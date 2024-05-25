@@ -15,8 +15,8 @@
       <nav class="side-content">
                 <a class="nav-title" href="index.html">はじめてのデータウェアハウス</a>
 <ul class="toc toc-1">
-    <li class="toc-chapter"><a href="./contents/preface.html">まえがき</a></li>
-    <li class="toc-chapter"><a href="./contents/dbsql-general.html">1 Databricks SQL の概要</a>
+    <li class="toc-chapter"><a href="./preface.html">まえがき</a></li>
+    <li class="toc-chapter"><a href="./dbsql-general.html">1 Databricks SQL の概要</a>
       <ul class="toc toc-2">
         <li class="toc-section"><a href="#h1-1">1.1 Databricks ってSQLもできるんです！</a></li>
         <li class="toc-section"><a href="#h1-2">1.2 そのまえに・・・Databricksの概要紹介</a></li>
@@ -27,16 +27,16 @@
         <li class="toc-section"><a href="#h1-7">1.7 まとめ</a></li>
       </ul>
     </li>
-    <li class="toc-chapter"><a href="./contents/unitycatalog.html">2 Unity Catalogではじめるデータマネジメント</a></li>
-    <li class="toc-chapter"><a href="./contents/data-engineering.html">3 データエンジニアリング</a></li>
-    <li class="toc-chapter"><a href="./contents/lakeview.html">4 Lakeviewによるデータ可視化とBIダッシュボード</a></li>
-    <li class="toc-chapter"><a href="./contents/realtime-app-dbsql.html">5 Databricks SQLとRaspberry Piを使ってIoTデータダッシュボードを作る</a></li>
-    <li class="toc-chapter"><a href="./contents/SQLextention.html">6 Databricks SQLの拡張機能</a></li>
-    <li class="toc-chapter"><a href="./contents/dbsql-perf-tuning.html">7 Databricks SQL パフォーマンス・チューニング Tips</a></li>
-    <li class="toc-chapter"><a href="./contents/dbsql-serverless-nw-security.html">8 Databricks SQLサーバーレスのネットワークセキュリティ</a></li>
-    <li class="toc-chapter"><a href="./contents/dbsql-migration.html">9 既存データウェアハウスからDatabricksへの実践的な移行方法と成功のためのヒント</a></li>
-    <li class="toc-chapter"><a href="./contents/DBRX.html">データブリックスが作った新しいLLM「DBRX」って、一体どんなモデル？</a></li>
-    <li class="toc-chapter"><a href="./contents/contributors.html">著者紹介</a></li>
+    <li class="toc-chapter"><a href="./unitycatalog.html">2 Unity Catalogではじめるデータマネジメント</a></li>
+    <li class="toc-chapter"><a href="./data-engineering.html">3 データエンジニアリング</a></li>
+    <li class="toc-chapter"><a href="./lakeview.html">4 Lakeviewによるデータ可視化とBIダッシュボード</a></li>
+    <li class="toc-chapter"><a href="./realtime-app-dbsql.html">5 Databricks SQLとRaspberry Piを使ってIoTデータダッシュボードを作る</a></li>
+    <li class="toc-chapter"><a href="./SQLextention.html">6 Databricks SQLの拡張機能</a></li>
+    <li class="toc-chapter"><a href="./dbsql-perf-tuning.html">7 Databricks SQL パフォーマンス・チューニング Tips</a></li>
+    <li class="toc-chapter"><a href="./dbsql-serverless-nw-security.html">8 Databricks SQLサーバーレスのネットワークセキュリティ</a></li>
+    <li class="toc-chapter"><a href="./dbsql-migration.html">9 既存データウェアハウスからDatabricksへの実践的な移行方法と成功のためのヒント</a></li>
+    <li class="toc-chapter"><a href="./DBRX.html">データブリックスが作った新しいLLM「DBRX」って、一体どんなモデル？</a></li>
+    <li class="toc-chapter"><a href="./contributors.html">著者紹介</a></li>
 </ul>
       </nav>
       <div class="page-inner">
@@ -65,7 +65,7 @@
 </li>
 </ul>
 <div id="lakehouseplatform" class="image">
-<img src="images/dbsql-general/lakehouseplatform.png" alt="レイクハウスプラットフォーム" class="img border" />
+<img src="images/lakehouseplatform.png" alt="レイクハウスプラットフォーム" class="img width-090per border" />
 <p class="caption">
 図1.1: レイクハウスプラットフォーム
 </p>
@@ -100,21 +100,21 @@
 </ul>
 <p>Classic と Pro はユーザー環境の EC2 などのコンピュートを立ち上げてそこに SQL Warehouse を構築します。</p>
 <div id="sqlwarehouse_classicarch" class="image">
-<img src="images/dbsql-general/sqlwarehouse_classicarch.png" alt="Classic/Pro のアーキテクチャ" class="img border" />
+<img src="images/sqlwarehouse_classicarch.png" alt="Classic/Pro のアーキテクチャ" class="img width-090per border" />
 <p class="caption">
 図1.2: Classic/Pro のアーキテクチャ
 </p>
 </div>
 <p>対して Serverless は Databricks が管理するコンピュートを払い出す形で提供されます。</p>
 <div id="sqlwarehouse_serverlessarch" class="image">
-<img src="images/dbsql-general/sqlwarehouse_serverlessarch.png" alt="Serverless のアーキテクチャ" class="img border" />
+<img src="images/sqlwarehouse_serverlessarch.png" alt="Serverless のアーキテクチャ" class="img width-090per border" />
 <p class="caption">
 図1.3: Serverless のアーキテクチャ
 </p>
 </div>
 <p>Classic と Pro の使い分けについては、まず EC2 などのリソースを自分たちの AWS アカウントに立ち上げたい場合かつ、小さい、かつシンプルなワークロードの場合は Classic を使うことで、コストを抑えることができますし、より大きなワークロードの場合には Pro を使うことで ストレージ性能の最適化や、各種フェデレーションや、 Python UDF などの機能を使うことができます。詳しくは以下の表を参照ください。</p>
 <div id="dbsql_featurematrix" class="image">
-<img src="images/dbsql-general/dbsql_featurematrix.png" alt="Classic/Pro/Serverless の機能一覧" class="img border" />
+<img src="images/dbsql_featurematrix.png" alt="Classic/Pro/Serverless の機能一覧" class="img width-090per border" />
 <p class="caption">
 図1.4: Classic/Pro/Serverless の機能一覧
 </p>
@@ -147,32 +147,33 @@
 <h3 class="symbol"><a id="h1-6-1"></a>SQL Warehouse を作ろう</h3>
 <p>まずこの画面から始まると思います。ワークスペースのホーム画面です。</p>
 <div id="wshome" class="image">
-<img src="images/dbsql-general/wshome.png" alt="ワークスペースのホーム画面" class="img width-050per border" />
+<img src="images/wshome.png" alt="ワークスペースのホーム画面" class="img width-050per border" />
 <p class="caption">
 図1.5: ワークスペースのホーム画面
 </p>
 </div>
 <p>この画面の左のメニューから [ SQL Warehouse ] を選択してください。</p>
 <div id="sqlwarehouse" class="image">
-<img src="images/dbsql-general/sqlwarehouse.png" alt="SQL Warehouse 画面" class="img width-080per border" />
+<img src="images/sqlwarehouse.png" alt="SQL Warehouse 画面" class="img width-080per border" />
 <p class="caption">
 図1.6: SQL Warehouse 画面
 </p>
 </div>
 <p>するとこのような画面に遷移すると思います。この画面で、 [ Create SQL Warehouse ] ボタンをクリックすると下記のような画面が開きます。</p>
 <div id="createsqlwarehouse" class="image">
-<img src="images/dbsql-general/createsqlwarehouse.png" alt="SQL Warehouse 作成画面" class="img width-080per border" />
+<img src="images/createsqlwarehouse.png" alt="SQL Warehouse 作成画面" class="img width-080per border" />
 <p class="caption">
 図1.7: SQL Warehouse 作成画面
 </p>
 </div>
 <p>ここから自分の作りたい SQL Warehouse を作成することができます。</p>
-<ul>
-<li>[Name]: SQL Warehouseの名前
-</li>
-<li>[ Cluster size]: SQL Warehouseのサイズ
-</li>
-</ul>
+<div id="sqlwarehouseconfig" class="table">
+<p class="caption">表1.1: SQL Warehouse作成時の設定</p>
+<table>
+<tr class="hline"><td>NameSQL Warehouseの名前</td></tr>
+<tr class="hline"><td>Cluster size  SQL Warehouseのサイズ</td></tr>
+</table>
+</div>
 <p>先ほどお話しした通り、 Classic/Pro であれば数分、 Serverless であれば数秒で　SQL Warehouse が起動します。</p>
 
 <h3 class="symbol"><a id="h1-6-2"></a>SQL を実行しよう</h3>
@@ -180,29 +181,29 @@
 <p>次は SQL を実行するための画面に移動します、先程のワークスペースのホーム画面にもどって今度は [ SQL Editor ] をクリックしてください。</p>
 <p>そうするとこのような画面になると思います。</p>
 <div id="sqleditor" class="image">
-<img src="images/dbsql-general/sqleditor.png" alt="SQL Editor画面" class="img width-080per border" />
+<img src="images/sqleditor.png" alt="SQL Editor画面" class="img width-080per border" />
 <p class="caption">
 図1.8: SQL Editor画面
 </p>
 </div>
 <p>このテキストボックスに SQL を書くことができます。先程作成した SQL Warehouse を指定して SQL を実行してみましょう！</p>
 <p>まずは、データを保存するための、カタログ、スキーマ、テーブルといった要素を作って行きます。</p>
-<div class="caption-code">
-<span class="caption">カタログ作成</span>
+<div id="createcatalog" class="caption-code">
+<span class="caption">リスト1.1: リスト1.1: カタログ作成</span>
 <pre class="list">
 CREATE CATALOG sample_catalog_20240525
 
 </pre>
 </div>
-<div class="caption-code">
-<span class="caption">スキーマ作成</span>
+<div id="createdatabase" class="caption-code">
+<span class="caption">リスト1.2: リスト1.2: スキーマ作成</span>
 <pre class="list">
 CREATE DATABASE sample_catalog_20240525.sample_catalog_20240525
 
 </pre>
 </div>
-<div class="caption-code">
-<span class="caption">テーブル作成</span>
+<div id="createtable" class="caption-code">
+<span class="caption">リスト1.3: リスト1.3: テーブル作成</span>
 <pre class="list">
 CREATE TABLE sample_catalog_20240525.sample_catalog_20240525.persons(
   Id INT,
@@ -214,8 +215,8 @@ CREATE TABLE sample_catalog_20240525.sample_catalog_20240525.persons(
 </pre>
 </div>
 <p>次に、できたテーブルにデータを投入していきましょう！</p>
-<div class="caption-code">
-<span class="caption">データ投入</span>
+<div id="insertsample" class="caption-code">
+<span class="caption">リスト1.4: リスト1.4: データ投入</span>
 <pre class="list">
 INSERT INTO sample_catalog_20240525.sample_catalog_20240525.persons (Id, Name, Age, Hobby) VALUES
 (1, 'Alice', 30, 'Reading'),
@@ -226,15 +227,15 @@ INSERT INTO sample_catalog_20240525.sample_catalog_20240525.persons (Id, Name, A
 </pre>
 </div>
 <p>成功しましたか？成功したかどうかデータがちゃんと入っているか確認してみましょう！</p>
-<div class="caption-code">
-<span class="caption">データ取得</span>
+<div id="selectsample" class="caption-code">
+<span class="caption">リスト1.5: リスト1.5: データ取得</span>
 <pre class="list">
 SELECT * FROM sample_catalog_20240525.sample_catalog_20240525.persons
 
 </pre>
 </div>
 <div id="selectresult" class="image">
-<img src="images/dbsql-general/selectresult.png" alt="SELECTの結果" class="img width-080per border" />
+<img src="images/selectresult.png" alt="SELECTの結果" class="img width-080per border" />
 <p class="caption">
 図1.9: SELECTの結果
 </p>
