@@ -15,16 +15,16 @@
       <nav class="side-content">
                 <a class="nav-title" href="index.html">はじめてのデータウェアハウス</a>
 <ul class="toc toc-1">
-    <li class="toc-chapter"><a href="./contents/preface.html">まえがき</a></li>
-    <li class="toc-chapter"><a href="./contents/dbsql-general.html">1 Databricks SQL の概要</a></li>
-    <li class="toc-chapter"><a href="./contents/unitycatalog.html">2 Unity Catalogではじめるデータマネジメント</a></li>
-    <li class="toc-chapter"><a href="./contents/data-engineering.html">3 データエンジニアリング</a></li>
-    <li class="toc-chapter"><a href="./contents/lakeview.html">4 Lakeviewによるデータ可視化とBIダッシュボード</a></li>
-    <li class="toc-chapter"><a href="./contents/realtime-app-dbsql.html">5 Databricks SQLとRaspberry Piを使ってIoTデータダッシュボードを作る</a></li>
-    <li class="toc-chapter"><a href="./contents/SQLextention.html">6 Databricks SQLの拡張機能</a></li>
-    <li class="toc-chapter"><a href="./contents/dbsql-perf-tuning.html">7 Databricks SQL パフォーマンス・チューニング Tips</a></li>
-    <li class="toc-chapter"><a href="./contents/dbsql-serverless-nw-security.html">8 Databricks SQLサーバーレスのネットワークセキュリティ</a></li>
-    <li class="toc-chapter"><a href="./contents/dbsql-migration.html">9 既存データウェアハウスからDatabricksへの実践的な移行方法と成功のためのヒント</a>
+    <li class="toc-chapter"><a href="./preface.html">まえがき</a></li>
+    <li class="toc-chapter"><a href="./dbsql-general.html">1 Databricks SQL の概要</a></li>
+    <li class="toc-chapter"><a href="./unitycatalog.html">2 Unity Catalogではじめるデータマネジメント</a></li>
+    <li class="toc-chapter"><a href="./data-engineering.html">3 データエンジニアリング</a></li>
+    <li class="toc-chapter"><a href="./lakeview.html">4 Lakeviewによるデータ可視化とBIダッシュボード</a></li>
+    <li class="toc-chapter"><a href="./realtime-app-dbsql.html">5 Databricks SQLとRaspberry Piを使ってIoTデータダッシュボードを作る</a></li>
+    <li class="toc-chapter"><a href="./SQLextention.html">6 Databricks SQLの拡張機能</a></li>
+    <li class="toc-chapter"><a href="./dbsql-perf-tuning.html">7 Databricks SQL パフォーマンス・チューニング Tips</a></li>
+    <li class="toc-chapter"><a href="./dbsql-serverless-nw-security.html">8 Databricks SQLサーバーレスのネットワークセキュリティ</a></li>
+    <li class="toc-chapter"><a href="./dbsql-migration.html">9 既存データウェアハウスからDatabricksへの実践的な移行方法と成功のためのヒント</a>
       <ul class="toc toc-2">
         <li class="toc-section"><a href="#h9-1">9.1 はじめに</a></li>
         <li class="toc-section"><a href="#h9-2">9.2 データベースオブジェクトのマッピング</a></li>
@@ -39,8 +39,8 @@
         <li class="toc-section"><a href="#h9-11">9.11 おわりに</a></li>
       </ul>
     </li>
-    <li class="toc-chapter"><a href="./contents/DBRX.html">データブリックスが作った新しいLLM「DBRX」って、一体どんなモデル？</a></li>
-    <li class="toc-chapter"><a href="./contents/contributors.html">著者紹介</a></li>
+    <li class="toc-chapter"><a href="./DBRX.html">データブリックスが作った新しいLLM「DBRX」って、一体どんなモデル？</a></li>
+    <li class="toc-chapter"><a href="./contributors.html">著者紹介</a></li>
 </ul>
       </nav>
       <div class="page-inner">
@@ -55,7 +55,7 @@
 <h2 class="grayback"><a id="h9-2"></a><span class="secno">9.2</span> データベースオブジェクトのマッピング</h2>
 <p>移行対象のデータウェアハウス製品によって機能に差異が存在しますが、一般的なデータウェアハウスのオブジェクトをDatabricksに移行する際の機能マッピングは以下の通りです。</p>
 <div id="img_001" class="image">
-<img src="images/dbsql-migration/img_001.png" alt="オブジェクトをDatabricksに移行する際の機能マッピング" class="img width-080per" />
+<img src="images/img_001.png" alt="オブジェクトをDatabricksに移行する際の機能マッピング" class="img width-080per" />
 <p class="caption">
 図9.1: オブジェクトをDatabricksに移行する際の機能マッピング
 </p>
@@ -90,8 +90,8 @@ WITH　(  DISTRIBUTION = HASH (L_ORDERKEY),  HEAP )} ←Synapse固有のテー�
 
 <h3 class="symbol"><a id="h9-3-1"></a>レイクハウスフェデレーションの活用と選択可能なデータロード手法</h3>
 <p>レイクハウスフェデレーションを使用してリモートデータウェアハウスに接続すると、そのデータベース内のテーブル一覧がUnity Catalogにリストされ、参照が可能になります。</p>
-<div class="note">
-<h5>レイクハウスフェデレーションとは</h5>
+<div class="miniblock miniblock-info">
+<p class="miniblock-caption">レイクハウスフェデレーションとは</p>
 <p>レイクハウスフェデレーション（クエリーフェデレーション）はデータをDatabricksに移行せずに、複数のデータソースに対してDatabricksから透過的にクエリーを実行できるようにする機能です。</p>
 <ul>
 <li>サポート対象データベースと設定方法ついてはドキュメントをご参照ください。
@@ -106,7 +106,7 @@ WITH　(  DISTRIBUTION = HASH (L_ORDERKEY),  HEAP )} ←Synapse固有のテー�
 </div>
 <p>以下はレイクハウスフェデレーションを使用して移行元データウェアハウスに接続した後、Unity Catalogでのデータベース内のテーブル定義情報の表示例です。レイクハウスフェデレーションにより、リモートデータベース内の全てのテーブルがデータ型などスキーマ情報を含めて自動的に変換され、Databricksのローカルテーブルとして参照可能になっています。</p>
 <div id="img_002" class="image">
-<img src="images/dbsql-migration/img_002.png" alt="Unity Catalogでのデータベース内のテーブル定義情報の表示例" class="img width-070per" />
+<img src="images/img_002.png" alt="Unity Catalogでのデータベース内のテーブル定義情報の表示例" class="img width-070per" />
 <p class="caption">
 図9.2: Unity Catalogでのデータベース内のテーブル定義情報の表示例
 </p>
@@ -121,15 +121,15 @@ SELECT * FROM synapse_catalog.dbo.lineitem &lt;-- レイクハウスフェデレ
 limit 0;
 </pre>
 </div>
-<div class="note">
-<h5>大量データの移行には別の方式を検討しましょう</h5>
+<div class="miniblock miniblock-info">
+<p class="miniblock-caption">大量データの移行には別の方式を検討しましょう</p>
 <p>レイクハウスフェデレーションを使用してデータロードを行うことも可能ですが、使用されるコネクタは内部的にシングルスレッドのJDBC接続であるため、大量データセットをリモートDBからDatabricksにネットワーク転送する処理には向いていません。このため、データロードはボトルネックにならない規模のデータやテスト目的での使用に限定することを推奨します。</p>
 </div>
 
 <h4><a id="h9-3-1-2"></a>データロード方法の選択</h4>
 <p>テーブルの作成が完了した後、移行要件に合わせたデータロード方法を検討します。大規模データの一括移行や継続的な差分ロードなど、要件によって最適なロード方式が異なります。検討すべきデータロードオプションには、以下のようなものがあります。</p>
 <div id="img_003" class="image">
-<img src="images/dbsql-migration/img_003.png" alt="データロードオプション" class="img width-080per" />
+<img src="images/img_003.png" alt="データロードオプション" class="img width-080per" />
 <p class="caption">
 図9.3: データロードオプション
 </p>
@@ -137,57 +137,31 @@ limit 0;
 
 <h5><a id="h9-3-1-2-1"></a>方法1：ParquetからDeltaへの変換</h5>
 <p>移行元のデータウェアハウスのデータをParquetフォーマットでDatabricksがアクセス可能なクラウドストレージに出力し、その後Deltaフォーマットに変換する方法は、大規模データの移行を一括で完了させる際に適しています。この方式は、Databricksの外部テーブルにデータを効率的に移行するのに特に有効です。</p>
-<ul>
-<li>ドキュメントURL：
-<ul>
-<li>https://learn.microsoft.com/ja-jp/azure/databricks/sql/language-manual/delta-convert-to-delta
-</li>
-</ul>
-</li>
-</ul>
+<p>ドキュメントURL：</p>
+<p>https://learn.microsoft.com/ja-jp/azure/databricks/sql/language-manual/delta-convert-to-delta</p>
 
 <h5><a id="h9-3-1-2-2"></a>方法2：JDBCドライバでの並列データ読み込み（レガシーフェデレーション）</h5>
 <p>移行元のデータウェアハウスにJDBCドライバを使用して接続し、spark.read を利用した並列データ読み取りによりデータを移行する方法です。この手法は大規模データのロードや、SQLで条件を指定した差分データのロードに適していますが、移行元のデータウェアハウスへの負荷を考慮する必要があります。</p>
-<ul>
-<li>ドキュメントURL：
-<ul>
-<li>https://learn.microsoft.com/ja-jp/azure/databricks/connect/external-systems/jdbc#control-parallelism-for-jdbc-queries
-</li>
-</ul>
-</li>
-</ul>
+<p>ドキュメントURL：</p>
+<p>https://learn.microsoft.com/ja-jp/azure/databricks/connect/external-systems/jdbc#control-parallelism-for-jdbc-queries</p>
 
 <h5><a id="h9-3-1-2-3"></a>方法3：Autoloaderでのデータロード</h5>
 <p>任意のフォーマットでDatabricksからアクセス可能なクラウドストレージにデータを出力する場合、Autoloaderを使用してデータロードを行います。この方法は大規模データロードや差分データロードにも適用可能です。また、ロード対象のファイル数が多い場合など、パフォーマンスを改善するためのオプションもサポートされています。</p>
-<ul>
-<li>ドキュメントURL：
-<ul>
-<li>https://learn.microsoft.com/ja-jp/azure/databricks/ingestion/auto-loader/
-</li>
-</ul>
-</li>
-</ul>
+<p>ドキュメントURL：</p>
+<p>https://learn.microsoft.com/ja-jp/azure/databricks/ingestion/auto-loader/</p>
 
 <h5><a id="h9-3-1-2-4"></a>方法4：Spark Structured Streamingでのデータロード</h5>
 <p>ロード対象データを移行元のデータウェアハウスやクラウドストレージ以外から直接取得したい場合は、Apache Spark Structured Streamingを使用してください。この方法は、リアルタイムでの差分データロードに特に適しており、ストリームメッセージングサービスからデータを効率的に取り込むことが可能です。</p>
-<ul>
-<li>ドキュメントURL：
-<ul>
-<li>https://docs.databricks.com/ja/connect/streaming/index.html
-</li>
-</ul>
-</li>
-</ul>
+<p>ドキュメントURL：</p>
+<p>https://docs.databricks.com/ja/connect/streaming/index.html</p>
 
 <h5><a id="h9-3-1-2-5"></a>方法5：レイクハウスフェデレーションでのデータロード</h5>
 <p>この方式はマスターテーブルなどの小規模データテーブルや、SQLで条件を指定した差分データのロードに適しています。ただし、前述したようにシングルスレッド接続であるため、大規模データセットのロードには不向きです。大規模データに対しては、異なるデータへアクセスするクエリを複数ジョブで実行する方法もありますが他の方式の使用が推奨されます。</p>
-<div class="note">
-<h5>データ移行時は適切な方式を検討してください</h5>
+<div class="miniblock miniblock-info">
+<p class="miniblock-caption">データ移行時は適切な方式を検討してください</p>
 <p>新規テーブルの作成や小規模データの移行には、レイクハウスフェデレーション機能を活用することが特に効果的です。一方で、大規模データの初期ロードや、その後の差分データのロードについては、移行期間や並行稼働の要件を考慮して適切なデータロード方式を選定することが推奨されます。</p>
-<p>各種サードパーティツールも利用可能です<sup><a id="fnb-link2" href="#fn-link2" class="noteref" epub:type="noteref">*1</a></sup>。</p>
-<div class="footnote-list">
-<div class="footnote" id="fn-link2" epub:type="footnote"><p class="footnote"><span class="footnote-mark">[*1] </span>https://docs.databricks.com/ja/integrations/index.html#technology-partners</p></div>
-</div><!--/.footnote-list-->
+<p>各種サードパーティツールも利用可能です。</p>
+<p>https://docs.databricks.com/ja/integrations/index.html#technology-partners</p>
 </div>
 
 <h2 class="grayback"><a id="h9-4"></a><span class="secno">9.4</span> ビューの移行</h2>
@@ -197,17 +171,11 @@ limit 0;
 <li>出力されたDDL文をDatabricksで実行可能な形式に変換します。これには、製品固有のSQL構文をSpark SQL構文に変換し、ビューを作成する作業が含まれます。</li>
 </ol>
 <p>ビュー定義中のクエリ構文の書き換えには、Databricksアシスタントの利用が効率的です。</p>
-<div class="note">
-<h5>Databricksアシスタント</h5>
+<div class="miniblock miniblock-info">
+<p class="miniblock-caption">Databricksアシスタント</p>
 <p>Databricksアシスタントは、Databricksでサポートされるプログラミング言語やフレームワークに対応したコード生成、最適化、説明、修正を行うために最適化された大規模言語モデル（LLM）による対話型サポートツールです。</p>
-<ul>
-<li>ドキュメントURL
-<ul>
-<li>https://docs.databricks.com/ja/notebooks/use-databricks-assistant.html
-</li>
-</ul>
-</li>
-</ul>
+<p>ドキュメントURL</p>
+<p>https://docs.databricks.com/ja/notebooks/use-databricks-assistant.html</p>
 </div>
 <p>例として以下のSynapseのビューの変換例をご紹介します。</p>
 <div class="emlist-code">
@@ -224,21 +192,21 @@ WHERE L_ORDERKEY BETWEEN 1 and 100
 </div>
 <p>Synapse固有の構文を含んでいるためDBアシスタントを使用してクエリを変換します。次のようにDBアシスタントのチャットウィンドウに入力してみます。</p>
 <div id="img_004" class="image">
-<img src="images/dbsql-migration/img_004.png" alt="DBアシスタントのチャットウィンドウへの質問例" class="img width-080per" />
+<img src="images/img_004.png" alt="DBアシスタントのチャットウィンドウへの質問例" class="img width-080per" />
 <p class="caption">
 図9.4: DBアシスタントのチャットウィンドウへの質問例
 </p>
 </div>
 <p>以下の回答が生成されました。</p>
 <div id="img_005" class="image">
-<img src="images/dbsql-migration/img_005.png" alt="DBアシスタントの回答例" class="img width-080per" />
+<img src="images/img_005.png" alt="DBアシスタントの回答例" class="img width-080per" />
 <p class="caption">
 図9.5: DBアシスタントの回答例
 </p>
 </div>
 <p>製品固有の構文の差異は正しく変換され、ほぼそのまま実行可能なクエリが生成されています。（ただし、今回テンポラリビューに関連するTEMPORARY句は削除しました。）全てのクエリが正しく変換されているかの最終確認は実データで行う必要がありますが、これまでのPoC（Proof of Concept）での実績においても、SQL構文の変更はDatabricksアシスタントによってほぼ完璧なレベルで実現できています。万が一エラーが発生しても、エラー情報からの適切なクエリ修正が可能です。SQL構文の差異も出力されるため、SQL開発者とって確認しやすくなっています。</p>
-<div class="note">
-<h5>ビューの移行はDatabricksアシスタントを活用しましょう</h5>
+<div class="miniblock miniblock-info">
+<p class="miniblock-caption">ビューの移行はDatabricksアシスタントを活用しましょう</p>
 <p>クエリの変換・デバックの作業効率が格段に向上します！</p>
 </div>
 
@@ -258,19 +226,12 @@ WHERE L_ORDERKEY BETWEEN 1 and 100
 USING DELTA CLUSTER BY (L_ORDERKEY)　&lt;-- 最大4カラムまで指定可能
 </pre>
 </div>
-<div class="note">
-<h5>チューニング方法の詳細について</h5>
+<div class="miniblock miniblock-info">
+<p class="miniblock-caption">チューニング方法の詳細について</p>
 <p>チューニング手法の詳細については本書のDBSQLチューニングTispの章及びドキュメントを参照ください。</p>
-<ul>
-<li>ドキュメントURL
-<ul>
-<li>https://learn.microsoft.com/ja-jp/azure/databricks/delta/clustering 
-</li>
-<li>https://learn.microsoft.com/ja-jp/azure/databricks/delta/data-skipping
-</li>
-</ul>
-</li>
-</ul>
+<p>ドキュメントURL</p>
+<p>https://learn.microsoft.com/ja-jp/azure/databricks/delta/clustering</p>
+<p>https://learn.microsoft.com/ja-jp/azure/databricks/delta/data-skipping</p>
 </div>
 
 <h2 class="grayback"><a id="h9-6"></a><span class="secno">9.6</span> ストアドプロシージャの移行</h2>
@@ -284,8 +245,8 @@ USING DELTA CLUSTER BY (L_ORDERKEY)　&lt;-- 最大4カラムまで指定可能
 <p>- Databricksワークフローによるスケジュール実行、フェイルオーバなどの実行制御</p>
 <p>- 該当ノートブックで参照されてるテーブルの確認などオブジェクト間の依存性の確認</p>
 <p>- CI/CD連携　など</p>
-<div class="note">
-<h5>Databricksノートブックはストアドプロシージャ移行に最適です</h5>
+<div class="miniblock miniblock-info">
+<p class="miniblock-caption">Databricksノートブックはストアドプロシージャ移行に最適です</p>
 <p>データウェアハウスにおけるストアドプロシージャは、SQLコードを管理しやすい単位にカプセル化し、データベース内に格納することで、トラフィックを軽減し、コードの再利用性を高めることができます。しかし、製品ごとの実装の違いやコードメンテナンスの難しさなどの課題があります。</p>
 <p>Databricksノートブックはオープンな言語でのコーディングとCI/CD連携により、ストアドプロシージャの課題を解決しています。</p>
 </div>
@@ -312,14 +273,14 @@ END;
 </div>
 <p>次のようにDBアシスタントのチャットウィンドウに入力してみます。</p>
 <div id="img_006" class="image">
-<img src="images/dbsql-migration/img_006.png" alt="DBアシスタントのチャットウィンドウへの入力例" class="img width-080per" />
+<img src="images/img_006.png" alt="DBアシスタントのチャットウィンドウへの入力例" class="img width-080per" />
 <p class="caption">
 図9.6: DBアシスタントのチャットウィンドウへの入力例
 </p>
 </div>
 <p>次のような回答が生成されました。</p>
 <div id="img_007" class="image">
-<img src="images/dbsql-migration/img_007.png" alt="DBアシスタントの回答例" class="img width-080per" />
+<img src="images/img_007.png" alt="DBアシスタントの回答例" class="img width-080per" />
 <p class="caption">
 図9.7: DBアシスタントの回答例
 </p>
@@ -365,17 +326,11 @@ while True:
 <h3 class="symbol"><a id="h9-6-2"></a>ai_query関数によるストアドプロシージャの変換</h3>
 <p>多くの大規模言語モデル（LLM）と同様に、Databricksアシスタントの出力は現在4096トークンに制限されています。これは、数千ステップを含む長いストアドプロシージャのコード変換を行う際に、最大トークン数を超えてしまうことがあるという問題を意味します。また、DatabricksアシスタントにはCLI（コマンドラインインターフェイス）やAPI（アプリケーションプログラミングインターフェイス）が提供されていないため、多くのプロシージャを手動で変換する必要があります。</p>
 <p>このような状況に対処する方法として、簡単かつ効率的にプロシージャコードを変換するためにai-query関数を使用する方法を紹介します</p>
-<div class="note">
-<h5>ai_query関数とは</h5>
+<div class="miniblock miniblock-info">
+<p class="miniblock-caption">ai_query関数とは</p>
 <p>ai_query関数はDatabrick SQLで利用できる組み込みのAI関数で、Databricksによってホストされる基盤モデル、外部モデル(Databricksの外部でホストされているサードパーティモデル)、モデルサービングエンドポイントによってホストされるカスタムモデルに対してSQLでアクセスすることが可能です。</p>
-<ul>
-<li>ドキュメントURL
-<ul>
-<li>https://learn.microsoft.com/ja-jp/azure/databricks/delta/clustering
-</li>
-</ul>
-</li>
-</ul>
+<p>ドキュメントURL</p>
+<p>https://learn.microsoft.com/ja-jp/azure/databricks/delta/clustering</p>
 </div>
 <p>以下のように3つのブロックから構成されるストアドプロシージャをai-query関数で変換する例を元にご紹介します。(誌面の都合上短いサンプルコードですがご了承くださいませ)</p>
 <div class="emlist-code">
@@ -441,7 +396,7 @@ END;
 </div>
 <p>以下は上記のテーブルに各変換対象のストアドプロシージャコードを分割してそれぞれをレコードとして格納した例です。1本のプロシージャコードを3分割して3レコードに分割して格納しています。</p>
 <div id="img_008" class="image">
-<img src="images/dbsql-migration/img_008.png" alt="コードを各レコードとして分割格納した例" class="img width-080per" />
+<img src="images/img_008.png" alt="コードを各レコードとして分割格納した例" class="img width-080per" />
 <p class="caption">
 図9.8: コードを各レコードとして分割格納した例
 </p>
@@ -449,14 +404,8 @@ END;
 
 <h4><a id="h9-6-2-2"></a>ステップ2：ai-query関数によるコードの変換</h4>
 <p>Databricks SQLクラスタに接続し、上で作成した作成したテーブルのカラムをai-query関数の引数に指定してコンバートを実行します。以下はDatabircksの基盤モデルとして提供されているLlama3-70Bを使用したコード変換の実行例です。</p>
-<ul>
-<li>ドキュメントURL
-<ul>
-<li>https://learn.microsoft.com/ja-jp/azure/databricks/machine-learning/foundation-models/supported-models#meta-llama-3-70b-instruct
-</li>
-</ul>
-</li>
-</ul>
+<p>ドキュメントURL</p>
+<p>https://learn.microsoft.com/ja-jp/azure/databricks/machine-learning/foundation-models/supported-models#meta-llama-3-70b-instruct</p>
 <div class="emlist-code">
 <pre class="emlist">SELECT 
 NO,
@@ -470,7 +419,7 @@ Where NO between 101 and 103
 </div>
 <p>上のai-query関数の実行結果の例は以下のようになります。LLMで生成されたSparkSQL/Pythonコードがテキストでカラムに出力されています。</p>
 <div id="img_009" class="image">
-<img src="images/dbsql-migration/img_009.png" alt="ai-query関数の実行結果の例" class="img width-080per" />
+<img src="images/img_009.png" alt="ai-query関数の実行結果の例" class="img width-080per" />
 <p class="caption">
 図9.9: ai-query関数の実行結果の例
 </p>
@@ -488,18 +437,11 @@ Where NO between 101 and 103
 </pre>
 </div>
 <p>マーカーを付与して保存した.pyファイルをDatabricksにアップロードし、インポートするとDatabricksはこのファイルをノートブックとして認識します。</p>
-<ul>
-<li>ドキュメントURL
-<ul>
-<li>https://docs.databricks.com/en/notebooks/notebook-export-import.html#import-a-file-and-convert-it-to-a-notebook
-</li>
-<li>https://docs.databricks.com/en/notebooks/notebook-export-import.html#import-a-file-and-convert-it-to-a-notebook
-</li>
-</ul>
-</li>
-</ul>
-<div class="note">
-<h5>LLM(大規模言語モデル）によりストアドプロシージャコードの変換も効率化可能です！</h5>
+<p>ドキュメントURL</p>
+<p>https://docs.databricks.com/en/notebooks/notebook-export-import.html#import-a-file-and-convert-it-to-a-notebook</p>
+<p>https://docs.databricks.com/en/notebooks/notebook-export-import.html#import-a-file-and-convert-it-to-a-notebook</p>
+<div class="miniblock miniblock-info">
+<p class="miniblock-caption">LLM(大規模言語モデル）によりストアドプロシージャコードの変換も効率化可能です！</p>
 <p>Databricksアシスタント、ai_query関数により自動変換で生成されるストアドプロシージャコードの変換コードの品質は細かな部分の修正とテストはまだ必要ですが、Spark分散フラットフォームに合わせた処理方式のリファクタリングもしっかりと考慮されたコードを生成することができ、非常に高品質のコードが生成できているという印象です。これまで時間がかかっていたストアドプロシージャの移行も非常に短期間で実現できる可能性がありますので今後も検証していきます！</p>
 </div>
 
@@ -536,17 +478,11 @@ CREATE FUNCTION main.default.isleapyear(year INT)
   $$
 </pre>
 </div>
-<div class="note">
-<h5>Python関数利用時のパフォーマンスに注意</h5>
+<div class="miniblock miniblock-caution">
+<p class="miniblock-caption">Python関数利用時のパフォーマンスに注意</p>
 <p>大量のレコードセットに対して処理を実行するスカラー関数を作成する場合、パフォーマンスを優先する場合はPython関数ではなくSQL関数を使用してください。ファンクションについては本書の「Databricks SQL の拡張機能」の章でも取り上げておりますのでこちらも合わせてご覧ください。</p>
-<ul>
-<li>ドキュメントURL
-<ul>
-<li>https://learn.microsoft.com/ja-jp/azure/databricks/sql/language-manual/sql-ref-syntax-ddl-create-sql-function
-</li>
-</ul>
-</li>
-</ul>
+<p>ドキュメントURL</p>
+<p>https://learn.microsoft.com/ja-jp/azure/databricks/sql/language-manual/sql-ref-syntax-ddl-create-sql-function</p>
 </div>
 
 <h2 class="grayback"><a id="h9-8"></a><span class="secno">9.8</span> シーケンスの移行</h2>
@@ -561,46 +497,33 @@ CREATE TABLE DATA_WITH_ID1 (ID LONG GENERATED ALWAYS AS IDENTITY (START WITH 1 I
 CREATE TABLE DATA_WITH_ID2 (ID LONG GENERATED BY DEFAULT AS IDENTITY (START WITH 1 INCREMENT BY 1), DATA STRING );
 </pre>
 </div>
-<div class="note">
-<h5>GENERATED　AS IDENTITY句を使用したカラムの制限</h5>
+<div class="miniblock miniblock-info">
+<p class="miniblock-caption">GENERATED　AS IDENTITY句を使用したカラムの制限</p>
 <p>GENERATED　AS IDENTITY句をでID列をセットしたカラムは次の制限があります。</p>
 <p>- ID列が有効がテーブルでは、同時実行トランザクションはサポートされていません。</p>
 <p>- ID列でテーブルをパーティション分割することはできません。</p>
 <p>- ALTER TABLEはID列のADD、REPLACE、CHANGE に使用できません。</p>
 <p>- 既存のレコードのID列の値を更新することはできません。</p>
-<ul>
-<li>ドキュメントURL
-<ul>
-<li>https://learn.microsoft.com/ja-jp/azure/databricks/delta/generated-columns
-</li>
-</ul>
-</li>
-</ul>
+<p>ドキュメントURL</p>
+<p>https://learn.microsoft.com/ja-jp/azure/databricks/delta/generated-columns</p>
 </div>
 
 <h2 class="grayback"><a id="h9-9"></a><span class="secno">9.9</span> トリガーの移行</h2>
 <p>データウェアハウスでは従来のデータベースシステムで見られるような行レベルのトリガー機能を利用しているケースは少ないと思われますが、従来のデータベースシステムで見られるような行レベルのトリガー機能を使用して更新ルールを実装している場合は、Deltaテーブルの行レベルの変更情報（チェンジデータフィード）を使用して行レベルのトリガーと同様の更新ルールを持つパイプラインを構築することができます。</p>
 <p>Databricksでは変更情報（チェンジデータフィード）の記録を有効にしたDELTAテーブルには通常のカラムに加えて、変更イベントの種類を識別するメタデータ列が作成され、更新情報が自動でセットされます。</p>
 <div id="img_010" class="image">
-<img src="images/dbsql-migration/img_010.png" alt="変更イベントの種類を識別するメタデータ列" class="img width-060per" />
+<img src="images/img_010.png" alt="変更イベントの種類を識別するメタデータ列" class="img width-060per" />
 <p class="caption">
 図9.10: 変更イベントの種類を識別するメタデータ列
 </p>
 </div>
 <p>Delta Live Tablesでは、このチェンジデータフィードの情報を使用し、チェンジデータキャプチャ (CDC) のETLパイプライン（ストリーミング、バッチ）の構築を簡素化し非常にシンプルなコードのみで実装することができます。</p>
-<div class="note">
-<h5>Delta Live Tablesを活用しましょう</h5>
+<div class="miniblock miniblock-info">
+<p class="miniblock-caption">Delta Live Tablesを活用しましょう</p>
 <p>データの更新ルールの実装はDelta Live Tablesパイプラインでの実装を推奨します。Delta Live Tables(DLT)は高い信頼性と保守が容易なデータ処理パイプラインを構築するためのフレームワークです。データに変換処理をSQLまたはPythonで定義すると、Delta Live Tablesがタスクオーケストレーション、クラスター管理、監視、データ品質、エラー処理を管理します。本書のデータエンジニアリングの章でDelta Live Tables(DLT)を紹介していますのでご参照ください。尚、ドキュメントのリンクはこちらです。</p>
-<ul>
-<li>ドキュメントURL
-<ul>
-<li>https://docs.databricks.com/ja/delta/delta-change-data-feed.html
-</li>
-<li>https://docs.databricks.com/ja/delta-live-tables/cdc.html
-</li>
-</ul>
-</li>
-</ul>
+<p>ドキュメントURL</p>
+<p>https://docs.databricks.com/ja/delta/delta-change-data-feed.html</p>
+<p>https://docs.databricks.com/ja/delta-live-tables/cdc.html</p>
 </div>
 
 <h2 class="grayback"><a id="h9-10"></a><span class="secno">9.10</span> その他：トランザクション処理の移行</h2>
@@ -681,22 +604,16 @@ except Exception as e:
 </div>
 <p>尚、上記のコードもDBアシスタントで自動生成されたコードですが、修正不要で動作しました。LLMの進化には驚かされるばかりです！</p>
 <div id="img_011" class="image">
-<img src="images/dbsql-migration/img_011.png" alt="DBアシスタントへのインストラクション例" class="img width-060per" />
+<img src="images/img_011.png" alt="DBアシスタントへのインストラクション例" class="img width-060per" />
 <p class="caption">
 図9.11: DBアシスタントへのインストラクション例
 </p>
 </div>
-<div class="note">
-<h5>タイムトラベル機能を活用した高速リカバリ</h5>
+<div class="miniblock miniblock-info">
+<p class="miniblock-caption">タイムトラベル機能を活用した高速リカバリ</p>
 <p>タイムトラベルによるデータリカバリにより複数SQLによる更新のロールバックも可能です。また、リカバリ処理は参照するデータファイルをメタデータレベルでの切り替えで完了しますので所要時間は数秒程度です。</p>
-<ul>
-<li>ドキュメントURL 
-<ul>
-<li>https://learn.microsoft.com/ja-jp/azure/databricks/delta/history
-</li>
-</ul>
-</li>
-</ul>
+<p>ドキュメントURL</p>
+<p>https://learn.microsoft.com/ja-jp/azure/databricks/delta/history</p>
 </div>
 
 <h2 class="grayback"><a id="h9-11"></a><span class="secno">9.11</span> おわりに</h2>

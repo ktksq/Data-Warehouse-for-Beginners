@@ -15,10 +15,10 @@
       <nav class="side-content">
                 <a class="nav-title" href="index.html">はじめてのデータウェアハウス</a>
 <ul class="toc toc-1">
-    <li class="toc-chapter"><a href="./contents/preface.html">まえがき</a></li>
-    <li class="toc-chapter"><a href="./contents/dbsql-general.html">1 Databricks SQL の概要</a></li>
-    <li class="toc-chapter"><a href="./contents/unitycatalog.html">2 Unity Catalogではじめるデータマネジメント</a></li>
-    <li class="toc-chapter"><a href="./contents/data-engineering.html">3 データエンジニアリング</a>
+    <li class="toc-chapter"><a href="./preface.html">まえがき</a></li>
+    <li class="toc-chapter"><a href="./dbsql-general.html">1 Databricks SQL の概要</a></li>
+    <li class="toc-chapter"><a href="./unitycatalog.html">2 Unity Catalogではじめるデータマネジメント</a></li>
+    <li class="toc-chapter"><a href="./data-engineering.html">3 データエンジニアリング</a>
       <ul class="toc toc-2">
         <li class="toc-section"><a href="#h3-1">3.1 はじめに</a></li>
         <li class="toc-section"><a href="#h3-2">3.2 サンプルアプリケーションの紹介: ニュース配信アプリ</a></li>
@@ -40,14 +40,14 @@
         <li class="toc-section"><a href="#h3-18">3.18 おわりに</a></li>
       </ul>
     </li>
-    <li class="toc-chapter"><a href="./contents/lakeview.html">4 Lakeviewによるデータ可視化とBIダッシュボード</a></li>
-    <li class="toc-chapter"><a href="./contents/realtime-app-dbsql.html">5 Databricks SQLとRaspberry Piを使ってIoTデータダッシュボードを作る</a></li>
-    <li class="toc-chapter"><a href="./contents/SQLextention.html">6 Databricks SQLの拡張機能</a></li>
-    <li class="toc-chapter"><a href="./contents/dbsql-perf-tuning.html">7 Databricks SQL パフォーマンス・チューニング Tips</a></li>
-    <li class="toc-chapter"><a href="./contents/dbsql-serverless-nw-security.html">8 Databricks SQLサーバーレスのネットワークセキュリティ</a></li>
-    <li class="toc-chapter"><a href="./contents/dbsql-migration.html">9 既存データウェアハウスからDatabricksへの実践的な移行方法と成功のためのヒント</a></li>
-    <li class="toc-chapter"><a href="./contents/DBRX.html">データブリックスが作った新しいLLM「DBRX」って、一体どんなモデル？</a></li>
-    <li class="toc-chapter"><a href="./contents/contributors.html">著者紹介</a></li>
+    <li class="toc-chapter"><a href="./lakeview.html">4 Lakeviewによるデータ可視化とBIダッシュボード</a></li>
+    <li class="toc-chapter"><a href="./realtime-app-dbsql.html">5 Databricks SQLとRaspberry Piを使ってIoTデータダッシュボードを作る</a></li>
+    <li class="toc-chapter"><a href="./SQLextention.html">6 Databricks SQLの拡張機能</a></li>
+    <li class="toc-chapter"><a href="./dbsql-perf-tuning.html">7 Databricks SQL パフォーマンス・チューニング Tips</a></li>
+    <li class="toc-chapter"><a href="./dbsql-serverless-nw-security.html">8 Databricks SQLサーバーレスのネットワークセキュリティ</a></li>
+    <li class="toc-chapter"><a href="./dbsql-migration.html">9 既存データウェアハウスからDatabricksへの実践的な移行方法と成功のためのヒント</a></li>
+    <li class="toc-chapter"><a href="./DBRX.html">データブリックスが作った新しいLLM「DBRX」って、一体どんなモデル？</a></li>
+    <li class="toc-chapter"><a href="./contributors.html">著者紹介</a></li>
 </ul>
       </nav>
       <div class="page-inner">
@@ -124,13 +124,13 @@
 <p>サンプルアプリケーションでは、最新のニュース情報を収集するために、newsapi.org<sup><a id="fnb-de-newsapi" href="#fn-de-newsapi" class="noteref" epub:type="noteref">*2</a></sup>のAPIを活用しています。APIを呼び出し、結果をテーブルに取り込むコードをingest_newsノートブックに記述します。</p>
 <p>ニュースAPIを安全に利用するために、APIキーはDatabricksのシークレット機能を使用して管理します。APIキーがコード内にハードコーディングされるリスクを避け、安全にAPIを呼び出すことが可能です。Databricksのシークレット機能を利用することで、キーの安全性が確保されるとともに、アクセス管理が簡単になります。</p>
 <p>シークレットキーの登録はdatabricks secretsコマンドを使います。</p>
-<div class="caption-code">
-<span class="caption">ニュースAPIキーをシークレットに登録する</span>
+<div id="de-put-secret" class="caption-code">
+<span class="caption">リスト3.1: リスト3.1: ニュースAPIキーをシークレットに登録する</span>
 <pre class="list">databricks secrets put-secret &lt;secret-scope-name&gt; news_api_key
 </pre>
 </div>
-<div class="caption-code">
-<span class="caption">Pythonでシークレットに登録されたAPIキーを利用する</span>
+<div id="de-get-secret" class="caption-code">
+<span class="caption">リスト3.2: リスト3.2: Pythonでシークレットに登録されたAPIキーを利用する</span>
 <pre class="list">import requests 
 
 # ニュースAPIを実行
@@ -168,8 +168,8 @@ response = requests.get(url)
 
 <h3 class="symbol"><a id="h3-6-1"></a>増分的にデータを追加するには MERGE INTO</h3>
 <p>サンプルアプリケーションでは次のように冪等性を持って増分的にデータを追加しています。まず、空のnewsテーブルを作成します</p>
-<div class="caption-code">
-<span class="caption">newsテーブルの作成</span>
+<div id="de-create-news-table" class="caption-code">
+<span class="caption">リスト3.3: リスト3.3: newsテーブルの作成</span>
 <pre class="list">CREATE TABLE IF NOT EXISTS news ( 
     source struct&lt;id: STRING, name: STRING&gt;, 
     author STRING, 
@@ -183,8 +183,8 @@ response = requests.get(url)
 </pre>
 </div>
 <p>そして、APIからの取得結果を含むデータフレームの内容をMERGE文で追記します。</p>
-<div class="caption-code">
-<span class="caption">新規ニュース記事をMERGEで追記</span>
+<div id="de-merge-into-news" class="caption-code">
+<span class="caption">リスト3.4: リスト3.4: 新規ニュース記事をMERGEで追記</span>
 <pre class="list"># SQLのMERGE文で参照できるように一時ビューとしてDataFrameを保存
 spark.createDataFrame(articles_df).createOrReplaceTempView(&quot;new_news&quot;) 
 
@@ -232,8 +232,8 @@ WHEN NOT MATCHED THEN
 
 <h3 class="symbol"><a id="h3-6-2"></a>MERGEで既存レコードを更新しながら取り込む</h3>
 <p>ニュースAPIと同様に天気予報APIのデータも保存します。サンプルアプリケーションではopen-meteo.com<sup><a id="fnb-de-open-meteo" href="#fn-de-open-meteo" class="noteref" epub:type="noteref">*3</a></sup>を利用しました。指定したロケーションの気温と降水量予測データをAPIで取得します。同様にMERGE文を使いますが、予測結果が更新されることもあるので、既存データは上書きするようにします。コードはingest_weatherノートブックに記述してあります。</p>
-<div class="caption-code">
-<span class="caption">既存レコードを更新しながらMERGE</span>
+<div id="de-merge-weather-table" class="caption-code">
+<span class="caption">リスト3.5: リスト3.5: 既存レコードを更新しながらMERGE</span>
 <pre class="list">MERGE INTO weather AS target 
 USING new_weather AS source 
 ON target.timestamp = source.timestamp AND target.location = source.location 
@@ -296,14 +296,14 @@ WHEN NOT MATCHED THEN
 <p>タスク名はジョブ内でユニークである必要があります。種類はノートブックの他にもPythonスクリプトやDLTパイプライン、dbtなど色々あります。今回はワークスペースにあるノートブックを指定しました。</p>
 <p>同様に天気予報APIの取り込みタスクも設定します。ジョブ名は左上の名前部分をクリックすると変更できます。下図は二つのタスクを設定した状態です。これはingest_newsを実行した後にingest_weatherを実行する設定になっています。それぞれ順番に動作するので処理時間がもったいないですね。</p>
 <div id="de-ingest-news-then-weather" class="image">
-<img src="images/data-engineering/de-ingest-news-then-weather.png" alt="ニュース、天気予報の順に取り込み" class="img width-080per" />
+<img src="images/de-ingest-news-then-weather.png" alt="ニュース、天気予報の順に取り込み" class="img width-050per" />
 <p class="caption">
 図3.1: ニュース、天気予報の順に取り込み
 </p>
 </div>
 <p>ingest_weaterタスクの依存先にingest_newsが自動的に設定されている状態です。依存先の設定を消すと、下図のように繋がりが消えます。そして二つのタスクは上下に並び、並列で実行できるようになります。</p>
 <div id="de-ingest-news-and-weather" class="image">
-<img src="images/data-engineering/de-ingest-news-and-weather.png" alt="ニュース、天気予報を並列で取り込み" class="img width-040per" />
+<img src="images/de-ingest-news-and-weather.png" alt="ニュース、天気予報を並列で取り込み" class="img width-025per" />
 <p class="caption">
 図3.2: ニュース、天気予報を並列で取り込み
 </p>
@@ -312,21 +312,21 @@ WHEN NOT MATCHED THEN
 <h2 class="grayback"><a id="h3-8"></a><span class="secno">3.8</span> ワークフロージョブを実行して結果を確認する</h2>
 <p>ジョブの実行方法は色々とありますが、画面右上の「今すぐ実行」をクリックしてジョブを実行してみます。するとジョブの実行画面へのリンクが表示されるのでクリックすると下図画面が表示されます。</p>
 <div id="de-ingest-run" class="image">
-<img src="images/data-engineering/de-ingest-run.png" alt="ジョブの実行結果" class="img width-080per" />
+<img src="images/de-ingest-run.png" alt="ジョブの実行結果" class="img width-050per" />
 <p class="caption">
 図3.3: ジョブの実行結果
 </p>
 </div>
 <p>この実行結果の画面からはさまざまな操作が可能です。二つのタスクが正常に完了した様子が表示されています。それぞれのタスクの緑の正方形をクリックすると、ノートブックの実行結果を表示できます。「開始時刻」のリンク、もしくはランの合計時間のバーをクリックすると、その実行の詳細画面へ遷移できます。実行の詳細画面の「タイムライン」をみると、二つのタスクが並列に実行されている様子が分かります。</p>
 <div id="de-ingest-run-timeline" class="image">
-<img src="images/data-engineering/de-ingest-run-timeline.png" alt="ジョブの実行結果タイムライン" class="img width-080per" />
+<img src="images/de-ingest-run-timeline.png" alt="ジョブの実行結果タイムライン" class="img width-050per" />
 <p class="caption">
 図3.4: ジョブの実行結果タイムライン
 </p>
 </div>
 <p>ワークフロージョブに二つのノートブックタスクを設定し、下図のようにAPI実行結果を冪等性を持って取り込むことができました。</p>
 <div id="de-ingest-arch-diagram" class="image">
-<img src="images/data-engineering/de-ingest-arch-diagram.png" alt="現時点でのアプリケーション" class="img width-080per" />
+<img src="images/de-ingest-arch-diagram.png" alt="現時点でのアプリケーション" class="img width-050per" />
 <p class="caption">
 図3.5: 現時点でのアプリケーション
 </p>
@@ -340,7 +340,7 @@ WHEN NOT MATCHED THEN
 <h2 class="grayback"><a id="h3-10"></a><span class="secno">3.10</span> DLTで宣言的なデータパイプラインを実装</h2>
 <p>次はユーザー情報の更新フィードを取り込んでいきます。サンプルアプリケーションのシナリオでは、ユーザー情報は外部データベースで管理されており、変更の差分をCDC (Change Data Capture) で受け取り、反映することを想定しています。メダリオンアーキテクチャに則り、まずは下図のようにCDCデータをテーブルに取り込みます。</p>
 <div id="de-cdc-arch-diagram" class="image">
-<img src="images/data-engineering/de-cdc-arch-diagram.png" alt="CDC更新フィードの増分取り込み" class="img width-080per" />
+<img src="images/de-cdc-arch-diagram.png" alt="CDC更新フィードの増分取り込み" class="img width-050per" />
 <p class="caption">
 図3.6: CDC更新フィードの増分取り込み
 </p>
@@ -349,8 +349,8 @@ WHEN NOT MATCHED THEN
 
 <h3 class="symbol"><a id="h3-10-1"></a>cloud_filesで新規ファイルの取り込みを宣言</h3>
 <p>クラウドストレージやボリュームなど、特定のロケーションを見張り、新規ファイルを取り込むcloud_filesという仕組みがDLTでは用意されています。サンプルアプリケーションではusers_cdcノートブックに以下の宣言があります。たったこれだけで、新規CSVファイルを読み取り、users_cdc_rawに追記していく実装が完了します。面倒な状態管理などは全てDLTが実行してくれます。ここではSQLで記述していますが、同様の宣言はPythonでも可能です。もちろんCSV以外のフォーマットにも対応しています。</p>
-<div class="caption-code">
-<span class="caption">users_cdc_rawストリーミングテーブルの作成</span>
+<div id="de-create-users_cdc_raw" class="caption-code">
+<span class="caption">リスト3.6: リスト3.6: users_cdc_rawストリーミングテーブルの作成</span>
 <pre class="list">CREATE OR REFRESH STREAMING TABLE users_cdc_raw 
 AS SELECT * FROM cloud_files(&quot;${source}&quot;, &quot;csv&quot;) 
 </pre>
@@ -371,21 +371,21 @@ AS SELECT * FROM cloud_files(&quot;${source}&quot;, &quot;csv&quot;)
 <h3 class="symbol"><a id="h3-10-5"></a>DLTパイプラインを開始するとノートブックの宣言から自動実行</h3>
 <p>必要な設定を終え、パイプラインを作成すると、下図のような画面になります。「パイプライン更新が開始されるとグラフが生成されます。「開始」をクリックしてアップデートを開始します。」とあるので「開始」をクリックします。</p>
 <div id="de-start-dlt-pipeline" class="image">
-<img src="images/data-engineering/de-start-dlt-pipeline.png" alt="DLTパイプラインの開始" class="img width-090per" />
+<img src="images/de-start-dlt-pipeline.png" alt="DLTパイプラインの開始" class="img width-075per" />
 <p class="caption">
 図3.7: DLTパイプラインの開始
 </p>
 </div>
 <p>すると、初回は「リソースを待機中」でしばらく待つことになるでしょう。前述の通り、専用のジョブクラスターを作成するのに5分程度かかります。</p>
 <div id="de-dlt-waiting-for-resource" class="image">
-<img src="images/data-engineering/de-dlt-waiting-for-resource.png" alt="DLTジョブクラスター作成待ち" class="img width-040per" />
+<img src="images/de-dlt-waiting-for-resource.png" alt="DLTジョブクラスター作成待ち" class="img width-025per" />
 <p class="caption">
 図3.8: DLTジョブクラスター作成待ち
 </p>
 </div>
 <p>しばらく待つと下図のようにusers_cdc_rawテーブルが作成された様子が確認できます。</p>
 <div id="de-users_cdc_raw-created" class="image">
-<img src="images/data-engineering/de-users_cdc_raw-created.png" alt="users_cdc_rawストリーミングテーブル" class="img width-080per" />
+<img src="images/de-users_cdc_raw-created.png" alt="users_cdc_rawストリーミングテーブル" class="img width-050per" />
 <p class="caption">
 図3.9: users_cdc_rawストリーミングテーブル
 </p>
@@ -400,7 +400,7 @@ AS SELECT * FROM cloud_files(&quot;${source}&quot;, &quot;csv&quot;)
 <p>シルバーレイヤーにあたるのがusersとusers_anonymizedになります。</p>
 <p>users_cdcノートブックにそれぞれのテーブルを宣言するコードを記述し、DLTパイプラインを再度開始すると、下図のように自動でテーブル間の関連からDAG (Directed Acyclic Graph) を生成し、順番にデータ更新処理を実行してくれます。</p>
 <div id="de-dlt-medalion" class="image">
-<img src="images/data-engineering/de-dlt-medalion.png" alt="DLTパイプラインでメダリオンアーキテクチャを実装" class="img width-080per" />
+<img src="images/de-dlt-medalion.png" alt="DLTパイプラインでメダリオンアーキテクチャを実装" class="img width-075per" />
 <p class="caption">
 図3.10: DLTパイプラインでメダリオンアーキテクチャを実装
 </p>
@@ -422,8 +422,8 @@ AS SELECT * FROM cloud_files(&quot;${source}&quot;, &quot;csv&quot;)
 
 <h3 class="symbol"><a id="h3-10-9"></a>データクレンジングと品質チェックを宣言</h3>
 <p>users_cdc_cleanで簡単なデータクレンジングと品質チェックを宣言します。</p>
-<div class="caption-code">
-<span class="caption">users_cdc_cleanの宣言</span>
+<div id="de-users_cdc_clean-table" class="caption-code">
+<span class="caption">リスト3.7: リスト3.7: users_cdc_cleanの宣言</span>
 <pre class="list">CREATE OR REFRESH STREAMING TABLE users_cdc_clean 
 (CONSTRAINT valid_change_type EXPECT ( 
   change_type IN (&quot;INSERT&quot;, &quot;UPDATE&quot;, &quot;DELETE&quot;) 
@@ -440,7 +440,7 @@ AS SELECT
 <p>データ品質チェックはCONSTRAINTのEXPECT句で実装します。ここではCDCフィードの変更種別を表すchange_typeが期待する値になっていることを確認します。</p>
 <p>想定しない値を投入してテストしてみると、DLT画面ではテーブルのデータ品質タブで1件のレコードがDROPされているのが確認できます。EXPECTの条件に一致しない不良レコードの扱いは、デフォルトでは件数のカウントのみ、レコードの削除、パイプライン実行を失敗させる、の三通りから選ぶことができます。</p>
 <div id="de-users_cdc_clean-expectation" class="image">
-<img src="images/data-engineering/de-users_cdc_clean-expectation.png" alt="品質チェック実行結果" class="img width-060per" />
+<img src="images/de-users_cdc_clean-expectation.png" alt="品質チェック実行結果" class="img width-025per" />
 <p class="caption">
 図3.11: 品質チェック実行結果
 </p>
@@ -448,8 +448,8 @@ AS SELECT
 
 <h3 class="symbol"><a id="h3-10-10"></a>PIIを匿名化</h3>
 <p>顧客情報には個人を特定可能な情報(PII, Personal Identifiable Information)である、氏名や生年月日が含まれています。データを収集、加工していく中でなるべく早い段階でPIIは仮名化、匿名化などの処理を行い、生データは適切にアクセス権限を絞って管理するのが良いでしょう。実装方法としてはいくつか異なるアプローチがありますが、サンプルアプリケーションでは users_cdc_anonymizedテーブルで匿名化を実装しています。</p>
-<div class="caption-code">
-<span class="caption">users_cdc_anonymizedテーブル</span>
+<div id="users_cdc_anonymized-table" class="caption-code">
+<span class="caption">リスト3.8: リスト3.8: users_cdc_anonymizedテーブル</span>
 <pre class="list">CREATE OR REFRESH STREAMING TABLE users_cdc_anonymized 
 AS SELECT 
 change_type, id, timestamp, 
@@ -471,8 +471,8 @@ FROM STREAM(LIVE.users_cdc_clean)
 
 <h3 class="symbol"><a id="h3-10-11"></a>SCD Type 1でユーザーディメンションテーブルを更新</h3>
 <p>それでは、CDCデータからユーザーのディメンションテーブルを作成していきます。DLTではAPPLY CHANGESという構文があらかじめ用意されています。以下のコードのように、どの項目で既存レコードとぶつけるのかを指定するだけで、新規レコードは追加、既存レコードは更新として扱われます。削除として反映する条件をAPPLY AS DELETEで指定しています。一回のパイプライン更新処理中に同一のユーザーに対して複数の更新レコードが渡ってくることもあり得ます。更新順序の整合性を保つためにSEQUENCE BYでtimestampを指定しています。</p>
-<div class="caption-code">
-<span class="caption">SCD Type 1でusersテーブルを宣言</span>
+<div id="de-users-table-scd-type-1" class="caption-code">
+<span class="caption">リスト3.9: リスト3.9: SCD Type 1でusersテーブルを宣言</span>
 <pre class="list">CREATE OR REFRESH STREAMING TABLE users; 
 
 APPLY CHANGES INTO LIVE.users 
@@ -504,8 +504,8 @@ COLUMNS * EXCEPT (change_type);
 
 <h3 class="symbol"><a id="h3-10-12"></a>SCD Type 2でユーザーディメンションテーブルを更新</h3>
 <p>続いて、SCD Type 2によるテーブル更新例を見てみましょう。Type 2は変更の履歴を保持できるため、より高度な分析が可能になります。サンプルアプリケーションでは匿名化したusers_anonymizedをTypeで作成しています。Type 1との違いは最後のSTORED AS SCD TYPE 2を宣言している部分だけです。</p>
-<div class="caption-code">
-<span class="caption">SCD Type 2でusers_anonymizedテーブルを宣言</span>
+<div id="de-users_anonymized-table-scd-type-2" class="caption-code">
+<span class="caption">リスト3.10: リスト3.10: SCD Type 2でusers_anonymizedテーブルを宣言</span>
 <pre class="list">CREATE OR REFRESH STREAMING TABLE users_anonymized; 
 
 APPLY CHANGES INTO LIVE.users_anonymized 
@@ -541,7 +541,7 @@ STORED AS SCD TYPE 2;
 <p>顧客情報が整備できたので、集計結果を保持するマテリアライズドビューも作成してみましょう。データ分析時やダッシュボードを表示する際にアドホックに集計を行うこともできますが、データ量が増加したり、頻繁に参照したりする場合は事前に集計結果をテーブルとして保存しておくと負荷を軽減できます。そのための仕組みがマテリアライズドビューです。</p>
 <p>サンプルアプリケーションでは例として下図のように各地域のユーザー数と、天気を結合した集計結果のマテリアライズドビューdaily_statsを生成しています。</p>
 <div id="de-view-and-materialized-view" class="image">
-<img src="images/data-engineering/de-view-and-materialized-view.png" alt="ビューとマテリアライズドビュー" class="img width-080per" />
+<img src="images/de-view-and-materialized-view.png" alt="ビューとマテリアライズドビュー" class="img width-050per" />
 <p class="caption">
 図3.12: ビューとマテリアライズドビュー
 </p>
@@ -555,16 +555,16 @@ STORED AS SCD TYPE 2;
 </table>
 </div>
 <p>最終的なdaily_statsを作成するまでに、いくつか中間テーブルを作成しています。DLTではLIVE VIEWという構文で、DLTパイプライン実行中のみ存在する一時的なビューを作成することができます。</p>
-<div class="caption-code">
-<span class="caption">user_locations一時ビュー</span>
+<div id="de-user_locations" class="caption-code">
+<span class="caption">リスト3.11: リスト3.11: user_locations一時ビュー</span>
 <pre class="list">CREATE LIVE VIEW user_locations AS 
 SELECT location, count(*) user_count FROM LIVE.users_anonymized 
 GROUP BY location
 </pre>
 </div>
 <p>users_anonymizedは同じパイプライン内で生成しているのでLIVEスキーマで参照できます。しかしパイプライン外で作成したweatherを参照する場合はスキーマ名を明示しなければなりません。具体的なスキーマ名をパイプラインのコードに書いてしまうとポータビリティが損なわれるので、DLTのパラメーターで渡すようにしました。天気予報は一時間ごとの気温と降水量のデータです。UTCタイムゾーンのタイムスタンプとなっているため、後続の集計がしやすいように、まず日本時間としての日付に加工する一時ビューを作成しています。</p>
-<div class="caption-code">
-<span class="caption">daily_weather一時ビュー</span>
+<div id="de-daily_weather" class="caption-code">
+<span class="caption">リスト3.12: リスト3.12: daily_weather一時ビュー</span>
 <pre class="list">CREATE LIVE VIEW daily_weather AS 
 SELECT 
 cast(convert_timezone(&quot;UTC&quot;, &quot;Asia/Tokyo&quot;, timestamp) as DATE) as DATE, 
@@ -572,8 +572,8 @@ location, temperature_2m as temp, rain FROM ${source_schema}.weather
 </pre>
 </div>
 <p>さらに、各地域の本日の気温の統計情報を集計する一時ビューを作成しています。</p>
-<div class="caption-code">
-<span class="caption">daily_weather_stats一時ビュー</span>
+<div id="de-daily_weather_stats" class="caption-code">
+<span class="caption">リスト3.13: リスト3.13: daily_weather_stats一時ビュー</span>
 <pre class="list">CREATE LIVE VIEW daily_weather_stats AS 
 SELECT max(date) as date, location, min(temp) as temp_min, max(temp) as temp_max, round(avg(temp), 2) as temp_avg FROM LIVE.daily_weather 
 WHERE date = cast(convert_timezone(&quot;UTC&quot;, &quot;Asia/Tokyo&quot;, current_date()) as DATE) 
@@ -581,8 +581,8 @@ GROUP BY location
 </pre>
 </div>
 <p>ここまで整えておけば、最終的な集計はJOINするだけで実施できます。</p>
-<div class="caption-code">
-<span class="caption">daily_statsマテリアライズドビュー</span>
+<div id="de-daily_stats-materialized-view" class="caption-code">
+<span class="caption">リスト3.14: リスト3.14: daily_statsマテリアライズドビュー</span>
 <pre class="list">CREATE OR REFRESH LIVE TABLE daily_stats AS 
 SELECT w.*, u.user_count FROM LIVE.daily_weather_stats w 
 LEFT JOIN LIVE.user_locations u ON w.location = u.location
@@ -608,7 +608,7 @@ LEFT JOIN LIVE.user_locations u ON w.location = u.location
 <p>DLTでもスケジューリング機能を実装していて、単体で動かすことができます。しかしサンプルアプリケーションでは顧客情報の更新が完了したら最新の情報を使ってニュース配信を行いたいので、全体の関連性をワークフローのジョブで定義しています。</p>
 <p>下図のようにニュースAPIデータ取り込み、天気予報データ取り込み、顧客情報更新DLTパイプライン実行のタスクが並列で動作するようにしました。DLTパイプラインのタスク種別を選び、パイプラインを指定するだけなのでワークフロー側の設定は簡単です。</p>
 <div id="de-dlt-from-job" class="image">
-<img src="images/data-engineering/de-dlt-from-job.png" alt="ワークフロージョブからDLTパイプラインを実行する" class="img width-040per" />
+<img src="images/de-dlt-from-job.png" alt="ワークフロージョブからDLTパイプラインを実行する" class="img width-025per" />
 <p class="caption">
 図3.13: ワークフロージョブからDLTパイプラインを実行する
 </p>
@@ -621,14 +621,14 @@ LEFT JOIN LIVE.user_locations u ON w.location = u.location
 <p>DLTパイプラインの実装が完了し、ワークフロージョブに組み込みました。これからワークフロー側での開発作業を進めるにあたって、ジョブを何度も実行することになります。しかし、毎回DLTクラスターの作成を待っていたり、開発モードでDLTのクラスターを起動したままにしたりすると、時間とコストがかかります。タスク自体を削除してしまうと、後でまた追加しないといけません。そこで、条件分岐を使い、一時的にDLTタスクを無効化しておきます。</p>
 <p>下図のように、パイプラインタスクの依存関係にif/else条件分岐を追加します。タスク名をdlt_enabledとし、if/elseタスクの条件は {{task.name}} == &quot;dlt_enabled&quot; としています。条件部分を&quot;dlt_disabled&quot;などに変更すれば、一時的に無効化できます。</p>
 <div id="de-dlt-disabled" class="image">
-<img src="images/data-engineering/de-dlt-disabled.png" alt="if/elseでタスクを一時的に無効化" class="img width-080per" />
+<img src="images/de-dlt-disabled.png" alt="if/elseでタスクを一時的に無効化" class="img width-050per" />
 <p class="caption">
 図3.14: if/elseでタスクを一時的に無効化
 </p>
 </div>
 <p>無効化した状態で実行すると、パイプラインタスク以外を実行できます。</p>
 <div id="de-dlt-disabled-result" class="image">
-<img src="images/data-engineering/de-dlt-disabled-result.png" alt="if/elseでタスクを一時的に無効化した実行結果" class="img width-080per" />
+<img src="images/de-dlt-disabled-result.png" alt="if/elseでタスクを一時的に無効化した実行結果" class="img width-050per" />
 <p class="caption">
 図3.15: if/elseでタスクを一時的に無効化した実行結果
 </p>
@@ -637,7 +637,7 @@ LEFT JOIN LIVE.user_locations u ON w.location = u.location
 <h3 class="symbol"><a id="h3-12-2"></a>新規データがある場合だけ後続の処理を実行したい</h3>
 <p>ニュース記事の取り込み後、モデルを最新化する処理を実行します。最新のニュースが全くない場合はモデルの最新化をスキップしたいのでif/elseで取り込みの件数をチェックするようにしました。条件は{{tasks.ingest_news.values.num_inserted_rows}} &gt; 0としています。</p>
 <div id="de-check-num-inserted" class="image">
-<img src="images/data-engineering/de-check-num-inserted.png" alt="新規データがある場合だけ後続の処理を実行" class="img" />
+<img src="images/de-check-num-inserted.png" alt="新規データがある場合だけ後続の処理を実行" class="img width-050per" />
 <p class="caption">
 図3.16: 新規データがある場合だけ後続の処理を実行
 </p>
@@ -651,8 +651,8 @@ LEFT JOIN LIVE.user_locations u ON w.location = u.location
 </table>
 </div>
 <p>挿入された新規レコード件数をタスクの値として記録しておき、if/elseで参照できるようにします。</p>
-<div class="caption-code">
-<span class="caption">ジョブタスクの値を設定</span>
+<div id="de-add-job-task-value" class="caption-code">
+<span class="caption">リスト3.15: リスト3.15: ジョブタスクの値を設定</span>
 <pre class="list">dbutils.jobs.taskValues.set(&quot;num_inserted_rows&quot;, result.head()[&quot;num_inserted_rows&quot;]) 
 </pre>
 </div>
@@ -660,8 +660,8 @@ LEFT JOIN LIVE.user_locations u ON w.location = u.location
 <h2 class="grayback"><a id="h3-13"></a><span class="secno">3.13</span> Chromaベクトルデータベースファイルを最新化</h2>
 <p>サンプルアプリケーションのゴールはユーザーの嗜好に応じたニュースを配信することです。この課題を実現するにはいろいろな方法があると思いますが、今回は単純にベクトル検索で、関連していそうなニュース記事を検索する実装にしてみました。Databricksにもベクトルサーチの機能はあるのですが、現時点では筆者が利用しているリージョンでは未対応でしたので、Chroma<sup><a id="fnb-de-chroma" href="#fn-de-chroma" class="noteref" epub:type="noteref">*4</a></sup>を使ってみます。</p>
 <p>Chromaのデータを永続化し、後で利用できるようにPersistentClientを使います。</p>
-<div class="caption-code">
-<span class="caption">ChromaのPersistentClient</span>
+<div id="de-chroma-persistent-client" class="caption-code">
+<span class="caption">リスト3.16: リスト3.16: ChromaのPersistentClient</span>
 <pre class="list">import os 
 import chromadb 
 
@@ -670,8 +670,8 @@ chroma_client = chromadb.PersistentClient(path=db_path)
 </pre>
 </div>
 <p>Chroma デフォルトエンベディングモデル all-MiniLM-L6-v2 は日本語に対応していないので、代わりに OpenAI のエンベディングを利用するようにします。APIキーはシークレット経由で指定します。</p>
-<div class="caption-code">
-<span class="caption">OpenAIでエンベディング</span>
+<div id="de-chroma-openai-embedding" class="caption-code">
+<span class="caption">リスト3.17: リスト3.17: OpenAIでエンベディング</span>
 <pre class="list">import chromadb.utils.embedding_functions as embedding_functions 
 
 openai_ef = embedding_functions.OpenAIEmbeddingFunction( 
@@ -686,8 +686,8 @@ openai_ef = embedding_functions.OpenAIEmbeddingFunction(
 
 <h2 class="grayback"><a id="h3-14"></a><span class="secno">3.14</span> SparkストリーミングでChromaにニュースを追加</h2>
 <p>ニュース記事をChromaコレクションに追加する部分のコードを紹介します。</p>
-<div class="caption-code">
-<span class="caption">Chromaにニュース記事を追加する</span>
+<div id="de-add-news-to-chroma" class="caption-code">
+<span class="caption">リスト3.18: リスト3.18: Chromaにニュース記事を追加する</span>
 <pre class="list">import dateutil.parser as dp 
 
 # newsテーブルからストリーミングで読み込む 
@@ -720,8 +720,8 @@ processed_query.awaitTermination()
 <p>ポイントとしてはトリガーにavailableNow=Trueを指定している点でしょうか。このストリーミング処理はニュース記事の取り込み後、ワークフローから実行されます。前回実行時から新規に追加されたニュース記事をChromaコレクションに追加します。</p>
 <p>Chromaではベクトルの類似性に加えて、メタデータでのフィルタリングもできます。最新のニュース記事のみを検索対象にしたいので、ニュースの発行日時をepochに変換してメタデータに付与しています。</p>
 <p>検索を実行するコードは以下のようになります。</p>
-<div class="caption-code">
-<span class="caption">Chromaでニュース記事を検索</span>
+<div id="de-search-chroma" class="caption-code">
+<span class="caption">リスト3.19: リスト3.19: Chromaでニュース記事を検索</span>
 <pre class="list">import datetime 
 
 three_days_ago = datetime.datetime.now() - datetime.timedelta(days=3) 
@@ -742,8 +742,8 @@ results = collection.query(
 
 <h3 class="symbol"><a id="h3-15-1"></a>Unity Catalogにモデルを登録する</h3>
 <p>以下のコードでMLflowにモデルを記録します。Unity Catalogにモデルを登録するのでset_registry_urlで指定しています。モデルの名前とシグネチャなどを指定してログするのに加え、更新済みのChromaデータベースファイルをアーティファクトに格納しています。</p>
-<div class="caption-code">
-<span class="caption">MLflowでUnity Catalogにモデルを登録</span>
+<div id="de-mlflow-log-model" class="caption-code">
+<span class="caption">リスト3.20: リスト3.20: MLflowでUnity Catalogにモデルを登録</span>
 <pre class="list">mlflow.set_registry_uri(&quot;databricks-uc&quot;) 
 
 model_name = &quot;query_chroma&quot; 
@@ -766,8 +766,8 @@ with mlflow.start_run():
 
 <h3 class="symbol"><a id="h3-15-2"></a>最新モデルバージョンをデプロイする</h3>
 <p>サンプルアプリケーションでは開発環境しかないので、@championエイリアスによるシンプルなMLOpsとしました。同一モデル名で新しいモデルを登録すると、新しいバージョンが増えていきます。推論時にモデルを利用する際には@championエイリアスで利用するバージョンを指定できるようにしています。</p>
-<div class="caption-code">
-<span class="caption">エイリアスを指定してモデルをデプロイする</span>
+<div id="de-mlflow-deploy-model-via-alias" class="caption-code">
+<span class="caption">リスト3.21: リスト3.21: エイリアスを指定してモデルをデプロイする</span>
 <pre class="list">from mlflow.tracking.client import MlflowClient 
 
 mlflow_client = MlflowClient() 
@@ -784,7 +784,7 @@ mlflow_client.set_registered_model_alias(model_fq_name, &quot;champion&quot;, la
 </pre>
 </div>
 <div id="de-model-versions" class="image">
-<img src="images/data-engineering/de-model-versions.png" alt="複数モデルバージョンと@champion" class="img width-080per" />
+<img src="images/de-model-versions.png" alt="複数モデルバージョンと@champion" class="img width-060per" />
 <p class="caption">
 図3.17: 複数モデルバージョンと@champion
 </p>
@@ -793,8 +793,8 @@ mlflow_client.set_registered_model_alias(model_fq_name, &quot;champion&quot;, la
 <h2 class="grayback"><a id="h3-16"></a><span class="secno">3.16</span> おすすめニュースをバッチ推論する</h2>
 <p>やっとユーザー情報の最新化、最新ニュースをおすすめできるモデルが用意できました！最後にモデルを利用してバッチ推論するコードを紹介します。</p>
 <p>まず、モデル名と@championエイリアスを指定して、 SparkのUDFとして利用できるようにモデルをロードします。その際、Chromaから検索するニュース記事の件数や検索クエリのエンベディングに利用するためのOpenAI APIキーなどを渡しています。</p>
-<div class="caption-code">
-<span class="caption">MLflow pyfuncモデルのロード</span>
+<div id="de-load-mlflow-model" class="caption-code">
+<span class="caption">リスト3.22: リスト3.22: MLflow pyfuncモデルのロード</span>
 <pre class="list">import mlflow 
 
 mlflow.set_registry_uri(&quot;databricks-uc&quot;) 
@@ -814,8 +814,8 @@ recommend_news = mlflow.pyfunc.spark_udf(
 </pre>
 </div>
 <p>その後、ユーザーのテーブルをもとにバッチ推論を実行します。ユーザーの年代、性別、ロケーション、興味のあるニュースカテゴリを単純に連結して、近しいニュース記事をモデルに問い合わせます。</p>
-<div class="caption-code">
-<span class="caption">バッチ推論の実行</span>
+<div id="de-batch-inference" class="caption-code">
+<span class="caption">リスト3.23: リスト3.23: バッチ推論の実行</span>
 <pre class="list">from pyspark.sql.functions import concat, concat_ws, struct, col, lit 
 
 df = (spark.table(&quot;users_anonymized&quot;).select( 
@@ -840,14 +840,14 @@ display(df)
 <h2 class="grayback"><a id="h3-17"></a><span class="secno">3.17</span> 複数タスクの完了を待ってからタスクを実行する</h2>
 <p>顧客情報の最新化、モデルの最新化が完了したら、ニュースのおすすめが動くようにワークフロージョブに組み込みます。タスクの依存関係の設定では依存先のタスクの状態に応じて実行要否を決定できるように「依存関係がある場合に実行」という設定があります。今回は「まったく失敗しなかった場合」に設定しました。DLTパイプラインを実行するか、新規ニュースが追加された場合にニュースのおすすめを実施するイメージです。</p>
 <div id="de-wait-for-dependency-tasks" class="image">
-<img src="images/data-engineering/de-wait-for-dependency-tasks.png" alt="複数タスクの完了を待つ" class="img width-080per" />
+<img src="images/de-wait-for-dependency-tasks.png" alt="複数タスクの完了を待つ" class="img width-070per" />
 <p class="caption">
 図3.18: 複数タスクの完了を待つ
 </p>
 </div>
 <p>プルダウンを開くと、その他の選択肢と簡単な説明が記載されています。</p>
 <div id="de-dependency-options" class="image">
-<img src="images/data-engineering/de-dependency-options.png" alt="依存関係の設定オプション選択肢" class="img width-080per" />
+<img src="images/de-dependency-options.png" alt="依存関係の設定オプション選択肢" class="img width-070per" />
 <p class="caption">
 図3.19: 依存関係の設定オプション選択肢
 </p>

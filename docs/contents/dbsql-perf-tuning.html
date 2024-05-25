@@ -15,14 +15,14 @@
       <nav class="side-content">
                 <a class="nav-title" href="index.html">はじめてのデータウェアハウス</a>
 <ul class="toc toc-1">
-    <li class="toc-chapter"><a href="./contents/preface.html">まえがき</a></li>
-    <li class="toc-chapter"><a href="./contents/dbsql-general.html">1 Databricks SQL の概要</a></li>
-    <li class="toc-chapter"><a href="./contents/unitycatalog.html">2 Unity Catalogではじめるデータマネジメント</a></li>
-    <li class="toc-chapter"><a href="./contents/data-engineering.html">3 データエンジニアリング</a></li>
-    <li class="toc-chapter"><a href="./contents/lakeview.html">4 Lakeviewによるデータ可視化とBIダッシュボード</a></li>
-    <li class="toc-chapter"><a href="./contents/realtime-app-dbsql.html">5 Databricks SQLとRaspberry Piを使ってIoTデータダッシュボードを作る</a></li>
-    <li class="toc-chapter"><a href="./contents/SQLextention.html">6 Databricks SQLの拡張機能</a></li>
-    <li class="toc-chapter"><a href="./contents/dbsql-perf-tuning.html">7 Databricks SQL パフォーマンス・チューニング Tips</a>
+    <li class="toc-chapter"><a href="./preface.html">まえがき</a></li>
+    <li class="toc-chapter"><a href="./dbsql-general.html">1 Databricks SQL の概要</a></li>
+    <li class="toc-chapter"><a href="./unitycatalog.html">2 Unity Catalogではじめるデータマネジメント</a></li>
+    <li class="toc-chapter"><a href="./data-engineering.html">3 データエンジニアリング</a></li>
+    <li class="toc-chapter"><a href="./lakeview.html">4 Lakeviewによるデータ可視化とBIダッシュボード</a></li>
+    <li class="toc-chapter"><a href="./realtime-app-dbsql.html">5 Databricks SQLとRaspberry Piを使ってIoTデータダッシュボードを作る</a></li>
+    <li class="toc-chapter"><a href="./SQLextention.html">6 Databricks SQLの拡張機能</a></li>
+    <li class="toc-chapter"><a href="./dbsql-perf-tuning.html">7 Databricks SQL パフォーマンス・チューニング Tips</a>
       <ul class="toc toc-2">
         <li class="toc-section"><a href="#h7-1">7.1 はじめに</a></li>
         <li class="toc-section"><a href="#h7-2">7.2 Databricks SQLとは</a></li>
@@ -34,10 +34,10 @@
         <li class="toc-section"><a href="#h7-8">7.8 おわりに</a></li>
       </ul>
     </li>
-    <li class="toc-chapter"><a href="./contents/dbsql-serverless-nw-security.html">8 Databricks SQLサーバーレスのネットワークセキュリティ</a></li>
-    <li class="toc-chapter"><a href="./contents/dbsql-migration.html">9 既存データウェアハウスからDatabricksへの実践的な移行方法と成功のためのヒント</a></li>
-    <li class="toc-chapter"><a href="./contents/DBRX.html">データブリックスが作った新しいLLM「DBRX」って、一体どんなモデル？</a></li>
-    <li class="toc-chapter"><a href="./contents/contributors.html">著者紹介</a></li>
+    <li class="toc-chapter"><a href="./dbsql-serverless-nw-security.html">8 Databricks SQLサーバーレスのネットワークセキュリティ</a></li>
+    <li class="toc-chapter"><a href="./dbsql-migration.html">9 既存データウェアハウスからDatabricksへの実践的な移行方法と成功のためのヒント</a></li>
+    <li class="toc-chapter"><a href="./DBRX.html">データブリックスが作った新しいLLM「DBRX」って、一体どんなモデル？</a></li>
+    <li class="toc-chapter"><a href="./contributors.html">著者紹介</a></li>
 </ul>
       </nav>
       <div class="page-inner">
@@ -51,29 +51,16 @@
 
 <h2 class="grayback"><a id="h7-2"></a><span class="secno">7.2</span> Databricks SQLとは</h2>
 <p>Databricks SQLは大規模データを高速に処理するための分散データウェアハウスであり、Databricksレイクハウスプラットフォームの主要機能の１つです。従来のDWH同様にSQLクエリ言語を使用してデータレイクに格納された大量のデータに対して高速な分析を実行することができ、標準的なANSI-SQLクエリ言語をサポートしているため、他のDWH製品やSQLに慣れている方であればすぐに活用することができます。またDatabricks社がC++で開発した高速化エンジンであるPhotonによりクエリが実行されますので通常のSparkSQLエンジンを大幅に上回る高速処理を実現することができます。</p>
-<ul>
-<li>参考リンク:
-<ul>
-<li>https://learn.microsoft.com/ja-jp/azure/databricks/sql/
-</li>
-<li>https://learn.microsoft.com/ja-jp/azure/databricks/runtime/photon
-</li>
-</ul>
-</li>
-</ul>
+<p>参考リンク:</p>
+<p>https://learn.microsoft.com/ja-jp/azure/databricks/sql/</p>
+<p>https://learn.microsoft.com/ja-jp/azure/databricks/runtime/photon</p>
 
 <h2 class="grayback"><a id="h7-3"></a><span class="secno">7.3</span> チューニングステップ</h2>
 <p>一連のチューニング作業ではクエリプロファイルを使用します。クエリプロファイルはDatabricks SQLの専用のチューニングツールで、SQLクエリの実行時間、実行計画、使用されたリソースなど、SQLクエリの詳細な情報を提供するツールです。SQLクエリのパフォーマンスの改善や、ボトルネックの特定などに役立つ各種の統計情報を確認できます。</p>
-<ul>
-<li>参考リンク:
-<ul>
-<li>https://learn.microsoft.com/ja-jp/azure/databricks/sql/user/queries/query-profile
-</li>
-</ul>
-</li>
-</ul>
+<p>参考リンク:</p>
+<p>https://learn.microsoft.com/ja-jp/azure/databricks/sql/user/queries/query-profile</p>
 <div id="tune_001" class="image">
-<img src="images/dbsql-perf-tuning/tune_001.png" alt="クエリプロファイルの起動" class="img width-080per" />
+<img src="images/tune_001.png" alt="クエリプロファイルの起動" class="img width-070per" />
 <p class="caption">
 図7.1: クエリプロファイルの起動
 </p>
@@ -84,20 +71,14 @@
 <p><b>3.Photon利用率の改善</b></p>
 <p><b>4.クラスタサイズの調整</b></p>
 <p>それでは、以下、チューニングステップの手順を実際の事例をもとに解説していきます。以下のドキュメントにもチューニングに関するTipsがあります。併せてご参照ください。</p>
-<ul>
-<li>参考リンク：
-<ul>
-<li>https://learn.microsoft.com/ja-jp/azure/databricks/lakehouse-architecture/performance-efficiency/best-practices
-</li>
-</ul>
-</li>
-</ul>
+<p>参考リンク：</p>
+<p>https://learn.microsoft.com/ja-jp/azure/databricks/lakehouse-architecture/performance-efficiency/best-practices</p>
 
 <h2 class="grayback"><a id="h7-4"></a><span class="secno">7.4</span> I/Oの効率化</h2>
 <p>最初に一般的なデータウェアハウスと同様、不要なストレージへのI/O削減を検討して下さい。これによりデータの読み込みやクエリの処理を効率化することができます。</p>
 <p>クエリプロファイルの情報から指定するフィルタ対象のカラムの選定を行います。クエリープロファイルでフィルタ条件の確認するにはクエリプロファイルを冗長化モードでの表示がお勧めです。以下のようにクエリで使用されているフィルタ条件が表示されます。</p>
 <div id="tune_002" class="image">
-<img src="images/dbsql-perf-tuning/tune_002.png" alt="クエリで使用されているフィルタ条件" class="img width-080per" />
+<img src="images/tune_002.png" alt="クエリで使用されているフィルタ条件" class="img width-080per" />
 <p class="caption">
 図7.2: クエリで使用されているフィルタ条件
 </p>
@@ -106,26 +87,14 @@
 
 <h3 class="symbol"><a id="h7-4-1"></a>(1)パーティショニング</h3>
 <p>大規模データセット（目安としては1TB以上）への高速なクエリ処理時間が最優先される場合にはフィルタ条件で指定するカラムでのパーティショニング検討をします。ただし、パーティション数が数千を超えるような場合はパーティショニングを構成するディレクトリ以下に配置される物理ファイル総数が増加する可能性があるため、多くともパーティション数は2000−3000程度を目安とすると良いでしょう。パーティションキーでフィルターできないクエリを実行した際のRead対象物理ファイル数が膨大とならないように注意してください。一般的なデータウェアハウス設計でのデータ分析単位となる時系列カラムなど、検索時にフィルター条件として必ず指定されるカラムを選定するようにします。複数パーティションキーも可能ですが先頭キーが指定されないとI/O削減効率が落ちるため、単一カラムでのパーティショニングを推奨します。</p>
-<ul>
-<li>参考リンク：
-<ul>
-<li>https://learn.microsoft.com/ja-jp/azure/databricks/tables/partitions
-</li>
-</ul>
-</li>
-</ul>
+<p>参考リンク：</p>
+<p>https://learn.microsoft.com/ja-jp/azure/databricks/tables/partitions</p>
 
 <h3 class="symbol"><a id="h7-4-2"></a>(2)Z-ORDER</h3>
 <p>OptmizeコマンドのZ-ORDERオプションで指定したカラムをキーとする特殊なデータソートで再配置することでI/Oスキッピングの効率を向上させます。カーディナリティが高すぎてパーティショニングできない、フィルタ対象のカラムが複数ありフィルタの条件がクエリにより異なる、などパーティショニングで対応できない場合でも効率的にI/O削減することが可能です。Zorderで指定するカラムの順番を考慮する必要はありませんが、指定したカラムがすべて指定される場合にI/O削減効率が最大となりますので、Z-ORDERで指定するフィルタ条件のカラムは絞り込み条件で使用される頻度の高いものから最大4カラム程度（先頭の32カラムから指定可能）を目安とします。</p>
 <p>小中規模(1TB以下程度）のテーブルではZ-ORDERのみで十分な速度改善が可能ですが、大規模テーブルへの定型アクセスなどではパーティショニングと併用すると更に効果があります。データ追加や更新によりレコードの物理配置が変化するため、10%程度のデータ更新が発生した場合にはOptimizeコマンドの定期的な実行によるレコードの再配置実行してください。</p>
-<ul>
-<li>参考リンク:
-<ul>
-<li>https://learn.microsoft.com/ja-jp/azure/databricks/sql/language-manual/delta-optimize
-</li>
-</ul>
-</li>
-</ul>
+<p>参考リンク:</p>
+<p>https://learn.microsoft.com/ja-jp/azure/databricks/sql/language-manual/delta-optimize</p>
 
 <h3 class="symbol"><a id="h7-4-3"></a>(3)リキッド・クラスタリング</h3>
 <p>リキッド クラスタリングは従来のパーティショニング、Z-ORDERをリプレース可能な新しいI/O削減の機能としてリリースされました。Databricks SQL及びRuntime 13.3以降のクラスタで使用でき、Zorderと同様に指定したカラム（先頭の32カラムから最大4カラムまで指定可能）を特殊なソートにより物理的に近い位置に再配置することでI/Oスキッピングの効率を向上させることが可能です。パーティショニング、Z-Orderとの併用はできませんが、これまで従来のチューニング方式では対応が困難であったケースでも効果を発揮します。クラスタリングのメリットが得られるシナリオの例を次に示します。- カーディナリティが非常に高い列でフィルター処理されることが多いテーブル- データ分散に大きな偏りがあるテーブル- 更新頻度が高く、頻繁にメンテナンスとチューニング作業が必要なテーブル- 同時書き込みの要件を持つテーブル- 時間の経過と共に変化するアクセス パターンを持つテーブル- 一般的なパーティションキーでは、パーティションが多すぎるか、少なすぎるテーブルとなってしまうテーブル</p>
@@ -136,16 +105,10 @@
 </ol>
 <p>その他、Zorderではクラスタリングに指定したカラムをテーブル情報から確認できず、カラムコメントなどに記録しておく必要がありましたが、リキッドクラスタリングではテーブルメタ情報として保存されます。</p>
 <p>すでに従来型のパーティション+Zorderで十分なパフォーマンスが得られている場合には必ずしもリキッドクラスタリングに変更する必要はございませんが、将来的にはクエリの実行情報から最適なクラスタリングキーを選定するなどの自動チューニング対応も予定されており、Databricksではすべての新しいDeltaテーブルに対してリキッドクラスタリングをお勧めします。</p>
-<ul>
-<li>参考リンク:
-<ul>
-<li>https://learn.microsoft.com/ja-jp/azure/databricks/delta/clustering
-</li>
-</ul>
-</li>
-</ul>
-<div class="note">
-<h5>Z-ORDERとの挙動の違い</h5>
+<p>参考リンク:</p>
+<p>https://learn.microsoft.com/ja-jp/azure/databricks/delta/clustering</p>
+<div class="miniblock miniblock-info">
+<p class="miniblock-caption">Z-ORDERとの挙動の違い</p>
 <p>時間と共に分析要件が変化しても柔軟に対応できるよう、クラスタリングキーが変更された後のOptimizeコマンドによる物理再配置は新規データのみが対象となります。過去データに対する物理再配置を実行したい場合は、テーブルを新規に再作成するか以下のように一度リキッド・クラスタリング解除＋最適化（Optimize)を実施後に再度クラスタリングキーを設定してください。</p>
 <p>(1)リキッド・クラスタリングを解除</p>
 <p>例:Alter table xxx cluster by NONE</p>
@@ -162,7 +125,7 @@
 <p>- Files read 　実際にReadしたファイル数</p>
 <p>- Partitions read 　Read対象なったファイル数</p>
 <div id="tune_003" class="image">
-<img src="images/dbsql-perf-tuning/tune_003.png" alt="スキャンに関するメトリクス" class="img width-080per" />
+<img src="images/tune_003.png" alt="スキャンに関するメトリクス" class="img width-070per" />
 <p class="caption">
 図7.3: スキャンに関するメトリクス
 </p>
@@ -172,7 +135,7 @@
 <p>次に結合クエリの実行計画を最適化するため、Analyze実行やSparkコンフィグパラメータの調整方法をご説明します。ここではボトルネックとなりやすい複数テーブル結合時の非効率な結合プランを最適化する方法とDiskスピルアウトの解消方法にフォーカスしてご説明します。</p>
 <p>データ量などの条件にも依存しますが多くの場合、以下の4つの結合方式のうち、高速なPhotonエンジンで処理可能なブロードキャスト結合/シャッフルハッシュ結合のどちらかで結合処理が行われており、ディスクへのスピルアウトは発生していない状態が望ましいです。</p>
 <div id="tune_004" class="image">
-<img src="images/dbsql-perf-tuning/tune_004.png" alt="4つの結合方式" class="img" />
+<img src="images/tune_004.png" alt="4つの結合方式" class="img width-070per" />
 <p class="caption">
 図7.4: 4つの結合方式
 </p>
@@ -182,7 +145,7 @@
 <h3 class="symbol"><a id="h7-5-1"></a>SQL実行プランの確認</h3>
 <p>まず最初にクエリプロファイルでテーブル結合処理のプランを確認しましょう。以下は典型的な低速なクエリプラン例ですが、ソートマージ結合が選択され、大量のDiskへのスピルが発生し、Photoneエンジンが使用されないためPhotonでのタスク処理の比率も非常に低い状態のクエリプロファイルでの表示例です。Photonエンジンが使用されないソートマージ結合のため全体的にPhoton利用率が低く、同時にDiskスピルが大量に発生してしまっている状態を示しています。理想はPhotonが大半を占めていて、ディスクへのスピルが0バイトの状態です。</p>
 <div id="tune_005" class="image">
-<img src="images/dbsql-perf-tuning/tune_005.png" alt="ソートマージ結合のプラン" class="img width-080per" />
+<img src="images/tune_005.png" alt="ソートマージ結合のプラン" class="img width-080per" />
 <p class="caption">
 図7.5: ソートマージ結合のプラン
 </p>
@@ -194,36 +157,18 @@
 <h4><a id="h7-5-2-1"></a>(1)Analyze実行</h4>
 <p>各クエリで使用しているテーブルは小規模マスターテーブルを含め最新の統計情報を取得してください。統計情報はコストベースにおける最適なテーブル結合方式と結合順序を決定するために使用されます。Sparkエンジン/PhotonではAQE (Adaptive Query Execution)によりクエリー実行中に収集される実行時の統計情報に基づきクエリプランの最適化が行われますが、実際にデータ読み込みが行われてからのプラン変更になりますので、クエリ実行前に最新の統計情報により最適なプランが作成されている状態である方が効率的です。</p>
 <p>通常の運用ではテーブルの10%程度のデータ更新が発生した場合に、クエリ内で使用されるカラムの統計情報をリフレッシュすることが推奨されています。※前述のZ-ORDER/リキッドクラスタリングでWhere句のフィルター条件に使用される先頭32列の統計はデータスキップ専用であり、Analyzeコマンドでカラムを指定して取得する統計情報は適切なプランを生成するために使用されます。</p>
-<ul>
-<li>参考リンク: 
-<ul>
-<li>https://learn.microsoft.com/ja-jp/azure/databricks/sql/language-manual/sql-ref-syntax-aux-analyze-table
-</li>
-</ul>
-</li>
-</ul>
+<p>参考リンク:</p>
+<p>https://learn.microsoft.com/ja-jp/azure/databricks/sql/language-manual/sql-ref-syntax-aux-analyze-table</p>
 
 <h4><a id="h7-5-2-2"></a>(2)Optimize実行</h4>
 <p>更新頻度の高いテーブルはファイルのフラグメンテーションが発生している場合がありますので定期的な物理ファイルの最適化を実行しておきます。また、パーティショニングテーブル全体に対するOptimize実行はパーティション数が多い場合にはリソース使用量が増加し長時間を要する場合があリます。その場合には更新が発生したパーティションのみをWhere条件で指定することが可能です。※Optimizeでは最適化処理により物理ファイルサイズはテーブルのサイズにより256MB-1GBの間で自動調整されます。テーブルプロパティで明示的にターゲットサイズを指定することも可能です。</p>
-<ul>
-<li>参考リンク:
-<ul>
-<li>https://learn.microsoft.com/ja-jp/azure/databricks/delta/tune-file-size
-</li>
-</ul>
-</li>
-</ul>
+<p>参考リンク:</p>
+<p>https://learn.microsoft.com/ja-jp/azure/databricks/delta/tune-file-size</p>
 
 <h4><a id="h7-5-2-3"></a>(3)Sparkコンフィグパラメータ調整</h4>
 <p>上記のAnalyze/Optmizeを実行しても期待したパフォーマンスを得られない場合はSparkコンフィグパラメータを調整します。 ここでは代表的なパラメータを3つ紹介します。</p>
-<ul>
-<li>参考リンク:
-<ul>
-<li>https://learn.microsoft.com/ja-jp/azure/databricks/optimizations/aqe#configuration
-</li>
-</ul>
-</li>
-</ul>
+<p>参考リンク:</p>
+<p>https://learn.microsoft.com/ja-jp/azure/databricks/optimizations/aqe#configuration</p>
 <ul>
 <li>spark.databricks.adaptive.autoBroadcastJoinThreshold(デフォルト:30MB) 推奨：100MB以下(クラスタのドライバノードのメモリサイズに依存） ブロードキャスト結合を実行するテーブルサイズの閾値。クラスタサイズに対して設定サイズが大きすぎるとOutOfMemoryエラーの原因となるので注意してください。OutOfMemoryエラーとなった場合はクラスタサイズを大きくすることでドライバノードのメモリ搭載量が増加するためエラーを解消できますが、200MB以上に設定してもパフォーマンスはほとんど向上しません。※spark.sql.autoBroadcastJoinThresholdパラメータと同等
 </li>
@@ -232,21 +177,14 @@
 <li>spark.sql.shuffle.partitions（デフォルト：200) 推奨：auto  結合または集計のデータをシャッフルするときに使用するパーティションの既定の数。 値をautoに設定すると、自動最適化シャッフルが有効になり、クエリー プランとクエリー入力データサイズに基づいてこの数値が自動的に決定されます。ディスクへのスピルアウトが発生している場合はSparkタスクが細分化されることでDiskスピルアウトが改善されます。
 </li>
 </ul>
-<div class="note">
-<h5>補足：Sparkコンフィグパラメータの設定方法</h5>
+
+<h4><a id="h7-5-2-4"></a>補足：Sparkコンフィグパラメータの設定方法</h4>
 <p>Databricks SQL GUIでの”管理者設定では設定可能なSparkコンフィグパラメータに制限があり、現バージョンではここでご紹介しているSparkパラメータはGUIでは設定できません。SQL Warehouses API を使用して設定を行います。尚、Sparkコンフィグパラメータを変更すると起動中のSQLクラスタは再起動されますのでご注意ください。</p>
-<ul>
-<li>参考リンク:
-<ul>
-<li>https://docs.databricks.com/api/azure/workspace/warehouses
-</li>
-</ul>
-</li>
-</ul>
-</div>
+<p>参考リンク:</p>
+<p>https://docs.databricks.com/api/azure/workspace/warehouses</p>
 <p>以下、SQL Warehouses APIでのPythonコードサンプルです。</p>
-<div class="caption-code">
-<pre class="emlist"># 認証情報の設定
+<div class="emlist-code">
+<pre class="emlist language-�"># 認証情報の設定
 import requests, json
 # SQLウェアハウスID
 warehouse_id = 'xxx' &lt;-- SQLウェアハウスのUIの”概要”で名前の横に表示されるID：xxxの部分)
@@ -263,18 +201,16 @@ url = &quot;https://{}&quot;.format(workspace_name)
 header_json = {'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json'}
 </pre>
 </div>
-<div class="caption-code">
-<span class="caption">.tsx:現在のパラメータ設定値の取得</span>
-<pre class="list"># 現在のパラメータ設定値の取得
+<div class="emlist-code">
+<pre class="emlist"># 現在のパラメータ設定値の取得
 http_method = 'GET'
 rest_path = f'/api/2.0/sql/warehouses/{warehouse_id}?debug=true'
 resp = requests.get(url + rest_path, headers=header_json)
 print(resp.json()
 </pre>
 </div>
-<div class="caption-code">
-<span class="caption">.tsx:新規パラメータ値の指定</span>
-<pre class="list">新規パラメータ値を変数にセット
+<div class="emlist-code">
+<pre class="emlist">新規パラメータ値を変数にセット
 scale_parameters= { &quot;confs&quot;: {
 &quot;conf_pairs&quot;: [
 {&quot;key&quot;: &quot;spark.sql.join.preferSortMergeJoin&quot;, &quot;value&quot;: &quot;false&quot;},  
@@ -284,9 +220,8 @@ scale_parameters= { &quot;confs&quot;: {
 } }
 </pre>
 </div>
-<div class="caption-code">
-<span class="caption">.tsx:新規パラメータを設定</span>
-<pre class="list">#新規パラメータを設定
+<div class="emlist-code">
+<pre class="emlist">#新規パラメータを設定
 scale_rest_path = '/api/2.0/sql/warehouses/' + warehouse_id + '/edit'
 print(json.dumps(scale_parameters))
 resp = requests.post(url + scale_rest_path, headers=header_json, data = json.dumps(scale_parameters))
@@ -297,7 +232,7 @@ print(resp.json())
 <h3 class="symbol"><a id="h7-5-3"></a>SQL実行プラン変更後の効果の確認</h3>
 <p>ブロードキャスト/シャッフルハッシュのクエリ実行プランへの変更によりDiskスピルがなくなり、Photonでのタスク処理の比率が高い状態となっている状態が望ましいです。上記のチューニングを行いパフォーマンスが改善された健全なクエリプラン例を以下に示します。この例ではPhotonエンジンでのタスク処理の割合が大半を占めており、Diskへのスピルが0バイトの理想的な状態に改善されました</p>
 <div id="tune_006" class="image">
-<img src="images/dbsql-perf-tuning/tune_006.png" alt="シャッフルハッシュのプラン" class="img width-080per" />
+<img src="images/tune_006.png" alt="シャッフルハッシュのプラン" class="img width-080per" />
 <p class="caption">
 図7.6: シャッフルハッシュのプラン
 </p>
@@ -311,7 +246,7 @@ print(resp.json())
 <h4><a id="h7-6-1-1"></a>(1)クエリプロファイラでの確認方法</h4>
 <p>クエリプロファイラからはクエリプランの各ステップをクリックすると、右側の詳細表示の上段に”Photonを使用&quot;と表示されているか確認ください。この表示がない場合はPhotonエンジンで処理が実行されていません。</p>
 <div id="tune_007" class="image">
-<img src="images/dbsql-perf-tuning/tune_007.png" alt="Photonエンジンで処理を示す表示" class="img width-080per" />
+<img src="images/tune_007.png" alt="Photonエンジンで処理を示す表示" class="img width-080per" />
 <p class="caption">
 図7.7: Photonエンジンで処理を示す表示
 </p>
@@ -320,7 +255,7 @@ print(resp.json())
 <h4><a id="h7-6-1-2"></a>(2)SparkUIでの確認方法</h4>
 <p>Photonエンジンでクエリが実行されているかの確認はSparkUIでも可能です。以下のようにクエリプロファイルから”Spark UIで開く”をクリックし、SparkUIをオープンして確認すると詳細が確認できます。視覚的にも見やすいためおすすめです。</p>
 <div id="tune_008" class="image">
-<img src="images/dbsql-perf-tuning/tune_008.png" alt="Spark UIで開く" class="img width-060per" />
+<img src="images/tune_008.png" alt="Spark UIで開く" class="img width-040per" />
 <p class="caption">
 図7.8: Spark UIで開く
 </p>
@@ -328,16 +263,10 @@ print(resp.json())
 <p>SparkUIでは以下の例のようにPhotonエンジンでの処理は黄色、Sparkエンジンでの処理は青色で表示されます。SQLウェアハウスではデフォルトでPhotonが有効化されており、可能な限りPhotonエンジンを使用してクエリを実行しますが、Photon未対応の処理が含まれる場合にはオプティマイザがSparkエンジンでの処理に切り替えます。</p>
 <p>以下の図の左側のプランは黄色の処理が大部分を占めておりPhotonエンジンが有効に利用されていますが、右側のように処理の大半が青色のプランになっている場合はSparkエンジンで処理されています。</p>
 <p>右側のプラン中の”ColumnarToRaw”ではSparkエンジンでの処理を行うためにデータフレームへのデータ変換が行われますが、これ以降の処理ステップではSparkエンジンでの処理となりPhotonエンジンがほとんど利用されていません。このような場合はPhoton未対応の箇所を特定し、Photonエンジンで処理可能なSQLへの書き換えが可能かを検討します。</p>
-<ul>
-<li>参考リンク:
-<ul>
-<li>https://learn.microsoft.com/ja-jp/azure/databricks/compute/photon#operators-expressions-and-data-types
-</li>
-</ul>
-</li>
-</ul>
+<p>参考リンク:</p>
+<p>https://learn.microsoft.com/ja-jp/azure/databricks/compute/photon#operators-expressions-and-data-types</p>
 <div id="tune_009" class="image">
-<img src="images/dbsql-perf-tuning/tune_009.png" alt="Photonエンジンでの処理の確認" class="img width-080per" />
+<img src="images/tune_009.png" alt="Photonエンジンでの処理の確認" class="img width-070per" />
 <p class="caption">
 図7.9: Photonエンジンでの処理の確認
 </p>
@@ -347,14 +276,14 @@ print(resp.json())
 <p>Photon未対応の処理の特定には先ほどのSparkUIのプランから<code class="tt"><b>&quot;Details&quot;</b></code>リンクをオープンし詳細情報を参照します。この詳細情報の中でPhotonエンジンからSparkエンジンへの切り替えの要因となった処理を特定する情報が出力されますので改善案を検討します。</p>
 <p>ここでは、クエリ中のtrim関数の引数の指定がPhotonエンジンに対応していなかったことからSparkエンジンへの切り替えが発生していた際の改善方法を例としてご紹介します。</p>
 <div id="tune_010" class="image">
-<img src="images/dbsql-perf-tuning/tune_010.png" alt="詳細情報の表示" class="img width-080per" />
+<img src="images/tune_010.png" alt="詳細情報の表示" class="img width-070per" />
 <p class="caption">
 図7.10: 詳細情報の表示
 </p>
 </div>
 <p>詳細情報の下の方にPhotonエンジンで処理できなかったタスクの情報が出力されます。以下のメッセージ情報からクエリ中のtrim関数の引数指定方法の問題であることがわかりました。</p>
 <div id="tune_011" class="image">
-<img src="images/dbsql-perf-tuning/tune_011.png" alt="Photonエンジンで処理できなかったタスクの情報" class="img" />
+<img src="images/tune_011.png" alt="Photonエンジンで処理できなかったタスクの情報" class="img width-060per" />
 <p class="caption">
 図7.11: Photonエンジンで処理できなかったタスクの情報
 </p>
@@ -368,7 +297,7 @@ print(resp.json())
 </ul>
 <p>この例のケースではクエリ内のTrim関数をReplace関数に変更することでPhotonエンジンを使用することができました。以下のようにSparkUIのプランDetailの最下部の表示が全て”The query is fully supported by Photon.”となっていることが理想的です。</p>
 <div id="tune_012" class="image">
-<img src="images/dbsql-perf-tuning/tune_012.png" alt="Photonエンジンを使用時のメッセージ" class="img" />
+<img src="images/tune_012.png" alt="Photonエンジンを使用時のメッセージ" class="img width-060per" />
 <p class="caption">
 図7.12: Photonエンジンを使用時のメッセージ
 </p>
@@ -376,25 +305,11 @@ print(resp.json())
 
 <h2 class="grayback"><a id="h7-7"></a><span class="secno">7.7</span> クラスタサイズの調整</h2>
 <p>Databricks SQLを構成するクラスタのスケールアウトやスケールアップを行うことで、クラスタのリソースを増やすことができます。Databricks SQLではSQLクラスタを複数起動することで複数のワークロードを独立して実行し、リソースの競合を回避することもできますが、ここでは単一のDatabricks SQLサーバレスクラスタのサイジング方法について説明します。</p>
-<ul>
-<li>参考リンク：
-<ul>
-<li>https://learn.microsoft.com/ja-jp/azure/databricks/compute/sql-warehouse/create
-</li>
-</ul>
-</li>
-</ul>
+<p>参考リンク：</p>
+<p>https://learn.microsoft.com/ja-jp/azure/databricks/compute/sql-warehouse/create</p>
 
 <h3 class="symbol"><a id="h7-7-1"></a>クラスタの稼働状況のモニタリング</h3>
-<p>実運用に近いワークロードでクラスタの稼働状況を確認してください。クラスタサイズはMくらいから始めモニタリング機能でレイテンシーや同時実行性を確認します。Databricks SQLを構成するクラスタをモニタリングするには、SQL ウェアハウスの名前をクリックし、[モニタリング]タブをクリックします</p>
-<ul>
-<li>参考リンク：
-<ul>
-<li>https://learn.microsoft.com/ja-jp/azure/databricks/compute/sql-warehouse/monitor
-</li>
-</ul>
-</li>
-</ul>
+<p>実運用に近いワークロードでクラスタの稼働状況を確認してください。クラスタサイズはMくらいから始めモニタリング機能でレイテンシーや同時実行性を確認します。Databricks SQLを構成するクラスタをモニタリングするには、SQL ウェアハウスの名前をクリックし、[モニタリング]タブをクリックします参考リンク：https://learn.microsoft.com/ja-jp/azure/databricks/compute/sql-warehouse/monitor</p>
 <p>以下の情報をモニタリング可能です。</p>
 <p>- ピーク時のクエリー数</p>
 <p>- 実行クエリ数</p>
@@ -402,7 +317,7 @@ print(resp.json())
 <p>- 実行中クラスタ数</p>
 <p>- オートスケールの履歴</p>
 <div id="tune_013" class="image">
-<img src="images/dbsql-perf-tuning/tune_013.png" alt="稼働状況のモニタリング" class="img" />
+<img src="images/tune_013.png" alt="稼働状況のモニタリング" class="img width-070per" />
 <p class="caption">
 図7.13: 稼働状況のモニタリング
 </p>
@@ -418,29 +333,23 @@ print(resp.json())
 
 <h4><a id="h7-7-1-2"></a>(2)スケールアップ</h4>
 <p>SQL単体での実行パフォーマンス向上が必要な場合、特にCPU/メモリ/ディスクスピルなどのリソースに起因する問題が発生している場合は単一のクラスタあたりの並列度を増加させるスケールアップを検討してください。尚、Databricks SQLではデフォルトでキャッシュが有効になっておりますが、キャッシュサイズをパラメータで調整することはできません。ディスクキャッシュヒット率が低い場合はスケールアップすることでディスクキャッシュサイズを拡張できます。</p>
-<ul>
-<li>参考リンク：
-<ul>
-<li>https://learn.microsoft.com/ja-jp/azure/databricks/optimizations/disk-cache
-</li>
-</ul>
-</li>
-</ul>
+<p>参考リンク：</p>
+<p>https://learn.microsoft.com/ja-jp/azure/databricks/optimizations/disk-cache</p>
 <div id="tune_014" class="image">
-<img src="images/dbsql-perf-tuning/tune_014.png" alt="ディスクキャッシュヒット率" class="img width-080per" />
+<img src="images/tune_014.png" alt="ディスクキャッシュヒット率" class="img width-050per" />
 <p class="caption">
 図7.14: ディスクキャッシュヒット率
 </p>
 </div>
 <p>キャッシュサイズの確認は前述のSparkUIから&quot;Storage&quot;を選択するとキャッシュとして利用可能なストレージサイズを確認できます。</p>
 <div id="tune_015" class="image">
-<img src="images/dbsql-perf-tuning/tune_015.png" alt="利用可能なストレージサイズの確認" class="img" />
+<img src="images/tune_015.png" alt="利用可能なストレージサイズの確認" class="img width-070per" />
 <p class="caption">
 図7.15: 利用可能なストレージサイズの確認
 </p>
 </div>
-<div class="note">
-<h5>補足：クラウドストレージのボトルネックの有無を確認</h5>
+
+<h3 class="symbol"><a id="h7-7-2"></a>補足：クラウドストレージのボトルネックの有無を確認</h3>
 <p>Databricks SQLクラスタのスケールアップ/スケールアウトを実行しても期待するパフォーマンスの向上が得られない場合、クラウドストレージでI/Oボトルネックが発生している可能性があります。クラウドリソースがボトルネックとなっている場合はストレージ アカウントあたりの既定の最大Egresや、ストレージ アカウントあたりの最大要求レートなど、クラウドリソースの制限値を緩和することで、パフォーマンスを改善できる場合があります。前述のI/O最適化及び結合プランの改善を実施しても期待するパフォーマンスが得られない場合、クラウドストレージへのアクセスがボトルネックとなっているかどうかを冗長化モードのプロファイラのメトリクスから確認してください。</p>
 <ul>
 <li>Cloud storage retry count　（この統計値が０となっていることを確認）
@@ -449,27 +358,20 @@ print(resp.json())
 </li>
 </ul>
 <div id="tune_016" class="image">
-<img src="images/dbsql-perf-tuning/tune_016.png" alt="クラウドストレージでI/Oボトルネックのメトリクス" class="img" />
+<img src="images/tune_016.png" alt="クラウドストレージでI/Oボトルネックのメトリクス" class="img width-070per" />
 <p class="caption">
 図7.16: クラウドストレージでI/Oボトルネックのメトリクス
 </p>
 </div>
 <p>通常はDatabricksのストレージキャッシュによりクラウドストレージがボトルネックとなることはほとんどありませんが、クエリ実行時に常にリトライ発生しているような場合にはクラウドリソース(Storage IO)制限の緩和を検討します。クラウドリソース(Storage IO)制限の緩和するには各クラウドベンダのサポートにお問い合わせください。以下はAzure環境の例となりますが、ドキュメントに記載の以下の制限値を緩和することでストレージボトルネックの解消が期待できます。</p>
-<ul>
-<li>参考リンク:
-<ul>
-<li>https://learn.microsoft.com/ja-jp/azure/azure-resource-manager/management/azure-subscription-service-limits#storage-limits
-</li>
-</ul>
-</li>
-</ul>
+<p>参考リンク:</p>
+<p>https://learn.microsoft.com/ja-jp/azure/azure-resource-manager/management/azure-subscription-service-limits#storage-limits</p>
 <ul>
 <li>汎用 v2 および BLOB ストレージ アカウントあたりの既定の最大エグレスデフォルト: 50Gbps (ストレージの種類により異なります）推奨値：1TBbps
 </li>
 <li>既定のストレージ アカウントあたりの最大要求レートデフォルト:1秒あたり 20,000 要求推奨値：1秒あたり 100,000 要求
 </li>
 </ul>
-</div>
 
 <h2 class="grayback"><a id="h7-8"></a><span class="secno">7.8</span> おわりに</h2>
 <p>この記事ではDatabricks SQLのクエリプロファイラを使用したボトルネックの調査方法とチューニング方法を筆者の経験を元にまとめました。ボトルネックの要因はユースケースによりは様々ですが、今回ご紹介しましたボトルネックの発見方法と対応のアプローチは多くのケースで活用できるかと思います。今回の記事ではご紹介できなったコンフィグパラメータやチューニングの手法もございますので今後も継続してご紹介できればと思っております。本記事の内容がみなさまのお役に立てば幸いです。</p>

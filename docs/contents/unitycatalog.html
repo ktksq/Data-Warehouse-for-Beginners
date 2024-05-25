@@ -15,9 +15,9 @@
       <nav class="side-content">
                 <a class="nav-title" href="index.html">はじめてのデータウェアハウス</a>
 <ul class="toc toc-1">
-    <li class="toc-chapter"><a href="./contents/preface.html">まえがき</a></li>
-    <li class="toc-chapter"><a href="./contents/dbsql-general.html">1 Databricks SQL の概要</a></li>
-    <li class="toc-chapter"><a href="./contents/unitycatalog.html">2 Unity Catalogではじめるデータマネジメント</a>
+    <li class="toc-chapter"><a href="./preface.html">まえがき</a></li>
+    <li class="toc-chapter"><a href="./dbsql-general.html">1 Databricks SQL の概要</a></li>
+    <li class="toc-chapter"><a href="./unitycatalog.html">2 Unity Catalogではじめるデータマネジメント</a>
       <ul class="toc toc-2">
         <li class="toc-section"><a href="#h2-1">2.1 はじめに</a></li>
         <li class="toc-section"><a href="#h2-2">2.2 Unity Catalogとはなにか？</a></li>
@@ -26,15 +26,15 @@
         <li class="toc-section"><a href="#h2-5">2.5 おわりに</a></li>
       </ul>
     </li>
-    <li class="toc-chapter"><a href="./contents/data-engineering.html">3 データエンジニアリング</a></li>
-    <li class="toc-chapter"><a href="./contents/lakeview.html">4 Lakeviewによるデータ可視化とBIダッシュボード</a></li>
-    <li class="toc-chapter"><a href="./contents/realtime-app-dbsql.html">5 Databricks SQLとRaspberry Piを使ってIoTデータダッシュボードを作る</a></li>
-    <li class="toc-chapter"><a href="./contents/SQLextention.html">6 Databricks SQLの拡張機能</a></li>
-    <li class="toc-chapter"><a href="./contents/dbsql-perf-tuning.html">7 Databricks SQL パフォーマンス・チューニング Tips</a></li>
-    <li class="toc-chapter"><a href="./contents/dbsql-serverless-nw-security.html">8 Databricks SQLサーバーレスのネットワークセキュリティ</a></li>
-    <li class="toc-chapter"><a href="./contents/dbsql-migration.html">9 既存データウェアハウスからDatabricksへの実践的な移行方法と成功のためのヒント</a></li>
-    <li class="toc-chapter"><a href="./contents/DBRX.html">データブリックスが作った新しいLLM「DBRX」って、一体どんなモデル？</a></li>
-    <li class="toc-chapter"><a href="./contents/contributors.html">著者紹介</a></li>
+    <li class="toc-chapter"><a href="./data-engineering.html">3 データエンジニアリング</a></li>
+    <li class="toc-chapter"><a href="./lakeview.html">4 Lakeviewによるデータ可視化とBIダッシュボード</a></li>
+    <li class="toc-chapter"><a href="./realtime-app-dbsql.html">5 Databricks SQLとRaspberry Piを使ってIoTデータダッシュボードを作る</a></li>
+    <li class="toc-chapter"><a href="./SQLextention.html">6 Databricks SQLの拡張機能</a></li>
+    <li class="toc-chapter"><a href="./dbsql-perf-tuning.html">7 Databricks SQL パフォーマンス・チューニング Tips</a></li>
+    <li class="toc-chapter"><a href="./dbsql-serverless-nw-security.html">8 Databricks SQLサーバーレスのネットワークセキュリティ</a></li>
+    <li class="toc-chapter"><a href="./dbsql-migration.html">9 既存データウェアハウスからDatabricksへの実践的な移行方法と成功のためのヒント</a></li>
+    <li class="toc-chapter"><a href="./DBRX.html">データブリックスが作った新しいLLM「DBRX」って、一体どんなモデル？</a></li>
+    <li class="toc-chapter"><a href="./contributors.html">著者紹介</a></li>
 </ul>
       </nav>
       <div class="page-inner">
@@ -55,7 +55,7 @@
 <h2 class="grayback"><a id="h2-2"></a><span class="secno">2.2</span> Unity Catalogとはなにか？</h2>
 <p>Unity Catalogとは、Databricksが提供するデータガバナンスおよびメタデータ管理のデータカタログです。これにより、組織全体でデータのアクセス制御、セキュリティ、ガバナンス、および監査を一元的に管理できます。Unity Catalogは、データの整理とアクセス管理を簡素化し、データ駆動型の意思決定を支援するために設計されています。</p>
 <div id="dip" class="image">
-<img src="images/unitycatalog/dip.png" alt="Databricks Data Intelligent Platform" class="img border" />
+<img src="images/dip.png" alt="Databricks Data Intelligent Platform" class="img border" />
 <p class="caption">
 図2.1: Databricks Data Intelligent Platform
 </p>
@@ -73,7 +73,7 @@
 </li>
 </ul>
 <div id="overview" class="image">
-<img src="images/unitycatalog/overview.png" alt="テーブルの概要" class="img width-090per border" />
+<img src="images/overview.png" alt="テーブルの概要" class="img width-070per border" />
 <p class="caption">
 図2.2: テーブルの概要
 </p>
@@ -85,7 +85,7 @@
 </li>
 </ul>
 <div id="sample" class="image">
-<img src="images/unitycatalog/sample.png" alt="サンプルデータ" class="img width-090per border" />
+<img src="images/sample.png" alt="サンプルデータ" class="img width-070per border" />
 <p class="caption">
 図2.3: サンプルデータ
 </p>
@@ -97,7 +97,7 @@
 </li>
 </ul>
 <div id="details" class="image">
-<img src="images/unitycatalog/details.png" alt="テーブルの詳細" class="img width-090per border" />
+<img src="images/details.png" alt="テーブルの詳細" class="img width-070per border" />
 <p class="caption">
 図2.4: テーブルの詳細
 </p>
@@ -113,19 +113,19 @@
 </li>
 </ul>
 <div id="Inheritance" class="image">
-<img src="images/unitycatalog/Inheritance.png" alt="Unity Catalogにおける権限の継承" class="img width-070per border" />
+<img src="images/Inheritance.png" alt="Unity Catalogにおける権限の継承" class="img width-070per border" />
 <p class="caption">
 図2.5: Unity Catalogにおける権限の継承
 </p>
 </div>
 <div id="previlage" class="image">
-<img src="images/unitycatalog/previlage.png" alt="カタログのアクセス制御" class="img width-090per border" />
+<img src="images/previlage.png" alt="カタログのアクセス制御" class="img width-070per border" />
 <p class="caption">
 図2.6: カタログのアクセス制御
 </p>
 </div>
-<div class="note">
-<h5>行フィルターと列マスクの利用</h5>
+<div class="miniblock miniblock-info">
+<p class="miniblock-caption">行フィルターと列マスクの利用</p>
 <p>Unity Catalogでは行フィルター、列マスクを使用してテーブル内の機密データをフィルタリングすることができます。</p>
 <ul>
 <li>行フィルターとは？
@@ -182,7 +182,7 @@
 <div class="footnote" id="fn-operation" epub:type="footnote"><p class="footnote"><span class="footnote-mark">[*2] </span>https://docs.databricks.com/en/delta/history.html#operation-metrics-keys</p></div>
 </div><!--/.footnote-list-->
 <div id="history" class="image">
-<img src="images/unitycatalog/history.png" alt="Deltaテーブルの履歴" class="img width-090per border" />
+<img src="images/history.png" alt="Deltaテーブルの履歴" class="img width-070per border" />
 <p class="caption">
 図2.7: Deltaテーブルの履歴
 </p>
@@ -208,7 +208,7 @@
 </li>
 </ul>
 <div id="lineage" class="image">
-<img src="images/unitycatalog/lineage.png" alt="Unity Catalogによるリネージュ" class="img width-090per border" />
+<img src="images/lineage.png" alt="Unity Catalogによるリネージュ" class="img width-070per border" />
 <p class="caption">
 図2.8: Unity Catalogによるリネージュ
 </p>
@@ -222,13 +222,13 @@
 </li>
 </ul>
 <div id="insight" class="image">
-<img src="images/unitycatalog/insight.png" alt="テーブルのインサイト" class="img width-090per border" />
+<img src="images/insight.png" alt="テーブルのインサイト" class="img width-070per border" />
 <p class="caption">
 図2.9: テーブルのインサイト
 </p>
 </div>
-<div class="note">
-<h5>洞察(インサイト)の効果的な使い方</h5>
+<div class="miniblock miniblock-info">
+<p class="miniblock-caption">洞察(インサイト)の効果的な使い方</p>
 <p>インサイトを活用することで、以下のような質問に答えることができます:</p>
 <ul>
 <li>このデータは信頼できるか？
@@ -251,7 +251,7 @@
 <p>ボリュームを使用することで、構造化データ、半構造化データ、非構造化データなど、あらゆる形式のファイルを格納することができます。またローカル ファイル システムにあるファイルのようにアクセスすることができます。</p>
 <p>ボリュームは、テーブルやビューなどと同様に、Unity Catalogのスキーマの配下で管理されます。</p>
 <div id="volume" class="image">
-<img src="images/unitycatalog/volume.png" alt="ボリュームによる非構造化データの管理" class="img width-090per border" />
+<img src="images/volume.png" alt="ボリュームによる非構造化データの管理" class="img width-080per border" />
 <p class="caption">
 図2.10: ボリュームによる非構造化データの管理
 </p>
@@ -261,7 +261,7 @@
 <p>ボリュームはDatabricksのUIからデータをアップロードすることができます。</p>
 <p>ストレージロケーションを何も指定しない場合はマネージドストレージに格納され、特定のストレージの場所に保存したい場合は外部ロケーションを指定してデータを格納することが可能です。</p>
 <div id="upload" class="image">
-<img src="images/unitycatalog/upload.png" alt="ボリュームにデータをアップロードする" class="img width-090per border" />
+<img src="images/upload.png" alt="ボリュームにデータをアップロードする" class="img width-080per border" />
 <p class="caption">
 図2.11: ボリュームにデータをアップロードする
 </p>
@@ -277,7 +277,7 @@
 </li>
 </ul>
 <div id="s3_volume" class="image">
-<img src="images/unitycatalog/s3_volume.png" alt="データの格納場所を指定しない場合" class="img width-090per border" />
+<img src="images/s3_volume.png" alt="データの格納場所を指定しない場合" class="img width-080per border" />
 <p class="caption">
 図2.12: データの格納場所を指定しない場合
 </p>
@@ -291,7 +291,7 @@
 </li>
 </ul>
 <div id="s3_volume_ext" class="image">
-<img src="images/unitycatalog/s3_volume_ext.png" alt="データの格納場所を指定する場合" class="img width-090per border" />
+<img src="images/s3_volume_ext.png" alt="データの格納場所を指定する場合" class="img width-080per border" />
 <p class="caption">
 図2.13: データの格納場所を指定する場合
 </p>
@@ -299,14 +299,14 @@
 
 <h4><a id="h2-3-2-3"></a>ボリュームに格納されたデータへのアクセス</h4>
 <p>ボリュームに格納されたデータは<b>/Volumes/</b>から始まるパスでアクセス可能です。</p>
-<div class="caption-code">
-<span class="caption">ボリュームに格納されたデータへのアクセス</span>
+<div id="access_volume" class="caption-code">
+<span class="caption">リスト2.1: リスト2.1: ボリュームに格納されたデータへのアクセス</span>
 <pre class="list">pdf = pd.read_csv(&quot;/Volumes/ktksk_catalog_demo/db_loan_status/volume_csv/lending_club.csv&quot;, header=0)
 pdf.head()
 </pre>
 </div>
 <div id="pandas" class="image">
-<img src="images/unitycatalog/pandas.png" alt="ボリュームにアップロードされたデータを読み込む" class="img width-090per border" />
+<img src="images/pandas.png" alt="ボリュームにアップロードされたデータを読み込む" class="img width-080per border" />
 <p class="caption">
 図2.14: ボリュームにアップロードされたデータを読み込む
 </p>
@@ -327,13 +327,13 @@ pdf.head()
 </li>
 </ul>
 <div id="model" class="image">
-<img src="images/unitycatalog/model.png" alt="Unity Catalogに登録されたAIモデル" class="img width-090per border" />
+<img src="images/model.png" alt="Unity Catalogに登録されたAIモデル" class="img width-080per border" />
 <p class="caption">
 図2.15: Unity Catalogに登録されたAIモデル
 </p>
 </div>
 <div id="model_lineage" class="image">
-<img src="images/unitycatalog/model_lineage.png" alt="Unity Catalogに登録されたAIモデルのリネージュ" class="img width-090per border" />
+<img src="images/model_lineage.png" alt="Unity Catalogに登録されたAIモデルのリネージュ" class="img width-080per border" />
 <p class="caption">
 図2.16: Unity Catalogに登録されたAIモデルのリネージュ
 </p>
@@ -343,12 +343,12 @@ pdf.head()
 
 <h4><a id="h2-3-4-1"></a>LLMを用いたメタデータの自動付与</h4>
 <p>テーブルの所有者やテーブルを編集する権限を持つユーザーは、Unity Catalogで管理されている任意のテーブルやカラムに対してAI生成コメントを表示および追加できます。コメントは、テーブルスキーマや列名などのテーブルメタデータを考慮した大規模言語モデル（LLM）によって生成されます。</p>
-<div class="note">
-<h5>AI生成コメントは保存前にレビューすることをお勧めします</h5>
+<div class="miniblock miniblock-caution">
+<p class="miniblock-caption">AI生成コメントは保存前にレビューすることをお勧めします</p>
 <p>AIモデルによるコメント付与は常に正確であるとは限らないため、コメントは保存前にレビューする必要があります。AI生成コメントの誤りをチェックするために人の手によるレビューを推奨しています。</p>
 </div>
 <div id="table_comment" class="image">
-<img src="images/unitycatalog/table_comment.png" alt="自動生成されたテーブルコメント" class="img width-090per border" />
+<img src="images/table_comment.png" alt="自動生成されたテーブルコメント" class="img width-070per border" />
 <p class="caption">
 図2.17: 自動生成されたテーブルコメント
 </p>
@@ -358,7 +358,7 @@ pdf.head()
 <p>lending_club_test テーブルには、レンディングクラブのローンデータセットのデータが含まれています。これにはローン金額、資金調達額、金利、期間、ローンステータスに関する情報が含まれます。このデータは、ローン実績の分析、ローン承認率の傾向の特定、異なるローン条件や金利がデフォルト率に与える影響の評価など、様々な目的に使用できます。また、借り手の人口統計学的特性やローン返済パターンの理解にも役立ちます。</p>
 </div>
 <div id="col_comment" class="image">
-<img src="images/unitycatalog/col_comment.png" alt="自動生成されたカラムのコメント" class="img width-090per border" />
+<img src="images/col_comment.png" alt="自動生成されたカラムのコメント" class="img width-070per border" />
 <p class="caption">
 図2.18: 自動生成されたカラムのコメント
 </p>
@@ -366,12 +366,12 @@ pdf.head()
 
 <h4><a id="h2-3-4-2"></a>オブジェクトの検索</h4>
 <p>UIの上部バーを使用してワークスペース内のテーブル、ノートブック、クエリ、ダッシュボード、アラート、ファイル、フォルダ、ライブラリ、ジョブ、リポジトリ、パートナー、およびマーケットプレイスのリストを検索することができます。</p>
-<div class="note">
-<h5>アクセス権限のないオブジェクトは検索結果に表示されません</h5>
+<div class="miniblock miniblock-caution">
+<p class="miniblock-caption">アクセス権限のないオブジェクトは検索結果に表示されません</p>
 <p>自分がアクセス権を持っていないテーブル、ビュー、およびモデルは検索結果に表示されません。</p>
 </div>
 <div id="discover" class="image">
-<img src="images/unitycatalog/discover.png" alt="関連オブジェクトの検索" class="img width-090per border" />
+<img src="images/discover.png" alt="関連オブジェクトの検索" class="img width-090per border" />
 <p class="caption">
 図2.19: 関連オブジェクトの検索
 </p>
@@ -419,7 +419,7 @@ pdf.head()
 <h4><a id="h2-3-5-2"></a>UIを用いてモニタリングを設定する</h4>
 <p>DatabricksのUIを用いてレイクハウスモニタリングを設定することができます。</p>
 <div id="monitor" class="image">
-<img src="images/unitycatalog/monitor.png" alt="レイクハウスモニタリングの設定" class="img width-080per border" />
+<img src="images/monitor.png" alt="レイクハウスモニタリングの設定" class="img width-080per border" />
 <p class="caption">
 図2.20: レイクハウスモニタリングの設定
 </p>
@@ -428,7 +428,7 @@ pdf.head()
 <h4><a id="h2-3-5-3"></a>モニタリングダッシュボードを確認する</h4>
 <p>レイクハウスモニタリングの設定を行うと、自動でモニタリングダッシュボードが作成されます。ダッシュボードからアラートを設定することも可能です。</p>
 <div id="dashboard" class="image">
-<img src="images/unitycatalog/dashboard.png" alt="モニタリングダッシュボード" class="img width-080per border" />
+<img src="images/dashboard.png" alt="モニタリングダッシュボード" class="img width-080per border" />
 <p class="caption">
 図2.21: モニタリングダッシュボード
 </p>
@@ -437,12 +437,12 @@ pdf.head()
 <h3 class="symbol"><a id="h2-3-6"></a>⑥ 監査</h3>
 <p>システムテーブルには、アカウントの運用データが格納されています。システムテーブルを利用することで、アカウント全体の履歴データを始めたとしたオブザーバビリティの確認が可能です。</p>
 <p>また監査ログとは異なり、データはDatabricksがホストするオブジェクトストレージに格納されます。</p>
-<div class="note">
-<h5>システムテーブルを有効化するには</h5>
+<div class="miniblock miniblock-info">
+<p class="miniblock-caption">システムテーブルを有効化するには</p>
 <p>システムテーブルにアクセスするには、ワークスペースでUnity Catalogを有効にする必要があります。またシステムテーブルはアカウント管理者によって有効化する必要があります。 SystemSchemas APIを使用してシステムテーブルを有効にすることができます。</p>
 </div>
 <div id="systemtable" class="image">
-<img src="images/unitycatalog/systemtable.png" alt="システムテーブルの種類" class="img width-090per border" />
+<img src="images/systemtable.png" alt="システムテーブルの種類" class="img width-090per border" />
 <p class="caption">
 図2.22: システムテーブルの種類
 </p>
@@ -450,8 +450,8 @@ pdf.head()
 
 <h4><a id="h2-3-6-1"></a>システムテーブルへのアクセス</h4>
 <p>全てのシステムテーブルは、Unity Catalogのsystemというカタログ配下から参照できます。テーブル形式で監査ログが格納されているため、SQLでアクセス/分析をすることができます。</p>
-<div class="caption-code">
-<span class="caption">システムテーブルへのアクセス</span>
+<div id="system_table" class="caption-code">
+<span class="caption">リスト2.2: リスト2.2: システムテーブルへのアクセス</span>
 <pre class="list">SELECT
   *
 FROM
@@ -460,11 +460,10 @@ ORDER BY
   usage_end_time desc
 LIMIT
   1000
-
 </pre>
 </div>
 <div id="query_result_system" class="image">
-<img src="images/unitycatalog/query_result_system.png" alt="billing.usageへクエリ" class="img width-080per border" />
+<img src="images/query_result_system.png" alt="billing.usageへクエリ" class="img width-080per border" />
 <p class="caption">
 図2.23: billing.usageへクエリ
 </p>
@@ -522,7 +521,7 @@ LIMIT
 <h4><a id="h2-3-7-1"></a>アクセス権限/テーブルセキュリティの設定</h4>
 <p>通常のテーブル同様にUnity CatalogでSQLまたはCatalog Explorerでアクセス権限を一元的に付与・管理することが可能です。</p>
 <div id="fed_bq" class="image">
-<img src="images/unitycatalog/fed_bq.png" alt="Google BigQueryをLakehouse Federationで登録する" class="img width-080per border" />
+<img src="images/fed_bq.png" alt="Google BigQueryをLakehouse Federationで登録する" class="img width-080per border" />
 <p class="caption">
 図2.24: Google BigQueryをLakehouse Federationで登録する
 </p>
@@ -533,7 +532,7 @@ LIMIT
 <p>クエリ実行時はオプティマイザがリモートDBで実行可能なSQL操作をプッシュダウン(フィルタリングや集計など実行可能な処理はリモートDB側で実行）することで、必要な計算済みデータセットのみ返却されるためDatabricksへの無駄なデータ転送は発生しません。</p>
 <p>サポートされているプッシュダウンは接続している各DBにより異なりますので、詳細はドキュメントをご覧ください。</p>
 <div id="query_fed" class="image">
-<img src="images/unitycatalog/query_fed.png" alt="外部DBへプッシュダウンする" class="img width-080per border" />
+<img src="images/query_fed.png" alt="外部DBへプッシュダウンする" class="img width-080per border" />
 <p class="caption">
 図2.25: 外部DBへプッシュダウンする
 </p>
@@ -543,8 +542,8 @@ LIMIT
 <p>フェデレーションテーブルへのアクセスはプッシュダウンにより最適化されていますが、クエリ実行の都度、リモートDBで処理を実行し結果セットのデータ転送が実行されるためユースケースによっては期待するレスポンスが得られない場合があります。</p>
 <p>また、プロダクションでの利用時はリモートデータベースへの負荷を考慮する必要もございます。</p>
 <p>プロダクション化において上記の課題がある場合には、要件に応じてマテリアライズドビューの利用を検討してください。マテリアライズドビューは名前の通り、クエリに使用できるベーステーブルの事前計算済みのデータセット保持するビューであり、定期的なリフレッシュによってアップストリームのデータセットの変更を反映させることができます。マテリアライズドビューを定期的にリモートデータベースの最新データを保持するデータキャッシュとして使用することで、リモートデータベースへのクエリ負荷を軽減しながら、Databricks上のクエリパフォーマンスを向上させることが可能です。</p>
-<div class="caption-code">
-<span class="caption">Lakehouse Federationを用いてマテリアライズドビューを作成</span>
+<div id="materialized_view" class="caption-code">
+<span class="caption">リスト2.3: リスト2.3: Lakehouse Federationを用いてマテリアライズドビューを作成</span>
 <pre class="list">CREATE MATERIALIZED VIEW materialized_view AS
 SELECT
   *
@@ -553,14 +552,14 @@ FROM
 </pre>
 </div>
 <div id="uc_mateview" class="image">
-<img src="images/unitycatalog/uc_mateview.png" alt="Unity Catalogに登録されたマテリアライズドビュー" class="img width-080per border" />
+<img src="images/uc_mateview.png" alt="Unity Catalogに登録されたマテリアライズドビュー" class="img width-080per border" />
 <p class="caption">
 図2.26: Unity Catalogに登録されたマテリアライズドビュー
 </p>
 </div>
 <p>またUnity CatalogはLakehouse Federationで接続したデータベースを含めたリネージュを可視化することができます。</p>
 <div id="fed_lineage" class="image">
-<img src="images/unitycatalog/fed_lineage.png" alt="BigQueryを含めたリネージュ" class="img width-080per border" />
+<img src="images/fed_lineage.png" alt="BigQueryを含めたリネージュ" class="img width-080per border" />
 <p class="caption">
 図2.27: BigQueryを含めたリネージュ
 </p>
@@ -570,7 +569,7 @@ FROM
 <p>Delta Sharingは、Databricksが開発したオープンプロトコルで、使用しているコンピューティングプラットフォームに関係なく、他の組織と安全にデータを共有するためのものです。</p>
 <p>Delta Sharingを使用してデータを共有する方法は3つあります：</p>
 <div id="deltashare" class="image">
-<img src="images/unitycatalog/deltashare.png" alt="Delta Sharingのシナリオ" class="img border" />
+<img src="images/deltashare.png" alt="Delta Sharingのシナリオ" class="img border" />
 <p class="caption">
 図2.28: Delta Sharingのシナリオ
 </p>
@@ -580,7 +579,7 @@ FROM
 <p>Unity Catalog対応のDatabricksワークスペースから、同じくUnity Catalog対応のDatabricksワークスペースを持つユーザーとデータやAI資産を共有する方法です。</p>
 <p>この方法では、Databricksに組み込まれたDelta Sharingサーバーを使用します。ノートブック共有、Unity Catalogのボリューム共有、AIモデル共有、データガバナンス、監査、および使用状況のリネージュなどをサポートします。Unity Catalogとの統合により、データプロバイダー(提供者)とデータ受信者の両方にとって設定とガバナンスが簡素化され、パフォーマンスが向上します。</p>
 <div id="ds_dbx" class="image">
-<img src="images/unitycatalog/ds_dbx.png" alt="Databricks上でデータ共有を行う方法" class="img width-080per border" />
+<img src="images/ds_dbx.png" alt="Databricks上でデータ共有を行う方法" class="img width-080per border" />
 <p class="caption">
 図2.29: Databricks上でデータ共有を行う方法
 </p>
@@ -590,7 +589,7 @@ FROM
 <p>Unity Catalog対応のDatabricksワークスペースで管理している表形式データを、任意のコンピューティングプラットフォームのユーザーと共有する方法です。</p>
 <p>この方法もDatabricksに組み込まれたDelta Sharingサーバーを使用し、Databricksを使用していないユーザーや、Unity Catalog対応のDatabricksワークスペースにアクセスできないユーザーとデータを共有する場合に便利です。提供者側のUnity Catalogとの統合により、提供者にとって設定とガバナンスが簡素化されます。</p>
 <div id="ds_protocol" class="image">
-<img src="images/unitycatalog/ds_protocol.png" alt="Delta Sharingの仕組み" class="img width-080per border" />
+<img src="images/ds_protocol.png" alt="Delta Sharingの仕組み" class="img width-080per border" />
 <p class="caption">
 図2.30: Delta Sharingの仕組み
 </p>
@@ -611,7 +610,7 @@ FROM
 </li>
 </ul>
 <div id="uc_managed" class="image">
-<img src="images/unitycatalog/uc_managed.png" alt="マネージドストレージの上書き" class="img width-090per border" />
+<img src="images/uc_managed.png" alt="マネージドストレージの上書き" class="img width-070per border" />
 <p class="caption">
 図2.31: マネージドストレージの上書き
 </p>
@@ -625,7 +624,7 @@ FROM
 </li>
 </ul>
 <div id="ext_loc" class="image">
-<img src="images/unitycatalog/ext_loc.png" alt="外部ロケーションの設定" class="img width-080per border" />
+<img src="images/ext_loc.png" alt="外部ロケーションの設定" class="img width-080per border" />
 <p class="caption">
 図2.32: 外部ロケーションの設定
 </p>
@@ -645,7 +644,7 @@ FROM
 
 <h3 class="symbol"><a id="h2-4-2"></a>Unity Catalogで管理されるオブジェクト</h3>
 <div id="uc_object" class="image">
-<img src="images/unitycatalog/uc_object.png" alt="データオブジェクト一覧" class="img border" />
+<img src="images/uc_object.png" alt="データオブジェクト一覧" class="img width-080per border" />
 <p class="caption">
 図2.33: データオブジェクト一覧
 </p>
@@ -663,13 +662,13 @@ FROM
 </li>
 </ul>
 <div id="meta_3" class="image">
-<img src="images/unitycatalog/meta_3.png" alt="メタストア配下の構造" class="img border" />
+<img src="images/meta_3.png" alt="メタストア配下の構造" class="img width-080per border" />
 <p class="caption">
 図2.34: メタストア配下の構造
 </p>
 </div>
-<div class="note">
-<h5>Hiveメタストアとは異なります</h5>
+<div class="miniblock miniblock-caution">
+<p class="miniblock-caption">Hiveメタストアとは異なります</p>
 <ul>
 <li>メタストアは、Unity Catalogが有効になっていないDatabricksワークスペースに含まれるHiveメタストアとは異なります。
 </li>
@@ -688,7 +687,7 @@ FROM
 </li>
 </ul>
 <div id="uc_3" class="image">
-<img src="images/unitycatalog/uc_3.png" alt="Unity Catalogの3層構造" class="img border" />
+<img src="images/uc_3.png" alt="Unity Catalogの3層構造" class="img width-090per border" />
 <p class="caption">
 図2.35: Unity Catalogの3層構造
 </p>
@@ -745,8 +744,8 @@ FROM
 <li>マネージドテーブルを削除すると、データは30日以内にクラウドテナントから削除されます。
 </li>
 </ul>
-<div class="note">
-<h5>マネージドテーブルを誤って削除してしまった場合は？</h5>
+<div class="miniblock miniblock-info">
+<p class="miniblock-caption">マネージドテーブルを誤って削除してしまった場合は？</p>
 <p>UNDROPコマンドを用いることで、Unity Catalogにあるマネージドテーブルまたは外部テーブルが誤って削除された場合に回復することができます。このコマンドはデフォルトで、指定されたテーブル名のユーザーが所有する最も最近削除されたテーブルを復元します。親スキーマとカタログは存在している必要があります。この機能は、削除されたテーブルを7日間の保持期間内に復元することをサポートしています。</p>
 </div>
 <ol start="2" type="1">
@@ -761,8 +760,8 @@ FROM
 <li>外部テーブルを削除しても、Unity Catalogはベースとなるデータを削除しません。
 </li>
 </ul>
-<div class="note">
-<h5>外部テーブルを用いるユースケース</h5>
+<div class="miniblock miniblock-info">
+<p class="miniblock-caption">外部テーブルを用いるユースケース</p>
 <p>外部テーブルの利用例には、以下のものがあります：</p>
 <ul>
 <li>大量の既存データをUnity Catalogに登録する場合
@@ -803,8 +802,8 @@ FROM
 <li>外部ボリュームを削除しても、Unity Catalogは外部ロケーション内のデータを削除しません。
 </li>
 </ul>
-<div class="note">
-<h5>外部ボリュームを使用するユースケース</h5>
+<div class="miniblock miniblock-info">
+<p class="miniblock-caption">外部ボリュームを使用するユースケース</p>
 <p>外部ボリュームの利用例には、以下のものがあります：</p>
 <ul>
 <li>データファイルを移行せずにガバナンスを追加したい。

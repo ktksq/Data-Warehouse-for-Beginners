@@ -15,15 +15,15 @@
       <nav class="side-content">
                 <a class="nav-title" href="index.html">はじめてのデータウェアハウス</a>
 <ul class="toc toc-1">
-    <li class="toc-chapter"><a href="./contents/preface.html">まえがき</a></li>
-    <li class="toc-chapter"><a href="./contents/dbsql-general.html">1 Databricks SQL の概要</a></li>
-    <li class="toc-chapter"><a href="./contents/unitycatalog.html">2 Unity Catalogではじめるデータマネジメント</a></li>
-    <li class="toc-chapter"><a href="./contents/data-engineering.html">3 データエンジニアリング</a></li>
-    <li class="toc-chapter"><a href="./contents/lakeview.html">4 Lakeviewによるデータ可視化とBIダッシュボード</a></li>
-    <li class="toc-chapter"><a href="./contents/realtime-app-dbsql.html">5 Databricks SQLとRaspberry Piを使ってIoTデータダッシュボードを作る</a></li>
-    <li class="toc-chapter"><a href="./contents/SQLextention.html">6 Databricks SQLの拡張機能</a></li>
-    <li class="toc-chapter"><a href="./contents/dbsql-perf-tuning.html">7 Databricks SQL パフォーマンス・チューニング Tips</a></li>
-    <li class="toc-chapter"><a href="./contents/dbsql-serverless-nw-security.html">8 Databricks SQLサーバーレスのネットワークセキュリティ</a>
+    <li class="toc-chapter"><a href="./preface.html">まえがき</a></li>
+    <li class="toc-chapter"><a href="./dbsql-general.html">1 Databricks SQL の概要</a></li>
+    <li class="toc-chapter"><a href="./unitycatalog.html">2 Unity Catalogではじめるデータマネジメント</a></li>
+    <li class="toc-chapter"><a href="./data-engineering.html">3 データエンジニアリング</a></li>
+    <li class="toc-chapter"><a href="./lakeview.html">4 Lakeviewによるデータ可視化とBIダッシュボード</a></li>
+    <li class="toc-chapter"><a href="./realtime-app-dbsql.html">5 Databricks SQLとRaspberry Piを使ってIoTデータダッシュボードを作る</a></li>
+    <li class="toc-chapter"><a href="./SQLextention.html">6 Databricks SQLの拡張機能</a></li>
+    <li class="toc-chapter"><a href="./dbsql-perf-tuning.html">7 Databricks SQL パフォーマンス・チューニング Tips</a></li>
+    <li class="toc-chapter"><a href="./dbsql-serverless-nw-security.html">8 Databricks SQLサーバーレスのネットワークセキュリティ</a>
       <ul class="toc toc-2">
         <li class="toc-section"><a href="#h8-1">8.1 はじめに</a></li>
         <li class="toc-section"><a href="#h8-2">8.2 NCCの概要</a></li>
@@ -33,9 +33,9 @@
         <li class="toc-section"><a href="#h8-6">8.6 おわりに</a></li>
       </ul>
     </li>
-    <li class="toc-chapter"><a href="./contents/dbsql-migration.html">9 既存データウェアハウスからDatabricksへの実践的な移行方法と成功のためのヒント</a></li>
-    <li class="toc-chapter"><a href="./contents/DBRX.html">データブリックスが作った新しいLLM「DBRX」って、一体どんなモデル？</a></li>
-    <li class="toc-chapter"><a href="./contents/contributors.html">著者紹介</a></li>
+    <li class="toc-chapter"><a href="./dbsql-migration.html">9 既存データウェアハウスからDatabricksへの実践的な移行方法と成功のためのヒント</a></li>
+    <li class="toc-chapter"><a href="./DBRX.html">データブリックスが作った新しいLLM「DBRX」って、一体どんなモデル？</a></li>
+    <li class="toc-chapter"><a href="./contributors.html">著者紹介</a></li>
 </ul>
       </nav>
       <div class="page-inner">
@@ -72,7 +72,7 @@
 <h3 class="symbol"><a id="h8-1-3"></a>サーバーレスにおけるコンピューティングの実行場所</h3>
 <p>サーバーレスでは、クラスターやウェアハウスといった「コンピュート（計算資源）」の実行される場所が従来とは異なります。従来型のクラシックコンピューティングプレーンでは、ユーザーが管理するクラウド環境の仮想ネットワーク内でコンピュートが実行されるのに対し、サーバーレスでは、Databricksが管理する<b>サーバーレスコンピューティングプレーン</b>上でコンピュートが実行されます。</p>
 <div id="serverless-networking" class="image">
-<img src="images/dbsql-serverless-nw-security/serverless-networking.png" alt="サーバーレス コンピューティング プレーン ネットワーキング" class="img" />
+<img src="images/serverless-networking.png" alt="サーバーレス コンピューティング プレーン ネットワーキング" class="img" />
 <p class="caption">
 図8.1: サーバーレス コンピューティング プレーン ネットワーキング
 </p>
@@ -144,7 +144,7 @@
 </li>
 </ul>
 <div id="serverless-security" class="image">
-<img src="images/dbsql-serverless-nw-security/serverless-security.png" alt="" class="img width-060per" />
+<img src="images/serverless-security.png" alt="" class="img width-060per" />
 <p class="caption">
 図8.2: 
 </p>
@@ -175,7 +175,7 @@
 </div><!--/.footnote-list-->
 <p>両者の違いについては以下の図をご覧ください。</p>
 <div id="ncc-concept" class="image">
-<img src="images/dbsql-serverless-nw-security/ncc-concept.png" alt="NCCの概念図（著者作成）" class="img" />
+<img src="images/ncc-concept.png" alt="NCCの概念図（著者作成）" class="img" />
 <p class="caption">
 図8.3: NCCの概念図（著者作成）
 </p>
@@ -185,7 +185,7 @@
 <p>プライベートリンクのサポートは2024年4月に新しく始まったものです。ストレージアカウントのファイアウォールについては「静的な」サブネットID群になったのがポイントです。</p>
 <p>2023年10月以前は、DBSQLサーバーレスが経由するサービスエンドポイントのサブネットID群をドキュメントで公開しており、それらのサブネットID群をストレージアカウントのファイアウォールに追加する方式でした。ただ、この方式だと、将来的にサブネットIDの追加や変更が発生した場合に、ユーザーがドキュメントを見て、ストレージアカウントのファイアウォールに反映するという作業が必要になってしまいます。そもそも、どうやってユーザーが変更に気付くのかという問題もありました。</p>
 <div id="previous-doc" class="image">
-<img src="images/dbsql-serverless-nw-security/previous-doc.png" alt="以前のドキュメントで公開していたサブネットID群" class="img width-070per" />
+<img src="images/previous-doc.png" alt="以前のドキュメントで公開していたサブネットID群" class="img width-070per" />
 <p class="caption">
 図8.4: 以前のドキュメントで公開していたサブネットID群
 </p>
@@ -201,7 +201,7 @@
 <h4><a id="h8-2-5-1"></a>GUIアクセス</h4>
 <p>Azure Databricksのアカウントコンソール (<a href="https://accounts.azuredatabricks.net" class="link">https://accounts.azuredatabricks.net</a>) の[<b>クラウドリソース</b>] &gt; [<b>ネットワーク接続構成</b>]でNCCの編集・閲覧ができます。</p>
 <div id="ncc-gui" class="image">
-<img src="images/dbsql-serverless-nw-security/ncc-gui.png" alt="アカウントコンソールのネットワーク接続構成" class="img width-080per" />
+<img src="images/ncc-gui.png" alt="アカウントコンソールのネットワーク接続構成" class="img width-080per" />
 <p class="caption">
 図8.5: アカウントコンソールのネットワーク接続構成
 </p>
@@ -266,7 +266,7 @@
 <h3 class="symbol"><a id="h8-3-1"></a>NCCを追加（アカウントコンソール）</h3>
 <p>アカウントコンソール (<a href="https://accounts.azuredatabricks.net/" class="link">https://accounts.azuredatabricks.net/</a>) にアクセスし、左サイドバーの [<b>クラウドリソース</b>] &gt; [<b>ネットワーク接続構成</b>] をクリックします。すると以下のような画面が表示されます。</p>
 <div id="ncc-fw-1-1" class="image">
-<img src="images/dbsql-serverless-nw-security/ncc-fw-1-1.png" alt="" class="img width-080per" />
+<img src="images/ncc-fw-1-1.png" alt="" class="img width-080per" />
 <p class="caption">
 図8.6: 
 </p>
@@ -274,14 +274,14 @@
 <p>画面右上にある [<b>ネットワーク接続構成を追加</b>] ボタンをクリックします。</p>
 <p>任意の名前を入力、アタッチしたいワークスペースが存在するリージョンを選択し、[<b>追加</b>] をクリックします。</p>
 <div id="ncc-fw-1-3" class="image">
-<img src="images/dbsql-serverless-nw-security/ncc-fw-1-3.png" alt="" class="img width-080per" />
+<img src="images/ncc-fw-1-3.png" alt="" class="img width-080per" />
 <p class="caption">
 図8.7: 
 </p>
 </div>
 <p>指定した名前でNCCが作成されます。</p>
 <div id="ncc-fw-1-4" class="image">
-<img src="images/dbsql-serverless-nw-security/ncc-fw-1-4.png" alt="" class="img width-080per" />
+<img src="images/ncc-fw-1-4.png" alt="" class="img width-080per" />
 <p class="caption">
 図8.8: 
 </p>
@@ -290,14 +290,14 @@
 <h3 class="symbol"><a id="h8-3-2"></a>NCCの静的サブネットID群をコピー（アカウントコンソール）</h3>
 <p>作成したNCCをクリック、[<b>デフォルトルール</b>] タブにアクセスし [<b>すべて表示</b>] リンクをクリックします。</p>
 <div id="ncc-fw-2-1" class="image">
-<img src="images/dbsql-serverless-nw-security/ncc-fw-2-1.png" alt="" class="img width-080per" />
+<img src="images/ncc-fw-2-1.png" alt="" class="img width-080per" />
 <p class="caption">
 図8.9: 
 </p>
 </div>
 <p>静的なサブネットIDの一覧が表示されるので [<b>サブネットをコピー</b>] をクリックします。</p>
 <div id="ncc-fw-2-2" class="image">
-<img src="images/dbsql-serverless-nw-security/ncc-fw-2-2.png" alt="" class="img width-080per" />
+<img src="images/ncc-fw-2-2.png" alt="" class="img width-080per" />
 <p class="caption">
 図8.10: 
 </p>
@@ -308,21 +308,21 @@
 <p>アカウントコンソールの左サイドバーの [<b>ワークスペース</b>] をクリックし、NCCをアタッチするワークスペースの名前をクリックします。</p>
 <p>[<b>構成</b>] タブが表示されるので右上の [<b>ワークスペースを更新</b>] ボタンをクリックします。</p>
 <div id="ncc-fw-3-2" class="image">
-<img src="images/dbsql-serverless-nw-security/ncc-fw-3-2.png" alt="" class="img width-080per" />
+<img src="images/ncc-fw-3-2.png" alt="" class="img width-080per" />
 <p class="caption">
 図8.11: 
 </p>
 </div>
 <p>[<b>ネットワーク接続構成</b>] 欄に作成したNCCを設定し [<b>更新</b>] ボタンをクリックします。</p>
 <div id="ncc-fw-3-3" class="image">
-<img src="images/dbsql-serverless-nw-security/ncc-fw-3-3.png" alt="" class="img width-080per" />
+<img src="images/ncc-fw-3-3.png" alt="" class="img width-080per" />
 <p class="caption">
 図8.12: 
 </p>
 </div>
 <p>以上でNCCのワークスペースへのアタッチは完了です。</p>
 <div id="ncc-fw-3-4" class="image">
-<img src="images/dbsql-serverless-nw-security/ncc-fw-3-4.png" alt="" class="img width-080per" />
+<img src="images/ncc-fw-3-4.png" alt="" class="img width-080per" />
 <p class="caption">
 図8.13: 
 </p>
@@ -346,7 +346,7 @@
 </li>
 </ul>
 <div id="ncc-fw-4-1" class="image">
-<img src="images/dbsql-serverless-nw-security/ncc-fw-4-1.png" alt="" class="img width-080per" />
+<img src="images/ncc-fw-4-1.png" alt="" class="img width-080per" />
 <p class="caption">
 図8.14: 
 </p>
@@ -380,14 +380,14 @@ done
 </div>
 <p>Azure CLIが手元のPCにインストールされていない場合は、AzureポータルからCloudShellを使うのがお手軽です。</p>
 <div id="ncc-fw-5-1" class="image">
-<img src="images/dbsql-serverless-nw-security/ncc-fw-5-1.png" alt="" class="img width-080per" />
+<img src="images/ncc-fw-5-1.png" alt="" class="img width-080per" />
 <p class="caption">
 図8.15: 
 </p>
 </div>
 <p>コマンドの実行が完了したら、Azureポータルから対象のストレージアカウントの [<b>ネットワーク</b>] &gt; [<b>仮想ネットワーク</b>] を確認します。以下のようにサブネットID群が追加されていればOKです。</p>
 <div id="ncc-fw-5-2" class="image">
-<img src="images/dbsql-serverless-nw-security/ncc-fw-5-2.png" alt="" class="img width-080per" />
+<img src="images/ncc-fw-5-2.png" alt="" class="img width-080per" />
 <p class="caption">
 図8.16: 
 </p>
@@ -398,21 +398,21 @@ done
 <p>NCCをアタッチしたワークスペースにアクセスします。</p>
 <p>タイプが<tt>サーバーレス</tt>のSQLウェアハウスがない場合、左サイドメニューの [<b>SQLウェアハウス</b>] &gt; [<b>SQLウェアハウスを作成</b>]をクリックして作成します。接続確認が目的なので、クラスターサイズは<tt>XXS</tt>などの小さなサイズでOKです。</p>
 <div id="ncc-fw-6-1" class="image">
-<img src="images/dbsql-serverless-nw-security/ncc-fw-6-1.png" alt="" class="img width-080per" />
+<img src="images/ncc-fw-6-1.png" alt="" class="img width-080per" />
 <p class="caption">
 図8.17: 
 </p>
 </div>
 <p>左サイドメニューの [<b>SQLエディタ</b>] にアクセスし、対象のストレージアカウントにデータがあるテーブルに対してSELECTをクエリを実行します。結果が表示されれば接続確認は問題ありません。</p>
 <div id="ncc-fw-6-2" class="image">
-<img src="images/dbsql-serverless-nw-security/ncc-fw-6-2.png" alt="" class="img width-080per" />
+<img src="images/ncc-fw-6-2.png" alt="" class="img width-080per" />
 <p class="caption">
 図8.18: 
 </p>
 </div>
 <p>ストレージアカウント側のネットワーク設定が上手く行えていない場合、以下のエラーメッセージが出力されます。その場合は前の手順に戻って見落としやミスがないかを確認してみてください。</p>
 <div id="ncc-fw-6-3" class="image">
-<img src="images/dbsql-serverless-nw-security/ncc-fw-6-3.png" alt="" class="img width-080per" />
+<img src="images/ncc-fw-6-3.png" alt="" class="img width-080per" />
 <p class="caption">
 図8.19: 
 </p>
@@ -437,7 +437,7 @@ done
 </li>
 </ul>
 <div id="ncc-pl-1-1" class="image">
-<img src="images/dbsql-serverless-nw-security/ncc-pl-1-1.png" alt="" class="img width-080per" />
+<img src="images/ncc-pl-1-1.png" alt="" class="img width-080per" />
 <p class="caption">
 図8.20: 
 </p>
@@ -453,7 +453,7 @@ done
 </li>
 </ul>
 <div id="ncc-pl-2-1" class="image">
-<img src="images/dbsql-serverless-nw-security/ncc-pl-2-1.png" alt="" class="img width-080per" />
+<img src="images/ncc-pl-2-1.png" alt="" class="img width-080per" />
 <p class="caption">
 図8.21: 
 </p>
@@ -472,14 +472,14 @@ done
 <h3 class="symbol"><a id="h8-4-3"></a>対象のストレージアカウントのリソースIDをコピー（Azureポータル）</h3>
 <p>Azureポータル (<a href="https://portal.azure.com" class="link">https://portal.azure.com</a>) にアクセスし、対象ストレージアカウントの [<b>概要</b>] ページの右上にある [<b>JSONビュー</b>] をクリックします。</p>
 <div id="ncc-pl-3-1" class="image">
-<img src="images/dbsql-serverless-nw-security/ncc-pl-3-1.png" alt="" class="img width-080per" />
+<img src="images/ncc-pl-3-1.png" alt="" class="img width-080per" />
 <p class="caption">
 図8.22: 
 </p>
 </div>
 <p>上部にリソースIDが表示されるので、枠で囲んだアイコンをクリックしてリソースIDをコピーします。</p>
 <div id="ncc-pl-3-2" class="image">
-<img src="images/dbsql-serverless-nw-security/ncc-pl-3-2.png" alt="" class="img width-080per" />
+<img src="images/ncc-pl-3-2.png" alt="" class="img width-080per" />
 <p class="caption">
 図8.23: 
 </p>
@@ -493,7 +493,7 @@ done
 </li>
 </ul>
 <div id="ncc-pl-4-1" class="image">
-<img src="images/dbsql-serverless-nw-security/ncc-pl-4-1.png" alt="" class="img width-080per" />
+<img src="images/ncc-pl-4-1.png" alt="" class="img width-080per" />
 <p class="caption">
 図8.24: 
 </p>
@@ -509,21 +509,21 @@ done
 </ul>
 <p>ここではADLS Gen2を対象にしています。入力が完了したら [<b>追加</b>] をクリックします。</p>
 <div id="ncc-pl-4-2" class="image">
-<img src="images/dbsql-serverless-nw-security/ncc-pl-4-2.png" alt="" class="img width-080per" />
+<img src="images/ncc-pl-4-2.png" alt="" class="img width-080per" />
 <p class="caption">
 図8.25: 
 </p>
 </div>
 <p>[<b>追加</b>] ボタンが処理中を表す表示に変わるので、しばらく待ちます。（数十秒〜1分程度）</p>
 <div id="ncc-pl-4-3" class="image">
-<img src="images/dbsql-serverless-nw-security/ncc-pl-4-3.png" alt="" class="img width-080per" />
+<img src="images/ncc-pl-4-3.png" alt="" class="img width-080per" />
 <p class="caption">
 図8.26: 
 </p>
 </div>
 <p>自動的に表示が切り替わり、プライベートエンドポイントルールが1件追加されます。ステータスが <tt>PENDING</tt> になっているはずです。</p>
 <div id="ncc-pl-4-4" class="image">
-<img src="images/dbsql-serverless-nw-security/ncc-pl-4-4.png" alt="" class="img width-080per" />
+<img src="images/ncc-pl-4-4.png" alt="" class="img width-080per" />
 <p class="caption">
 図8.27: 
 </p>
@@ -532,28 +532,28 @@ done
 <h3 class="symbol"><a id="h8-4-5"></a>プライベートエンドポイント接続を承認（Azureポータル）</h3>
 <p>Azureポータルで対象のストレージアカウントにアクセスし、[<b>ネットワーク</b>] &gt; [<b>プライベート エンドポイント接続</b>] タブを開きます。接続状態が <tt>保留中</tt> のプライベートエンドポイント接続が1件表示されるので、チェックボックスにチェックを入れて [<b>承認</b>] をクリックします。</p>
 <div id="ncc-pl-5-1" class="image">
-<img src="images/dbsql-serverless-nw-security/ncc-pl-5-1.png" alt="" class="img width-080per" />
+<img src="images/ncc-pl-5-1.png" alt="" class="img width-080per" />
 <p class="caption">
 図8.28: 
 </p>
 </div>
 <p>必要に応じて説明を入力し（ブランクでもOK）、[<b>はい</b>] をクリックします。</p>
 <div id="ncc-pl-5-2" class="image">
-<img src="images/dbsql-serverless-nw-security/ncc-pl-5-2.png" alt="" class="img width-080per" />
+<img src="images/ncc-pl-5-2.png" alt="" class="img width-080per" />
 <p class="caption">
 図8.29: 
 </p>
 </div>
 <p>しばらく待機し、接続状態が <tt>承認済み</tt> になることを確認します。</p>
 <div id="ncc-pl-5-3" class="image">
-<img src="images/dbsql-serverless-nw-security/ncc-pl-5-3.png" alt="" class="img width-080per" />
+<img src="images/ncc-pl-5-3.png" alt="" class="img width-080per" />
 <p class="caption">
 図8.30: 
 </p>
 </div>
 <p>アカウントコンソールのプライベートエンドポイントルールのステータスが <tt>ESTABLISHED</tt> になっていることを確認します。</p>
 <div id="ncc-pl-5-4" class="image">
-<img src="images/dbsql-serverless-nw-security/ncc-pl-5-4.png" alt="" class="img width-080per" />
+<img src="images/ncc-pl-5-4.png" alt="" class="img width-080per" />
 <p class="caption">
 図8.31: 
 </p>
@@ -562,7 +562,7 @@ done
 <h3 class="symbol"><a id="h8-4-6"></a>（オプション）ストレージアカウントのパブリックネットワークアクセスを無効化（Azureポータル）</h3>
 <p>省略可能な手順です。対象のストレージアカウントへのアクセスについてプライベートエンドポイントに限定したい場合は、パブリックネットワークを <tt>無効</tt> に変更して保存します。</p>
 <div id="ncc-pl-6-1" class="image">
-<img src="images/dbsql-serverless-nw-security/ncc-pl-6-1.png" alt="" class="img width-080per" />
+<img src="images/ncc-pl-6-1.png" alt="" class="img width-080per" />
 <p class="caption">
 図8.32: 
 </p>
@@ -578,7 +578,7 @@ done
 </li>
 </ul>
 <div id="ncc-pl-7-1" class="image">
-<img src="images/dbsql-serverless-nw-security/ncc-pl-7-1.png" alt="" class="img width-080per" />
+<img src="images/ncc-pl-7-1.png" alt="" class="img width-080per" />
 <p class="caption">
 図8.33: 
 </p>

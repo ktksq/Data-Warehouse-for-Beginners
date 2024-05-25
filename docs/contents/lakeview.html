@@ -15,11 +15,11 @@
       <nav class="side-content">
                 <a class="nav-title" href="index.html">はじめてのデータウェアハウス</a>
 <ul class="toc toc-1">
-    <li class="toc-chapter"><a href="./contents/preface.html">まえがき</a></li>
-    <li class="toc-chapter"><a href="./contents/dbsql-general.html">1 Databricks SQL の概要</a></li>
-    <li class="toc-chapter"><a href="./contents/unitycatalog.html">2 Unity Catalogではじめるデータマネジメント</a></li>
-    <li class="toc-chapter"><a href="./contents/data-engineering.html">3 データエンジニアリング</a></li>
-    <li class="toc-chapter"><a href="./contents/lakeview.html">4 Lakeviewによるデータ可視化とBIダッシュボード</a>
+    <li class="toc-chapter"><a href="./preface.html">まえがき</a></li>
+    <li class="toc-chapter"><a href="./dbsql-general.html">1 Databricks SQL の概要</a></li>
+    <li class="toc-chapter"><a href="./unitycatalog.html">2 Unity Catalogではじめるデータマネジメント</a></li>
+    <li class="toc-chapter"><a href="./data-engineering.html">3 データエンジニアリング</a></li>
+    <li class="toc-chapter"><a href="./lakeview.html">4 Lakeviewによるデータ可視化とBIダッシュボード</a>
       <ul class="toc toc-2">
         <li class="toc-section"><a href="#h4-1">4.1 はじめに</a></li>
         <li class="toc-section"><a href="#h4-2">4.2 今までとこれから</a></li>
@@ -28,13 +28,13 @@
         <li class="toc-section"><a href="#h4-5">4.5 おわりに</a></li>
       </ul>
     </li>
-    <li class="toc-chapter"><a href="./contents/realtime-app-dbsql.html">5 Databricks SQLとRaspberry Piを使ってIoTデータダッシュボードを作る</a></li>
-    <li class="toc-chapter"><a href="./contents/SQLextention.html">6 Databricks SQLの拡張機能</a></li>
-    <li class="toc-chapter"><a href="./contents/dbsql-perf-tuning.html">7 Databricks SQL パフォーマンス・チューニング Tips</a></li>
-    <li class="toc-chapter"><a href="./contents/dbsql-serverless-nw-security.html">8 Databricks SQLサーバーレスのネットワークセキュリティ</a></li>
-    <li class="toc-chapter"><a href="./contents/dbsql-migration.html">9 既存データウェアハウスからDatabricksへの実践的な移行方法と成功のためのヒント</a></li>
-    <li class="toc-chapter"><a href="./contents/DBRX.html">データブリックスが作った新しいLLM「DBRX」って、一体どんなモデル？</a></li>
-    <li class="toc-chapter"><a href="./contents/contributors.html">著者紹介</a></li>
+    <li class="toc-chapter"><a href="./realtime-app-dbsql.html">5 Databricks SQLとRaspberry Piを使ってIoTデータダッシュボードを作る</a></li>
+    <li class="toc-chapter"><a href="./SQLextention.html">6 Databricks SQLの拡張機能</a></li>
+    <li class="toc-chapter"><a href="./dbsql-perf-tuning.html">7 Databricks SQL パフォーマンス・チューニング Tips</a></li>
+    <li class="toc-chapter"><a href="./dbsql-serverless-nw-security.html">8 Databricks SQLサーバーレスのネットワークセキュリティ</a></li>
+    <li class="toc-chapter"><a href="./dbsql-migration.html">9 既存データウェアハウスからDatabricksへの実践的な移行方法と成功のためのヒント</a></li>
+    <li class="toc-chapter"><a href="./DBRX.html">データブリックスが作った新しいLLM「DBRX」って、一体どんなモデル？</a></li>
+    <li class="toc-chapter"><a href="./contributors.html">著者紹介</a></li>
 </ul>
       </nav>
       <div class="page-inner">
@@ -47,7 +47,7 @@
 <p>Databricks上のデータを可視化(グラフ化)して、さらにそれらをダッシュボード化する機能であるLakeview(レイクビュー)について概要とクイックスタートガイドを見ていきます。</p>
 <p>以下がダッシュボードのイメージです。今回の記事では、このダッシュボードの作り方と作成後の共有方法について見ていきたいと思います。</p>
 <div id="lakeview_overview" class="image">
-<img src="images/lakeview/lakeview_overview.png" alt="概要図" class="img width-090per" />
+<img src="images/lakeview_overview.png" alt="概要図" class="img width-070per" />
 <p class="caption">
 図4.1: 概要図
 </p>
@@ -80,14 +80,14 @@
 <h3 class="symbol"><a id="h4-3-1"></a>サンプルデータの用意</h3>
 <p>今回のデモで使用するデータを用意します。Databricksではサンプルデータが使えるようになっているため、これらを使っていきます。ただし、Unity Catalog(Databricksのカタログ機能)上のテーブルがLakeviewの対象になるため、適当なカタログ(<code class="inline-code">your_cat</code>)を作成し、そこにサンプルデータをコピー(<code class="inline-code">CLONE</code>)しておきます。</p>
 <p>以下のクエリをDatabricks上で実行します。SQLなので、Notebook上でもSQLクエリエディタ上でもどちらでも実行可能です。</p>
-<div class="caption-code">
-<span class="caption">サンプルデータの準備</span>
-<pre class="list language-sql">CREATE CATALOG your_cat;
-CREATE SCHEMA your_cat.samples;
-
-CREATE TABLE your_cat.samples.orders CLONE samples.tpch.orders;
-CREATE TABLE your_cat.samples.customer CLONE samples.tpch.customer;
-CREATE TABLE your_cat.samples.nation CLONE samples.tpch.nation;
+<div id="clone" class="code">
+<span class="caption">リスト4.1: リスト4.1: サンプルデータの準備</span>
+<pre class="list language-sql"><em class="linenowidth">1: </em>CREATE CATALOG your_cat;
+<em class="linenowidth">2: </em>CREATE SCHEMA your_cat.samples;
+<em class="linenowidth">3: </em>
+<em class="linenowidth">4: </em>CREATE TABLE your_cat.samples.orders CLONE samples.tpch.orders;
+<em class="linenowidth">5: </em>CREATE TABLE your_cat.samples.customer CLONE samples.tpch.customer;
+<em class="linenowidth">6: </em>CREATE TABLE your_cat.samples.nation CLONE samples.tpch.nation;
 </pre>
 </div>
 <p>上記の3つのテーブルデータは、テーブル名から推測できる通り、ある小売店の売り上げデータ(POS)と顧客情報になります。</p>
@@ -101,7 +101,7 @@ CREATE TABLE your_cat.samples.nation CLONE samples.tpch.nation;
 <li>以下のような新規ダッシュボード画面に遷移</li>
 </ol>
 <div id="dashboard_plane" class="image">
-<img src="images/lakeview/dashboard_plane.png" alt="初期段階のダッシュボード" class="img width-090per" />
+<img src="images/dashboard_plane.png" alt="初期段階のダッシュボード" class="img width-080per" />
 <p class="caption">
 図4.2: 初期段階のダッシュボード
 </p>
@@ -124,7 +124,7 @@ CREATE TABLE your_cat.samples.nation CLONE samples.tpch.nation;
 <li>3つのテーブルを追加した状態になります(下図)。</li>
 </ol>
 <div id="data_tab" class="image">
-<img src="images/lakeview/data_tab.png" alt="{データ}タブ" class="img width-090per" />
+<img src="images/data_tab.png" alt="{データ}タブ" class="img width-080per" />
 <p class="caption">
 図4.3: {データ}タブ
 </p>
@@ -164,7 +164,7 @@ CREATE TABLE your_cat.samples.nation CLONE samples.tpch.nation;
 </li>
 </ol>
 <div id="barchart" class="image">
-<img src="images/lakeview/barchart.png" alt="追加された棒グラフのチャート" class="img width-090per" />
+<img src="images/barchart.png" alt="追加された棒グラフのチャート" class="img width-080per" />
 <p class="caption">
 図4.4: 追加された棒グラフのチャート
 </p>
@@ -176,7 +176,7 @@ CREATE TABLE your_cat.samples.nation CLONE samples.tpch.nation;
 <li>描画されたチャートを確認して問題なければ<tt>承認</tt>をクリックする。</li>
 </ol>
 <div id="barchart2" class="image">
-<img src="images/lakeview/barchart2.png" alt="追加された2つ目の棒グラフのチャート" class="img width-090per" />
+<img src="images/barchart2.png" alt="追加された2つ目の棒グラフのチャート" class="img width-080per" />
 <p class="caption">
 図4.5: 追加された2つ目の棒グラフのチャート
 </p>
@@ -191,33 +191,33 @@ CREATE TABLE your_cat.samples.nation CLONE samples.tpch.nation;
 <li><tt>データ</tt>タブに移動して、<tt>SQLから作成</tt>ボタンをクリックし、以下のクエリを<tt>実行</tt>する。
 </li>
 </ol>
-<div class="caption-code">
-<span class="caption">テーブル結合のクエリ</span>
-<pre class="list language-sql">-- オーダー状態と顧客IDで売り上げ集計した結果から、顧客情報と国情報を結合する
-with total_price_by_customer as (
-  select
-    o_custkey,
-    o_orderstatus,
-    count(*) as cnt,
-    sum(o_totalprice) as total_price
-  from
-    your_cat.samples.orders
-  group by
-    o_custkey,
-    o_orderstatus
-),
-final as (
-  select
-    *
-  from
-    total_price_by_customer t
-    join your_cat.samples.customer c on t.o_custkey = c.c_custkey
-    join your_cat.samples.nation n on c.c_nationkey = n.n_nationkey
-)
-select
-  *
-from
-  final
+<div id="joined_table" class="code">
+<span class="caption">リスト4.2: リスト4.2: テーブル結合のクエリ</span>
+<pre class="list language-sql"><em class="linenowidth"> 1: </em>-- オーダー状態と顧客IDで売り上げ集計した結果から、顧客情報と国情報を結合する
+<em class="linenowidth"> 2: </em>with total_price_by_customer as (
+<em class="linenowidth"> 3: </em>  select
+<em class="linenowidth"> 4: </em>    o_custkey,
+<em class="linenowidth"> 5: </em>    o_orderstatus,
+<em class="linenowidth"> 6: </em>    count(*) as cnt,
+<em class="linenowidth"> 7: </em>    sum(o_totalprice) as total_price
+<em class="linenowidth"> 8: </em>  from
+<em class="linenowidth"> 9: </em>    your_cat.samples.orders
+<em class="linenowidth">10: </em>  group by
+<em class="linenowidth">11: </em>    o_custkey,
+<em class="linenowidth">12: </em>    o_orderstatus
+<em class="linenowidth">13: </em>),
+<em class="linenowidth">14: </em>final as (
+<em class="linenowidth">15: </em>  select
+<em class="linenowidth">16: </em>    *
+<em class="linenowidth">17: </em>  from
+<em class="linenowidth">18: </em>    total_price_by_customer t
+<em class="linenowidth">19: </em>    join your_cat.samples.customer c on t.o_custkey = c.c_custkey
+<em class="linenowidth">20: </em>    join your_cat.samples.nation n on c.c_nationkey = n.n_nationkey
+<em class="linenowidth">21: </em>)
+<em class="linenowidth">22: </em>select
+<em class="linenowidth">23: </em>  *
+<em class="linenowidth">24: </em>from
+<em class="linenowidth">25: </em>  final
 </pre>
 </div>
 <ol start="2" type="1">
@@ -258,7 +258,7 @@ from
 </li>
 </ol>
 <div id="added_chart" class="image">
-<img src="images/lakeview/added_chart.png" alt="上記で追加されたチャート" class="img width-090per" />
+<img src="images/added_chart.png" alt="上記で追加されたチャート" class="img width-080per" />
 <p class="caption">
 図4.6: 上記で追加されたチャート
 </p>
@@ -294,7 +294,7 @@ from
 </ol>
 <p>以上で、フィルタが追加できました。このフィルタ値を設定することで、条件付けされた結果が描画されます。</p>
 <div id="filter" class="image">
-<img src="images/lakeview/filter.png" alt="フィルター条件" class="img width-090per" />
+<img src="images/filter.png" alt="フィルター条件" class="img width-080per" />
 <p class="caption">
 図4.7: フィルター条件
 </p>
@@ -312,7 +312,7 @@ from
 <p>この2つのモードの違いは、ダッシュボードの共有時にも関係してきます。すなわち、下書きモードも含めて共有を許可するのか、完成した(公開された)ダッシュボードのみを共有するのかで分かれます。</p>
 <p>共有設定と共有される範囲は以下の通りです。</p>
 <div id="table" class="image">
-<img src="images/lakeview/table.png" alt="権限設定と共有範囲" class="img width-090per" />
+<img src="images/table.png" alt="権限設定と共有範囲" class="img width-080per" />
 <p class="caption">
 図4.8: 権限設定と共有範囲
 </p>
@@ -324,9 +324,9 @@ from
 
 <h3 class="symbol"><a id="h4-5-1"></a>参考</h3>
 <ul>
-<li>https://www.databricks.com/jp/databricks-documentation
+<li>公式ドキュメント - <tt>https://www.databricks.com/jp/databricks-documentation</tt>
 </li>
-<li>https://github.com/ktmrmshk/lakehousebook/tree/main/Lakeview
+<li>本記事のコードは<tt>https://github.com/ktmrmshk/lakehousebook/tree/main/Lakeview</tt>で参照可能です。
 </li>
 </ul>
 
