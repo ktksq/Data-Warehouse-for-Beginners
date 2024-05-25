@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>まえがき | はじめてのデータウェアハウス</title>
+    <link rel="stylesheet" type="text/css" href="css/normalize.css" />
+    <link rel="stylesheet" type="text/css" href="css/webstyle.css" />
+    <link rel="next" title="Databricks SQL の概要" href="dbsql-general.html">
+    <meta name="generator" content="Re:VIEW Starter">
+  </head>
+  <body>
+    <div class="page-outer">
+      <nav class="side-content">
+                <a class="nav-title" href="index.html">はじめてのデータウェアハウス</a>
+<ul class="toc toc-1">
+    <li class="toc-chapter"><a href="./preface.html">まえがき</a>
+      <ul class="toc toc-2">
+        <li class="toc-section"><a href="#h">データブリックスとは</a></li>
+        <li class="toc-section"><a href="#h">実際の環境で試してみたい場合には</a></li>
+        <li class="toc-section"><a href="#h">もっとデータブリックスについて知りたい場合には</a></li>
+        <li class="toc-section"><a href="#h">本書の電子書籍版</a></li>
+        <li class="toc-section"><a href="#h">本書のお問い合わせ先</a></li>
+        <li class="toc-section"><a href="#h">免責事項</a></li>
+      </ul>
+    </li>
+    <li class="toc-chapter"><a href="./dbsql-general.html">1 Databricks SQL の概要</a></li>
+    <li class="toc-chapter"><a href="./unitycatalog.html">2 Unity Catalogではじめるデータマネジメント</a></li>
+    <li class="toc-chapter"><a href="./data-engineering.html">3 データエンジニアリング</a></li>
+    <li class="toc-chapter"><a href="./lakeview.html">4 Lakeviewによるデータ可視化とBIダッシュボード</a></li>
+    <li class="toc-chapter"><a href="./realtime-app-dbsql.html">5 Databricks SQLとRaspberry Piを使ってIoTデータダッシュボードを作る</a></li>
+    <li class="toc-chapter"><a href="./SQLextention.html">6 Databricks SQLの拡張機能</a></li>
+    <li class="toc-chapter"><a href="./dbsql-perf-tuning.html">7 Databricks SQL パフォーマンス・チューニング Tips</a></li>
+    <li class="toc-chapter"><a href="./dbsql-serverless-nw-security.html">8 Databricks SQLサーバーレスのネットワークセキュリティ</a></li>
+    <li class="toc-chapter"><a href="./dbsql-migration.html">9 既存データウェアハウスからDatabricksへの実践的な移行方法と成功のためのヒント</a></li>
+    <li class="toc-chapter"><a href="./DBRX.html">データブリックスが作った新しいLLM「DBRX」って、一体どんなモデル？</a></li>
+    <li class="toc-chapter"><a href="./contributors.html">著者紹介</a></li>
+</ul>
+      </nav>
+      <div class="page-inner">
+        <header class="page-header">
+        </header>
+        <main class="page-main">
+<h1 class="none center"><a id="h"></a><br/>まえがき</h1>
+<p>本書をお手に取っていただきありがとうございます！本書は「データ インテリジェンス プラットフォーム」である「データブリックス」の中でも特に「データウェアハウス」の機能に絞って説明しています。前回と同じく、我々が楽しみながら、書きたいことを、書きたい時に、書きたいだけ書いた本ですが、本書がどこかで少しでも皆様のお役に立てることを願っています。</p>
+
+<h2 class="grayback"><a id="h-1"></a>データブリックスとは</h2>
+<p>データブリックスとは、データウェアハウスとデータレイクを統合する、次世代のクラウド型統合データ分析基盤「データ インテリジェンス プラットフォーム」を提供しています。これにより、全てのデータエキスパートが、あらゆるデータを簡単に統合、迅速に分析し、AIを活⽤したインサイトを獲得することが可能になります。</p>
+
+<h2 class="grayback"><a id="h-2"></a>実際の環境で試してみたい場合には</h2>
+<p>データブリックスのフリートライアルには2種類あります。ご利用用途によって使い分けください。</p>
+<ul>
+<li>Full Databricks platform Trial (フルトライアル)の場合は14日間のフル機能トライアルが可能
+</li>
+<li>Community Edition (コミュニティ エディション) の場合はデータブリックスがホストする環境での簡易トライアルが可能
+</li>
+</ul>
+<div id="pre_image1" class="image">
+<img src="images/pre_image1.png" alt="フルトライアルとコミュニティ エディションの違い" class="img width-090per border" />
+<p class="caption">
+図1: フルトライアルとコミュニティ エディションの違い
+</p>
+</div>
+
+<h3 class="symbol"><a id="h-2-1"></a>フリートライアルはこちらから！</h3>
+<ul>
+<li>URL: https://www.databricks.com/jp/try-databricks
+</li>
+</ul>
+<div id="Free_Trial" class="image">
+<img src="images/Free_Trial.png" alt="無料トライアルへの登録" class="img width-020per border" />
+<p class="caption">
+図2: 無料トライアルへの登録
+</p>
+</div>
+
+<h2 class="grayback"><a id="h-3"></a>もっとデータブリックスについて知りたい場合には</h2>
+<p>データブリックスではさまざまなチャネルで、データとAIの活用について発信を行なっております。もっとデータブリックスについて深く知りたい場合は以下のチャネルも併せてご覧ください。</p>
+
+<h3 class="symbol"><a id="h-3-1"></a>Youtubeアカウント</h3>
+<ul>
+<li>URL: https://www.youtube.com/@user-wg9vr7bg6n
+</li>
+</ul>
+<div id="Youtube" class="image">
+<img src="images/Youtube.png" alt="公式Youtubeアカウント" class="img width-020per border" />
+<p class="caption">
+図3: 公式Youtubeアカウント
+</p>
+</div>
+
+<h3 class="symbol"><a id="h-3-2"></a>Xアカウント: @DatabricksJP</h3>
+<div id="Twitter_account" class="image">
+<img src="images/Twitter_account.png" alt="公式Xアカウント" class="img width-020per border" />
+<p class="caption">
+図4: 公式Xアカウント
+</p>
+</div>
+
+<h3 class="symbol"><a id="h-3-3"></a>ブログ</h3>
+<ul>
+<li>URL: https://www.databricks.com/jp/blog
+</li>
+</ul>
+<div id="Blog" class="image">
+<img src="images/Blog.png" alt="データブリックス ジャパン ブログ" class="img width-020per border" />
+<p class="caption">
+図5: データブリックス ジャパン ブログ
+</p>
+</div>
+
+<h3 class="symbol"><a id="h-3-4"></a>ドキュメント</h3>
+<ul>
+<li>URL: https://www.databricks.com/jp/databricks-documentation
+</li>
+</ul>
+<div id="Doc" class="image">
+<img src="images/Doc.png" alt="データブリックスのドキュメント" class="img width-020per border" />
+<p class="caption">
+図6: データブリックスのドキュメント
+</p>
+</div>
+
+<h3 class="symbol"><a id="h-3-5"></a>コミュニティ</h3>
+<ul>
+<li>URL: https://jedai.connpass.com/
+</li>
+</ul>
+<div id="Jedai" class="image">
+<img src="images/Jedai.png" alt="Japan Enduser Group | Databricks Innovation (JEDAI)" class="img width-020per border" />
+<p class="caption">
+図7: Japan Enduser Group | Databricks Innovation (JEDAI)
+</p>
+</div>
+
+<h2 class="grayback"><a id="h-4"></a>本書の電子書籍版</h2>
+<div id="ebooks" class="image">
+<img src="images/ebooks.png" alt="電子書籍版" class="img width-020per border" />
+<p class="caption">
+図8: 電子書籍版
+</p>
+</div>
+
+<h2 class="grayback"><a id="h-5"></a>本書のお問い合わせ先</h2>
+<ul>
+<li>本書に関するお問い合わせ先： @ktksq (Xアカウント)
+</li>
+</ul>
+
+<h2 class="grayback"><a id="h-6"></a>免責事項</h2>
+<p>本書に記載された内容は、情報の提供のみを目的としています。したがって、本書を用いた開発、製作、運用は、必ずご自身の責任と判断によって行ってください。これらの情報による開発、製作、運用の結果について、著者はいかなる責任も負いません。また本書の内容は執筆された時期(2024年5月)時点での情報に基づいております。最新状況などは各種ドキュメントにてご確認ください。</p>
+
+        </main>
+        <nav class="page-navi">
+          <a href="dbsql-general.html" class="page-next">&#9654;</a>
+        </nav>
+        <footer>
+        </footer>
+      </div>
+    </div>
+  </body>
+</html>
+<!-- layout.html5.erb -->

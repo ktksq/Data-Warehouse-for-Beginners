@@ -1,0 +1,833 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Unity Catalogではじめるデータマネジメント | はじめてのデータウェアハウス</title>
+    <link rel="stylesheet" type="text/css" href="css/normalize.css" />
+    <link rel="stylesheet" type="text/css" href="css/webstyle.css" />
+    <link rel="next" title="データエンジニアリング" href="data-engineering.html">
+    <link rel="prev" title="Databricks SQL の概要" href="dbsql-general.html">
+    <meta name="generator" content="Re:VIEW Starter">
+  </head>
+  <body>
+    <div class="page-outer">
+      <nav class="side-content">
+                <a class="nav-title" href="index.html">はじめてのデータウェアハウス</a>
+<ul class="toc toc-1">
+    <li class="toc-chapter"><a href="./preface.html">まえがき</a></li>
+    <li class="toc-chapter"><a href="./dbsql-general.html">1 Databricks SQL の概要</a></li>
+    <li class="toc-chapter"><a href="./unitycatalog.html">2 Unity Catalogではじめるデータマネジメント</a>
+      <ul class="toc toc-2">
+        <li class="toc-section"><a href="#h2-1">2.1 はじめに</a></li>
+        <li class="toc-section"><a href="#h2-2">2.2 Unity Catalogとはなにか？</a></li>
+        <li class="toc-section"><a href="#h2-3">2.3 Unity Catalogでできること</a></li>
+        <li class="toc-section"><a href="#h2-4">2.4 Unity Catalog のアーキテクチャ</a></li>
+        <li class="toc-section"><a href="#h2-5">2.5 おわりに</a></li>
+      </ul>
+    </li>
+    <li class="toc-chapter"><a href="./data-engineering.html">3 データエンジニアリング</a></li>
+    <li class="toc-chapter"><a href="./lakeview.html">4 Lakeviewによるデータ可視化とBIダッシュボード</a></li>
+    <li class="toc-chapter"><a href="./realtime-app-dbsql.html">5 Databricks SQLとRaspberry Piを使ってIoTデータダッシュボードを作る</a></li>
+    <li class="toc-chapter"><a href="./SQLextention.html">6 Databricks SQLの拡張機能</a></li>
+    <li class="toc-chapter"><a href="./dbsql-perf-tuning.html">7 Databricks SQL パフォーマンス・チューニング Tips</a></li>
+    <li class="toc-chapter"><a href="./dbsql-serverless-nw-security.html">8 Databricks SQLサーバーレスのネットワークセキュリティ</a></li>
+    <li class="toc-chapter"><a href="./dbsql-migration.html">9 既存データウェアハウスからDatabricksへの実践的な移行方法と成功のためのヒント</a></li>
+    <li class="toc-chapter"><a href="./DBRX.html">データブリックスが作った新しいLLM「DBRX」って、一体どんなモデル？</a></li>
+    <li class="toc-chapter"><a href="./contributors.html">著者紹介</a></li>
+</ul>
+      </nav>
+      <div class="page-inner">
+        <header class="page-header">
+        </header>
+        <main class="page-main">
+<h1 class="boldlines center twolines"><a id="h2"></a><span class="secno">第2章</span> <br/>Unity Catalogではじめるデータマネジメント</h1>
+
+<h2 class="grayback"><a id="h2-1"></a><span class="secno">2.1</span> はじめに</h2>
+<p>データ、アナリティクス、AIの相互作用により、多くの分野で革新が進み、収益モデルや企業管理の再定義が行われています。マッキンゼーによると、2030年までにアナリティクスとAIは1.5兆ドル以上の新たなビジネス価値を創出する見込みです。<sup><a id="fnb-uc_book" href="#fn-uc_book" class="noteref" epub:type="noteref">*1</a></sup>また、生成AIの進展により、40％の企業がAIへの投資を増やす計画を立てています。この傾向は、データ駆動型文化の育成と競争優位の確立を促進しています。</p>
+<div class="footnote-list">
+<div class="footnote" id="fn-uc_book" epub:type="footnote"><p class="footnote"><span class="footnote-mark">[*1] </span>https://www.databricks.com/resources/ebook/data-analytics-and-ai-governance</p></div>
+</div><!--/.footnote-list-->
+<p>しかし、これらの投資にもかかわらず、データとAIから有意義な価値を引き出すことは依然として課題です。その核心は、包括的なデータおよびAIガバナンス戦略の欠如にあります。ガートナーによると、2025年までにデジタルビジネス拡大を目指す組織の80％が、旧態依然としたガバナンスアプローチのために障害に直面すると予測されています。</p>
+<p>現在、生成AIと大規模言語モデルの進化により、強力なデータおよびAIガバナンスの重要性がさらに増しています。これらの技術は組織に多くの利点をもたらしますが、データプライバシー、バイアス軽減、倫理的配慮に関する懸念も高めています。AIが企業の中核業務に組み込まれる中、公平性、説明責任、安全性を確保するための緻密なガバナンスが不可欠です。</p>
+<p>そこで今回はUnity Catalogを用いたデータ+AIの包括的なマネジメント方法について説明します。</p>
+
+<h2 class="grayback"><a id="h2-2"></a><span class="secno">2.2</span> Unity Catalogとはなにか？</h2>
+<p>Unity Catalogとは、Databricksが提供するデータガバナンスおよびメタデータ管理のデータカタログです。これにより、組織全体でデータのアクセス制御、セキュリティ、ガバナンス、および監査を一元的に管理できます。Unity Catalogは、データの整理とアクセス管理を簡素化し、データ駆動型の意思決定を支援するために設計されています。</p>
+<div id="dip" class="image">
+<img src="images/unitycatalog/dip.png" alt="Databricks Data Intelligent Platform" class="img border" />
+<p class="caption">
+図2.1: Databricks Data Intelligent Platform
+</p>
+</div>
+
+<h2 class="grayback"><a id="h2-3"></a><span class="secno">2.3</span> Unity Catalogでできること</h2>
+<p>Unity Catalogを用いることで大きく以下の8つのことができるようになります。</p>
+
+<h3 class="symbol"><a id="h2-3-1"></a>① 構造化データの管理</h3>
+<p>Unity Catalogではテーブルデータに対して以下のメタデータを管理します。</p>
+
+<h4><a id="h2-3-1-1"></a>1. 概要</h4>
+<ul>
+<li>テーブルデータのカラム情報やデータタイプ、コメント、タグを管理できます。
+</li>
+</ul>
+<div id="overview" class="image">
+<img src="images/unitycatalog/overview.png" alt="テーブルの概要" class="img width-090per border" />
+<p class="caption">
+図2.2: テーブルの概要
+</p>
+</div>
+
+<h4><a id="h2-3-1-2"></a>2. サンプルデータ</h4>
+<ul>
+<li>テーブルに格納されているデータをサンプルデータとして確認できます。
+</li>
+</ul>
+<div id="sample" class="image">
+<img src="images/unitycatalog/sample.png" alt="サンプルデータ" class="img width-090per border" />
+<p class="caption">
+図2.3: サンプルデータ
+</p>
+</div>
+
+<h4><a id="h2-3-1-3"></a>3. 詳細</h4>
+<ul>
+<li>テーブルのタイプやデータが実際に格納されているオブジェクトストレージのパス、作成日などを確認できます。
+</li>
+</ul>
+<div id="details" class="image">
+<img src="images/unitycatalog/details.png" alt="テーブルの詳細" class="img width-090per border" />
+<p class="caption">
+図2.4: テーブルの詳細
+</p>
+</div>
+
+<h4><a id="h2-3-1-4"></a>4. 権限</h4>
+<ul>
+<li>Unity Catalogではカタログ、スキーマ、テーブル、ボリューム、AIモデル、関数のアクセス制御を行うことができます。
+</li>
+<li>カタログ配下の権限は継承されます。
+</li>
+<li>つまり、カタログまたはスキーマに対する特権を付与すると、そのカタログまたはスキーマ内の現在および将来のすべてのオブジェクトに特権が自動的に付与されます。
+</li>
+</ul>
+<div id="Inheritance" class="image">
+<img src="images/unitycatalog/Inheritance.png" alt="Unity Catalogにおける権限の継承" class="img width-070per border" />
+<p class="caption">
+図2.5: Unity Catalogにおける権限の継承
+</p>
+</div>
+<div id="previlage" class="image">
+<img src="images/unitycatalog/previlage.png" alt="カタログのアクセス制御" class="img width-090per border" />
+<p class="caption">
+図2.6: カタログのアクセス制御
+</p>
+</div>
+<div class="note">
+<h5>行フィルターと列マスクの利用</h5>
+<p>Unity Catalogでは行フィルター、列マスクを使用してテーブル内の機密データをフィルタリングすることができます。</p>
+<ul>
+<li>行フィルターとは？
+<ul>
+<li>行フィルターを使用すると、述語フィルタが真の場合の行のみを返すようにテーブルにフィルターを適用できます。
+</li>
+<li>行フィルターはSQLのユーザー定義関数（UDF）として実装されます。
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li>行フィルターを適用するには？
+<ul>
+<li>行フィルターを作成するには、まずフィルターポリシーを定義するSQL UDFを記述し、それをALTER TABLEステートメントでテーブルに適用します。
+</li>
+<li>代わりに、CREATE TABLEステートメントでテーブルに行フィルターを指定することもできます。
+</li>
+<li>各テーブルには1つの行フィルターのみを持つことができます。
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li>列マスクとは？
+<ul>
+<li>列マスクを使用すると、テーブルの列にマスキング関数を適用できます。
+</li>
+<li>マスキング関数はクエリ実行時に評価され、ターゲット列の各参照をマスキング関数の結果に置き換えます。
+</li>
+<li>列マスクはSQL UDFとして記述されます。
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li>列マスクを適用するには？
+<ul>
+<li>関数を作成し、ALTER TABLEステートメントを使用してテーブル列に適用します。
+</li>
+<li>または、テーブルを作成する際にマスキング関数を適用することもできます。
+</li>
+</ul>
+</li>
+</ul>
+</div>
+
+<h4><a id="h2-3-1-5"></a>5. 履歴</h4>
+<ul>
+<li>Deltaテーブルの場合は、テーブルに対してオペレーション<sup><a id="fnb-operation" href="#fn-operation" class="noteref" epub:type="noteref">*2</a></sup>が発行されるたびに自動で履歴が記録されます。
+</li>
+</ul>
+<div class="footnote-list">
+<div class="footnote" id="fn-operation" epub:type="footnote"><p class="footnote"><span class="footnote-mark">[*2] </span>https://docs.databricks.com/en/delta/history.html#operation-metrics-keys</p></div>
+</div><!--/.footnote-list-->
+<div id="history" class="image">
+<img src="images/unitycatalog/history.png" alt="Deltaテーブルの履歴" class="img width-090per border" />
+<p class="caption">
+図2.7: Deltaテーブルの履歴
+</p>
+</div>
+
+<h4><a id="h2-3-1-6"></a>6. 依存関係(リネージュ)</h4>
+<ul>
+<li>Unity Catalog使用すると、 Databricksでクエリ間のデータリネージをキャプチャできます。
+</li>
+<li>リネージはすべての言語でサポートされており、列レベルまでキャプチャされます。
+</li>
+<li>リネージ データには、クエリに関連するデータベース、ワークフロー、ダッシュボードが含まれます。 
+</li>
+<li>リネージは、ほぼリアルタイムで Catalog Explorer で視覚化でき、リネージ システムテーブルとDatabricks REST APIを使用してプログラムで取得できます。
+</li>
+<li>リネージは、 Unity Catalogメタストアにアタッチされているすべてのワークスペースにわたって集約されます。
+</li>
+<li>つまり、あるワークスペースでキャプチャされたリネージを、そのメタストアを共有する他のワークスペースで表示することが可能です。 
+</li>
+<li>ユーザーはリネージ データを表示するための適切な権限を持っている必要があります。 
+</li>
+<li>リネージデータは1年間保存されます。
+</li>
+</ul>
+<div id="lineage" class="image">
+<img src="images/unitycatalog/lineage.png" alt="Unity Catalogによるリネージュ" class="img width-090per border" />
+<p class="caption">
+図2.8: Unity Catalogによるリネージュ
+</p>
+</div>
+
+<h4><a id="h2-3-1-7"></a>7. 洞察(インサイト)</h4>
+<ul>
+<li>インサイトタブでは、頻繁に使用されるクエリ、ダッシュボード、ノートブック、結合テーブルを表示できます。
+</li>
+<li>過去30日間の頻繁なクエリーとユーザーアクセスに関するレポートが表示されます。
+</li>
+</ul>
+<div id="insight" class="image">
+<img src="images/unitycatalog/insight.png" alt="テーブルのインサイト" class="img width-090per border" />
+<p class="caption">
+図2.9: テーブルのインサイト
+</p>
+</div>
+<div class="note">
+<h5>洞察(インサイト)の効果的な使い方</h5>
+<p>インサイトを活用することで、以下のような質問に答えることができます:</p>
+<ul>
+<li>このデータは信頼できるか？
+</li>
+<li>このデータを効果的に活用する方法は？
+</li>
+<li>このデータに関する質問に答えられるユーザーは誰か？
+</li>
+</ul>
+</div>
+
+<h4><a id="h2-3-1-8"></a>8. 品質(データ品質)</h4>
+<ul>
+<li>後述のレイクハウスモニタリングを用いることで、データ品質チェックを実施することができます。
+</li>
+</ul>
+
+<h3 class="symbol"><a id="h2-3-2"></a>② 非構造化データの管理</h3>
+<p>非構造化データは『ボリューム』機能を利用して管理することができます。ボリュームは、ファイルへのアクセス、保存、管理を行うための機能を提供します。『テーブル』が表形式のデータセットに対するガバナンスを提供する一方で、『ボリューム』は表形式以外のデータセットに対するガバナンスを提供します。</p>
+<p>ボリュームを使用することで、構造化データ、半構造化データ、非構造化データなど、あらゆる形式のファイルを格納することができます。またローカル ファイル システムにあるファイルのようにアクセスすることができます。</p>
+<p>ボリュームは、テーブルやビューなどと同様に、Unity Catalogのスキーマの配下で管理されます。</p>
+<div id="volume" class="image">
+<img src="images/unitycatalog/volume.png" alt="ボリュームによる非構造化データの管理" class="img width-090per border" />
+<p class="caption">
+図2.10: ボリュームによる非構造化データの管理
+</p>
+</div>
+
+<h4><a id="h2-3-2-1"></a>UIを用いたデータのアップロード</h4>
+<p>ボリュームはDatabricksのUIからデータをアップロードすることができます。</p>
+<p>ストレージロケーションを何も指定しない場合はマネージドストレージに格納され、特定のストレージの場所に保存したい場合は外部ロケーションを指定してデータを格納することが可能です。</p>
+<div id="upload" class="image">
+<img src="images/unitycatalog/upload.png" alt="ボリュームにデータをアップロードする" class="img width-090per border" />
+<p class="caption">
+図2.11: ボリュームにデータをアップロードする
+</p>
+</div>
+
+<h4><a id="h2-3-2-2"></a>実際にデータが格納されるオブジェクトストレージ (S3の場合)</h4>
+<ul>
+<li>データの格納場所を指定しない場合:
+<ul>
+<li>マネージドストレージにデータが格納される
+</li>
+</ul>
+</li>
+</ul>
+<div id="s3_volume" class="image">
+<img src="images/unitycatalog/s3_volume.png" alt="データの格納場所を指定しない場合" class="img width-090per border" />
+<p class="caption">
+図2.12: データの格納場所を指定しない場合
+</p>
+</div>
+<ul>
+<li>データの格納場所を指定した場合:
+<ul>
+<li>外部ロケーションに登録されたストレージの場所にデータが格納される
+</li>
+</ul>
+</li>
+</ul>
+<div id="s3_volume_ext" class="image">
+<img src="images/unitycatalog/s3_volume_ext.png" alt="データの格納場所を指定する場合" class="img width-090per border" />
+<p class="caption">
+図2.13: データの格納場所を指定する場合
+</p>
+</div>
+
+<h4><a id="h2-3-2-3"></a>ボリュームに格納されたデータへのアクセス</h4>
+<p>ボリュームに格納されたデータは<b>/Volumes/</b>から始まるパスでアクセス可能です。</p>
+<div class="caption-code">
+<span class="caption">ボリュームに格納されたデータへのアクセス</span>
+<pre class="list">pdf = pd.read_csv(&quot;/Volumes/ktksk_catalog_demo/db_loan_status/volume_csv/lending_club.csv&quot;, header=0)
+pdf.head()
+</pre>
+</div>
+<div id="pandas" class="image">
+<img src="images/unitycatalog/pandas.png" alt="ボリュームにアップロードされたデータを読み込む" class="img width-090per border" />
+<p class="caption">
+図2.14: ボリュームにアップロードされたデータを読み込む
+</p>
+</div>
+
+<h3 class="symbol"><a id="h2-3-3"></a>③ AIモデルの管理</h3>
+<p>Unity Catalogにモデルを登録することで、アクセス制御、監査、リネージュ、およびワークスペースを跨いだモデルのディスカバリーが可能になります。</p>
+<ul>
+<li>AIモデルに対してアクセス制御が可能（e.g. データサイエンティストに本番モデルへの読み取り専用アクセスを許可）
+</li>
+<li>AIモデルのリネージュ
+</li>
+<li>モデルのサービング
+</li>
+<li>モデルのバージョン管理
+</li>
+<li>モデルへのアノテーション(タグづけやディスクリプションの付与)
+</li>
+</ul>
+<div id="model" class="image">
+<img src="images/unitycatalog/model.png" alt="Unity Catalogに登録されたAIモデル" class="img width-090per border" />
+<p class="caption">
+図2.15: Unity Catalogに登録されたAIモデル
+</p>
+</div>
+<div id="model_lineage" class="image">
+<img src="images/unitycatalog/model_lineage.png" alt="Unity Catalogに登録されたAIモデルのリネージュ" class="img width-090per border" />
+<p class="caption">
+図2.16: Unity Catalogに登録されたAIモデルのリネージュ
+</p>
+</div>
+
+<h3 class="symbol"><a id="h2-3-4"></a>④ データ・AI資産のディスカバリー</h3>
+
+<h4><a id="h2-3-4-1"></a>LLMを用いたメタデータの自動付与</h4>
+<p>テーブルの所有者やテーブルを編集する権限を持つユーザーは、Unity Catalogで管理されている任意のテーブルやカラムに対してAI生成コメントを表示および追加できます。コメントは、テーブルスキーマや列名などのテーブルメタデータを考慮した大規模言語モデル（LLM）によって生成されます。</p>
+<div class="note">
+<h5>AI生成コメントは保存前にレビューすることをお勧めします</h5>
+<p>AIモデルによるコメント付与は常に正確であるとは限らないため、コメントは保存前にレビューする必要があります。AI生成コメントの誤りをチェックするために人の手によるレビューを推奨しています。</p>
+</div>
+<div id="table_comment" class="image">
+<img src="images/unitycatalog/table_comment.png" alt="自動生成されたテーブルコメント" class="img width-090per border" />
+<p class="caption">
+図2.17: 自動生成されたテーブルコメント
+</p>
+</div>
+<div class="note">
+<h5>生成されたコメントの日本語訳</h5>
+<p>lending_club_test テーブルには、レンディングクラブのローンデータセットのデータが含まれています。これにはローン金額、資金調達額、金利、期間、ローンステータスに関する情報が含まれます。このデータは、ローン実績の分析、ローン承認率の傾向の特定、異なるローン条件や金利がデフォルト率に与える影響の評価など、様々な目的に使用できます。また、借り手の人口統計学的特性やローン返済パターンの理解にも役立ちます。</p>
+</div>
+<div id="col_comment" class="image">
+<img src="images/unitycatalog/col_comment.png" alt="自動生成されたカラムのコメント" class="img width-090per border" />
+<p class="caption">
+図2.18: 自動生成されたカラムのコメント
+</p>
+</div>
+
+<h4><a id="h2-3-4-2"></a>オブジェクトの検索</h4>
+<p>UIの上部バーを使用してワークスペース内のテーブル、ノートブック、クエリ、ダッシュボード、アラート、ファイル、フォルダ、ライブラリ、ジョブ、リポジトリ、パートナー、およびマーケットプレイスのリストを検索することができます。</p>
+<div class="note">
+<h5>アクセス権限のないオブジェクトは検索結果に表示されません</h5>
+<p>自分がアクセス権を持っていないテーブル、ビュー、およびモデルは検索結果に表示されません。</p>
+</div>
+<div id="discover" class="image">
+<img src="images/unitycatalog/discover.png" alt="関連オブジェクトの検索" class="img width-090per border" />
+<p class="caption">
+図2.19: 関連オブジェクトの検索
+</p>
+</div>
+
+<h3 class="symbol"><a id="h2-3-5"></a>⑤ データ品質のモニタリング</h3>
+<p>データ品質のモニタリングは、データ分析に基づいて意思決定を行う企業にとって極めて重要です。Unity Catalogではレイクハウスモニタリングを用いることでデータ品質/AIモデルの監視を実施することができます。</p>
+
+<h4><a id="h2-3-5-1"></a>データ品質チェック</h4>
+<p>レイクハウスモニタリングは、Unity Catalog内のデータの整合性と信頼性を確保するために、さまざまな種類のデータ品質チェックを提供します。</p>
+<p>これらのチェックには以下が含まれます：</p>
+<ol start="1" type="1">
+<li><b>スナップショットプロファイル:</b>
+</li>
+</ol>
+<ul>
+<li>カタログ内のデータの定期的なスナップショットをとり、これらのスナップショットを比較することで、ユーザーはデータの変更や異常を特定できます。
+</li>
+<li>スナップショットは、予期しないデータの変更やデータ分布の急激な変化などの問題を検出するのに役立ちます。
+</li>
+</ul>
+<ol start="2" type="1">
+<li><b>時系列プロファイル:</b>
+</li>
+</ol>
+<ul>
+<li>タイムスタンプ列に基づいた時系列データセットを含むテーブルに使用します。
+</li>
+<li>時系列プロファイルは、時系列の時間ベースのウィンドウ全体でデータ品質のメトリクスを計算します。
+</li>
+</ul>
+<ol start="3" type="1">
+<li><b>推論プロファイル:</b>
+</li>
+</ol>
+<ul>
+<li>モデルのリクエストログを含むテーブルに使用します。
+</li>
+<li>各行がリクエストで、タイムスタンプ、モデル入力、対応する予測、および（オプションで）実際のラベルの列があります。
+</li>
+<li>推論プロファイルは、モデルのパフォーマンスとデータ品質のメトリクスを比較します。
+</li>
+</ul>
+
+<h4><a id="h2-3-5-2"></a>UIを用いてモニタリングを設定する</h4>
+<p>DatabricksのUIを用いてレイクハウスモニタリングを設定することができます。</p>
+<div id="monitor" class="image">
+<img src="images/unitycatalog/monitor.png" alt="レイクハウスモニタリングの設定" class="img width-080per border" />
+<p class="caption">
+図2.20: レイクハウスモニタリングの設定
+</p>
+</div>
+
+<h4><a id="h2-3-5-3"></a>モニタリングダッシュボードを確認する</h4>
+<p>レイクハウスモニタリングの設定を行うと、自動でモニタリングダッシュボードが作成されます。ダッシュボードからアラートを設定することも可能です。</p>
+<div id="dashboard" class="image">
+<img src="images/unitycatalog/dashboard.png" alt="モニタリングダッシュボード" class="img width-080per border" />
+<p class="caption">
+図2.21: モニタリングダッシュボード
+</p>
+</div>
+
+<h3 class="symbol"><a id="h2-3-6"></a>⑥ 監査</h3>
+<p>システムテーブルには、アカウントの運用データが格納されています。システムテーブルを利用することで、アカウント全体の履歴データを始めたとしたオブザーバビリティの確認が可能です。</p>
+<p>また監査ログとは異なり、データはDatabricksがホストするオブジェクトストレージに格納されます。</p>
+<div class="note">
+<h5>システムテーブルを有効化するには</h5>
+<p>システムテーブルにアクセスするには、ワークスペースでUnity Catalogを有効にする必要があります。またシステムテーブルはアカウント管理者によって有効化する必要があります。 SystemSchemas APIを使用してシステムテーブルを有効にすることができます。</p>
+</div>
+<div id="systemtable" class="image">
+<img src="images/unitycatalog/systemtable.png" alt="システムテーブルの種類" class="img width-090per border" />
+<p class="caption">
+図2.22: システムテーブルの種類
+</p>
+</div>
+
+<h4><a id="h2-3-6-1"></a>システムテーブルへのアクセス</h4>
+<p>全てのシステムテーブルは、Unity Catalogのsystemというカタログ配下から参照できます。テーブル形式で監査ログが格納されているため、SQLでアクセス/分析をすることができます。</p>
+<div class="caption-code">
+<span class="caption">システムテーブルへのアクセス</span>
+<pre class="list">SELECT
+  *
+FROM
+  system.billing.usage
+ORDER BY
+  usage_end_time desc
+LIMIT
+  1000
+
+</pre>
+</div>
+<div id="query_result_system" class="image">
+<img src="images/unitycatalog/query_result_system.png" alt="billing.usageへクエリ" class="img width-080per border" />
+<p class="caption">
+図2.23: billing.usageへクエリ
+</p>
+</div>
+
+<h3 class="symbol"><a id="h2-3-7"></a>⑦ Lakehouse Federationによる外部データベースシステムのミラーリング</h3>
+<p>『クエリフェデレーション』という用語は、すべてのデータを単一の統合システムに格納することなく、ユーザーとシステムが複数のデータベースに分散配置されたデータに対してクエリを実行できるようにする機能を意味しています。</p>
+<p>DatabricksではUnity Catalog を使用した『Lakehouse Federation』と呼ばれるクエリフェデレーションの機能を提供しています。具体的には、クラスターにあらかじめインストールされているドライバーを使用して、一般的なデータベースソリューションへの読み取り専用接続を構成することができます。</p>
+<p>この機能を用いることで、データを移行することなくUnity Catalogによるデータガバナンスとインターフェイスの活用が可能になります。</p>
+<p>執筆時点でサポートされているデータベースは以下の通りです。(2024年5月現在)</p>
+<ul>
+<li>MySQL
+</li>
+<li>PostgreSQL
+</li>
+<li>Amazon Redshift
+</li>
+<li>Snowflake
+</li>
+<li>Microsoft SQL Server
+</li>
+<li>Azure Synapse (SQL Data Warehouse)
+</li>
+<li>Google BigQuery
+</li>
+<li>Databricks
+</li>
+</ul>
+<div class="miniblock miniblock-info">
+<p class="miniblock-caption">Lakehouse Federationを使用するユースケース</p>
+<p>Databricksでは、データの冗長性とサイロ化を軽減するためにデータを1箇所のクラウドストレージに統合する集中管理を重視しています.しかし実稼働環境では多数のデータシステムが存在していることから、さまざまな理由で分散配置されたシステム内のデータを直接クエリする必要がある場合があります。例えば以下のような場合です。</p>
+<ul>
+<li>S3などのオブジェクトストレージに格納されていないデータを使用したカスタムレポート
+</li>
+<li>実証検証作業
+</li>
+<li>新しいユースケースの探索フェーズ
+</li>
+<li>外部DBからの差分データ移行のワークロードのサポート　など
+</li>
+</ul>
+<p>これらの各シナリオでは、クエリフェデレーションを使用すると、適切な場所でデータ管理したままクエリを実行でき、複雑で時間のかかるデータ統合のための ETL 処理を回避できるため、より迅速にデータ分析を実行することができます。</p>
+<p>上記ユースケースに加え、次のような要件がある場合にも効果的です。</p>
+<ul>
+<li>オブジェクトストレージにデータを取り込まずに分析を実行したい場合
+</li>
+<li>クエリ実行時に外部データベースシステムのコンピューティングリソースを効率的に利用したい場合
+</li>
+<li>データを分散配置したまま、きめ細かいアクセス制御、データリネージ、検索などのデータガバナンスを適用したい場合
+</li>
+</ul>
+<p>Lakehouse Federationで登録した外部DBのテーブルは読み取り専用ではありますがDatabricksのDeltaテーブルと同様にアクセスが可能ですので様々なユースケースでの活用が可能です。</p>
+</div>
+
+<h4><a id="h2-3-7-1"></a>アクセス権限/テーブルセキュリティの設定</h4>
+<p>通常のテーブル同様にUnity CatalogでSQLまたはCatalog Explorerでアクセス権限を一元的に付与・管理することが可能です。</p>
+<div id="fed_bq" class="image">
+<img src="images/unitycatalog/fed_bq.png" alt="Google BigQueryをLakehouse Federationで登録する" class="img width-080per border" />
+<p class="caption">
+図2.24: Google BigQueryをLakehouse Federationで登録する
+</p>
+</div>
+
+<h4><a id="h2-3-7-2"></a>クエリフェデレーションの実行</h4>
+<p>ローカルテーブルと同じようにDatabricksの各ツールから読み取り専用テーブルとしてクエリを実行することが可能です。またDatabricks内のテーブルや他のDBをデータソースとするフェデレーションテーブルとの結合処理も可能です。</p>
+<p>クエリ実行時はオプティマイザがリモートDBで実行可能なSQL操作をプッシュダウン(フィルタリングや集計など実行可能な処理はリモートDB側で実行）することで、必要な計算済みデータセットのみ返却されるためDatabricksへの無駄なデータ転送は発生しません。</p>
+<p>サポートされているプッシュダウンは接続している各DBにより異なりますので、詳細はドキュメントをご覧ください。</p>
+<div id="query_fed" class="image">
+<img src="images/unitycatalog/query_fed.png" alt="外部DBへプッシュダウンする" class="img width-080per border" />
+<p class="caption">
+図2.25: 外部DBへプッシュダウンする
+</p>
+</div>
+
+<h4><a id="h2-3-7-3"></a>マテリアライズド ビューを用いたプロダクション化</h4>
+<p>フェデレーションテーブルへのアクセスはプッシュダウンにより最適化されていますが、クエリ実行の都度、リモートDBで処理を実行し結果セットのデータ転送が実行されるためユースケースによっては期待するレスポンスが得られない場合があります。</p>
+<p>また、プロダクションでの利用時はリモートデータベースへの負荷を考慮する必要もございます。</p>
+<p>プロダクション化において上記の課題がある場合には、要件に応じてマテリアライズドビューの利用を検討してください。マテリアライズドビューは名前の通り、クエリに使用できるベーステーブルの事前計算済みのデータセット保持するビューであり、定期的なリフレッシュによってアップストリームのデータセットの変更を反映させることができます。マテリアライズドビューを定期的にリモートデータベースの最新データを保持するデータキャッシュとして使用することで、リモートデータベースへのクエリ負荷を軽減しながら、Databricks上のクエリパフォーマンスを向上させることが可能です。</p>
+<div class="caption-code">
+<span class="caption">Lakehouse Federationを用いてマテリアライズドビューを作成</span>
+<pre class="list">CREATE MATERIALIZED VIEW materialized_view AS
+SELECT
+  *
+FROM
+  ktksk_catalog_bigquery.ktksk_db.lending_club;
+</pre>
+</div>
+<div id="uc_mateview" class="image">
+<img src="images/unitycatalog/uc_mateview.png" alt="Unity Catalogに登録されたマテリアライズドビュー" class="img width-080per border" />
+<p class="caption">
+図2.26: Unity Catalogに登録されたマテリアライズドビュー
+</p>
+</div>
+<p>またUnity CatalogはLakehouse Federationで接続したデータベースを含めたリネージュを可視化することができます。</p>
+<div id="fed_lineage" class="image">
+<img src="images/unitycatalog/fed_lineage.png" alt="BigQueryを含めたリネージュ" class="img width-080per border" />
+<p class="caption">
+図2.27: BigQueryを含めたリネージュ
+</p>
+</div>
+
+<h3 class="symbol"><a id="h2-3-8"></a>⑧ Delta Sharingによるデータ共有</h3>
+<p>Delta Sharingは、Databricksが開発したオープンプロトコルで、使用しているコンピューティングプラットフォームに関係なく、他の組織と安全にデータを共有するためのものです。</p>
+<p>Delta Sharingを使用してデータを共有する方法は3つあります：</p>
+<div id="deltashare" class="image">
+<img src="images/unitycatalog/deltashare.png" alt="Delta Sharingのシナリオ" class="img border" />
+<p class="caption">
+図2.28: Delta Sharingのシナリオ
+</p>
+</div>
+
+<h4><a id="h2-3-8-1"></a>1. Databricks-to-Databricks共有プロトコル:</h4>
+<p>Unity Catalog対応のDatabricksワークスペースから、同じくUnity Catalog対応のDatabricksワークスペースを持つユーザーとデータやAI資産を共有する方法です。</p>
+<p>この方法では、Databricksに組み込まれたDelta Sharingサーバーを使用します。ノートブック共有、Unity Catalogのボリューム共有、AIモデル共有、データガバナンス、監査、および使用状況のリネージュなどをサポートします。Unity Catalogとの統合により、データプロバイダー(提供者)とデータ受信者の両方にとって設定とガバナンスが簡素化され、パフォーマンスが向上します。</p>
+<div id="ds_dbx" class="image">
+<img src="images/unitycatalog/ds_dbx.png" alt="Databricks上でデータ共有を行う方法" class="img width-080per border" />
+<p class="caption">
+図2.29: Databricks上でデータ共有を行う方法
+</p>
+</div>
+
+<h4><a id="h2-3-8-2"></a>2. Databricksオープン共有プロトコル:</h4>
+<p>Unity Catalog対応のDatabricksワークスペースで管理している表形式データを、任意のコンピューティングプラットフォームのユーザーと共有する方法です。</p>
+<p>この方法もDatabricksに組み込まれたDelta Sharingサーバーを使用し、Databricksを使用していないユーザーや、Unity Catalog対応のDatabricksワークスペースにアクセスできないユーザーとデータを共有する場合に便利です。提供者側のUnity Catalogとの統合により、提供者にとって設定とガバナンスが簡素化されます。</p>
+<div id="ds_protocol" class="image">
+<img src="images/unitycatalog/ds_protocol.png" alt="Delta Sharingの仕組み" class="img width-080per border" />
+<p class="caption">
+図2.30: Delta Sharingの仕組み
+</p>
+</div>
+
+<h4><a id="h2-3-8-3"></a>3. オープンソースのDelta Sharingサーバーを利用したデータ共有:</h4>
+<p>Databricksを使用しているかどうかに関係なく、任意のプラットフォーム間でデータを共有する方法です。詳細については、github.com/delta-io/delta-sharing を参照してください。</p>
+
+<h2 class="grayback"><a id="h2-4"></a><span class="secno">2.4</span> Unity Catalog のアーキテクチャ</h2>
+
+<h3 class="symbol"><a id="h2-4-1"></a>ストレージのロケーション</h3>
+
+<h4><a id="h2-4-1-1"></a>1. マネージドストレージ:</h4>
+<ul>
+<li>マネージドテーブルは、メタストアの作成時に設定されたデフォルトのルートストレージロケーションに格納されます。
+</li>
+<li>オプションとして、カタログレベルまたはスキーマレベルで特定のマネージドストレージを設定し、ルートストレージロケーションを上書きすることができます。
+</li>
+</ul>
+<div id="uc_managed" class="image">
+<img src="images/unitycatalog/uc_managed.png" alt="マネージドストレージの上書き" class="img width-090per border" />
+<p class="caption">
+図2.31: マネージドストレージの上書き
+</p>
+</div>
+
+<h4><a id="h2-4-1-2"></a>2. 外部ロケーション:</h4>
+<ul>
+<li>外部テーブル、外部ボリューム、マネージド ストレージの基になるクラウド ストレージへのアクセスを管理するためのオブジェクト。
+</li>
+<li>外部ロケーションにはストレージ資格情報とクラウドストレージパスへの参照が格納されています。
+</li>
+</ul>
+<div id="ext_loc" class="image">
+<img src="images/unitycatalog/ext_loc.png" alt="外部ロケーションの設定" class="img width-080per border" />
+<p class="caption">
+図2.32: 外部ロケーションの設定
+</p>
+</div>
+<div id="dif_storage" class="table">
+<p class="caption">表2.1: ストレージロケーションの違い</p>
+<table>
+<tr class="hline"><th>特徴/側面</th><th>マネージドストレージ</th><th>外部ロケーション</th></tr>
+<tr class="hline"><td>ライフサイクル管理</td><td>Databricksが管理</td><td>外部で管理</td></tr>
+<tr class="hline"><td>データの削除</td><td>テーブルが削除時に自動削除</td><td>テーブル削除時もデータは保持</td></tr>
+<tr class="hline"><td>ファイル形式</td><td>Delta Lake</td><td>Delta、CSV、JSON、Avroなど多形式</td></tr>
+<tr class="hline"><td>最適化</td><td>Z-orderなどの自動最適化</td><td>Databricksによる自動最適化はなし</td></tr>
+<tr class="hline"><td>アクセスの柔軟性</td><td>Databricksからに限定</td><td>外部ツールやシステムからもアクセス可能</td></tr>
+<tr class="hline"><td>ユースケース</td><td>Databricks内でデータを管理するのに最適</td><td>既存のデータエコシステムとの統合に最適</td></tr>
+</table>
+</div>
+
+<h3 class="symbol"><a id="h2-4-2"></a>Unity Catalogで管理されるオブジェクト</h3>
+<div id="uc_object" class="image">
+<img src="images/unitycatalog/uc_object.png" alt="データオブジェクト一覧" class="img border" />
+<p class="caption">
+図2.33: データオブジェクト一覧
+</p>
+</div>
+
+<h4><a id="h2-4-2-1"></a>メタストア</h4>
+<ul>
+<li>メタストアはUnity Catalog内のオブジェクトのトップレベルコンテナです。
+</li>
+<li>データとAI資産、およびそれらへのアクセスを管理するための権限に関するメタデータを登録します。
+</li>
+<li>Databricksのアカウント管理者は、各地域ごとに1つのメタストアを作成し、同じ地域内のDatabricksワークスペースに割り当てる必要があります。
+</li>
+<li>ワークスペースがUnity Catalogを使用するには、Unity Catalogメタストアが接続されている必要があります。
+</li>
+</ul>
+<div id="meta_3" class="image">
+<img src="images/unitycatalog/meta_3.png" alt="メタストア配下の構造" class="img border" />
+<p class="caption">
+図2.34: メタストア配下の構造
+</p>
+</div>
+<div class="note">
+<h5>Hiveメタストアとは異なります</h5>
+<ul>
+<li>メタストアは、Unity Catalogが有効になっていないDatabricksワークスペースに含まれるHiveメタストアとは異なります。
+</li>
+<li>ワークスペースにレガシーのHiveメタストアが含まれている場合、そのメタストア内のデータは、Unity Catalogで定義されたデータと並行して、hive_metastoreというカタログに表示されます。
+</li>
+<li>hive_metastoreカタログはUnity Catalogによって管理されず、Unity Catalogで定義されたカタログと同じ機能セットは提供されません。
+</li>
+</ul>
+</div>
+
+<h4><a id="h2-4-2-2"></a>カタログ</h4>
+<ul>
+<li>カタログはUnity Catalogの三層の名前空間の最初のレイヤーです。
+</li>
+<li>データとAI資産を整理するために使用されます。
+</li>
+</ul>
+<div id="uc_3" class="image">
+<img src="images/unitycatalog/uc_3.png" alt="Unity Catalogの3層構造" class="img border" />
+<p class="caption">
+図2.35: Unity Catalogの3層構造
+</p>
+</div>
+<p>カタログには、「スタンダードカタログ」と「外部カタログ」の2種類があります。「スタンダードカタログ」と「外部カタログ」の大きな違いはLakehouse Federationを使用しているかどうかです。</p>
+<ol start="1" type="1">
+<li><b>スタンダードカタログ:</b>
+</li>
+</ol>
+<ul>
+<li>Lakehouse Federationを除くすべてのユースケースの場合に用いるカタログ
+</li>
+</ul>
+<ol start="2" type="1">
+<li><b>外部カタログ:</b>
+</li>
+</ol>
+<ul>
+<li>Lakehouse Federationによる外部データベースシステムのミラーリングに用いるカタログ
+</li>
+</ul>
+
+<h4><a id="h2-4-2-3"></a>スキーマ</h4>
+<ul>
+<li>スキーマ（データベースとも呼ばれます）は、Unity Catalogの三層の名前空間の第二レイヤーです。
+</li>
+<li>スキーマはテーブルとビューを整理します。
+</li>
+<li>ユーザーは、USE SCHEMA権限が割り当てられているすべてのスキーマ、およびスキーマの親カタログに対するUSE CATALOG権限を持っています。
+</li>
+</ul>
+
+<h4><a id="h2-4-2-4"></a>テーブル</h4>
+<ul>
+<li>テーブルは、Unity Catalogの三層の名前空間の第三レイヤーに位置します。
+</li>
+</ul>
+<p>テーブルには、「マネージドテーブル」と「外部テーブル」の2種類があります。「マネージドテーブル」と「外部テーブル」の大きな違いは「パスを指定してテーブルを保存するかどうか」です。</p>
+<ol start="1" type="1">
+<li><b>マネージドテーブル:</b>
+</li>
+</ol>
+<ul>
+<li><b>パスを指定せずに</b>マネージドストレージ配下に保存したテーブル。
+</li>
+<li>マネージドテーブルは、Unity Catalogでテーブルを作成する推奨方法です。
+</li>
+<li>Unity Catalogは、これらのテーブルのライフサイクルとファイルレイアウトを管理し、パフォーマンスを自動的に最適化します。
+</li>
+<li>Databricks以外のツールを使用して、マネージドテーブル内のファイルを直接操作することは非推奨です。
+</li>
+<li>マネージドテーブルは常にDeltaテーブル形式を使用します。
+</li>
+<li>マネージドテーブルを削除すると、データは30日以内にクラウドテナントから削除されます。
+</li>
+</ul>
+<div class="note">
+<h5>マネージドテーブルを誤って削除してしまった場合は？</h5>
+<p>UNDROPコマンドを用いることで、Unity Catalogにあるマネージドテーブルまたは外部テーブルが誤って削除された場合に回復することができます。このコマンドはデフォルトで、指定されたテーブル名のユーザーが所有する最も最近削除されたテーブルを復元します。親スキーマとカタログは存在している必要があります。この機能は、削除されたテーブルを7日間の保持期間内に復元することをサポートしています。</p>
+</div>
+<ol start="2" type="1">
+<li><b>外部テーブル:</b>
+</li>
+</ol>
+<ul>
+<li><b>パスを指定して</b>保存したテーブル。
+</li>
+<li>外部テーブルは、Unity Catalogがデータのライフサイクルやファイルレイアウトを管理しないテーブルです。
+</li>
+<li>外部テーブルを削除しても、Unity Catalogはベースとなるデータを削除しません。
+</li>
+</ul>
+<div class="note">
+<h5>外部テーブルを用いるユースケース</h5>
+<p>外部テーブルの利用例には、以下のものがあります：</p>
+<ul>
+<li>大量の既存データをUnity Catalogに登録する場合
+</li>
+<li>DatabricksクラスターやDatabricks SQLウェアハウス以外のツールを使用してデータに直接アクセスする必要がある場合
+</li>
+</ul>
+</div>
+
+<h4><a id="h2-4-2-5"></a>ボリューム</h4>
+<p>ボリュームは、ファイルへのアクセス、保存、管理の機能を提供しています。</p>
+<p>ボリュームには、「マネージドボリューム」と「外部ボリューム」の2種類があります。「マネージドボリューム」と「外部ボリューム」の大きな違いはデータの保存される場所です。</p>
+<ol start="1" type="1">
+<li><b>マネージドボリューム:</b>
+</li>
+</ol>
+<ul>
+<li><b>マネージドロケーション</b>内に作成されるストレージボリューム。
+</li>
+<li>外部ロケーションやストレージクレデンシャルのオーバーヘッドなしに、ファイル操作のためのマネージドストレージを作成できます。
+</li>
+<li>ボリュームを作成する際にストレージの場所を指定する必要はありません。
+</li>
+<li>すべてのファイルアクセスはUnity Catalogが管理するパスを通じて行われます。
+</li>
+<li>マネージドボリュームを削除すると、このボリュームに保存されているファイルも30日以内にクラウドテナントから削除されます。
+</li>
+</ul>
+<ol start="2" type="1">
+<li><b>外部ボリューム:</b>
+</li>
+</ol>
+<ul>
+<li><b>外部ロケーション</b>内のディレクトリに登録されたストレージボリューム。
+</li>
+<li>既存のクラウドオブジェクトストレージディレクトリにUnity Catalogデータガバナンスを追加することができます。
+</li>
+<li>外部ボリュームを削除しても、Unity Catalogは外部ロケーション内のデータを削除しません。
+</li>
+</ul>
+<div class="note">
+<h5>外部ボリュームを使用するユースケース</h5>
+<p>外部ボリュームの利用例には、以下のものがあります：</p>
+<ul>
+<li>データファイルを移行せずにガバナンスを追加したい。
+</li>
+<li>他のシステムによって生成され、Databricksによって取り込まれるかアクセスされる必要があるファイルを管理したい。
+</li>
+<li>Databricksによって生成され、他のシステムがクラウドオブジェクトストレージから直接アクセスする必要があるデータを管理したい。
+</li>
+</ul>
+</div>
+
+<h2 class="grayback"><a id="h2-5"></a><span class="secno">2.5</span> おわりに</h2>
+<p>今回はUnity Catalogについてまとめました。Databricksの核となる機能なので、ぜひ使ってみてください！</p>
+
+        </main>
+        <nav class="page-navi">
+          <a href="dbsql-general.html" class="page-prev">&#9664;</a>
+          <a href="data-engineering.html" class="page-next">&#9654;</a>
+        </nav>
+        <footer>
+        </footer>
+      </div>
+    </div>
+  </body>
+</html>
+<!-- layout.html5.erb -->

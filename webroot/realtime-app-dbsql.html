@@ -1,0 +1,467 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Databricks SQLとRaspberry Piを使ってIoTデータダッシュボードを作る | はじめてのデータウェアハウス</title>
+    <link rel="stylesheet" type="text/css" href="css/normalize.css" />
+    <link rel="stylesheet" type="text/css" href="css/webstyle.css" />
+    <link rel="next" title="Databricks SQLの拡張機能" href="SQLextention.html">
+    <link rel="prev" title="Lakeviewによるデータ可視化とBIダッシュボード" href="lakeview.html">
+    <meta name="generator" content="Re:VIEW Starter">
+  </head>
+  <body>
+    <div class="page-outer">
+      <nav class="side-content">
+                <a class="nav-title" href="index.html">はじめてのデータウェアハウス</a>
+<ul class="toc toc-1">
+    <li class="toc-chapter"><a href="./preface.html">まえがき</a></li>
+    <li class="toc-chapter"><a href="./dbsql-general.html">1 Databricks SQL の概要</a></li>
+    <li class="toc-chapter"><a href="./unitycatalog.html">2 Unity Catalogではじめるデータマネジメント</a></li>
+    <li class="toc-chapter"><a href="./data-engineering.html">3 データエンジニアリング</a></li>
+    <li class="toc-chapter"><a href="./lakeview.html">4 Lakeviewによるデータ可視化とBIダッシュボード</a></li>
+    <li class="toc-chapter"><a href="./realtime-app-dbsql.html">5 Databricks SQLとRaspberry Piを使ってIoTデータダッシュボードを作る</a>
+      <ul class="toc toc-2">
+        <li class="toc-section"><a href="#h5-1">5.1 はじめに</a></li>
+        <li class="toc-section"><a href="#h5-2">5.2 要件</a></li>
+        <li class="toc-section"><a href="#h5-3">5.3 概要</a></li>
+        <li class="toc-section"><a href="#h5-4">5.4 手順詳細</a></li>
+        <li class="toc-section"><a href="#h5-5">5.5 おわりに</a></li>
+      </ul>
+    </li>
+    <li class="toc-chapter"><a href="./SQLextention.html">6 Databricks SQLの拡張機能</a></li>
+    <li class="toc-chapter"><a href="./dbsql-perf-tuning.html">7 Databricks SQL パフォーマンス・チューニング Tips</a></li>
+    <li class="toc-chapter"><a href="./dbsql-serverless-nw-security.html">8 Databricks SQLサーバーレスのネットワークセキュリティ</a></li>
+    <li class="toc-chapter"><a href="./dbsql-migration.html">9 既存データウェアハウスからDatabricksへの実践的な移行方法と成功のためのヒント</a></li>
+    <li class="toc-chapter"><a href="./DBRX.html">データブリックスが作った新しいLLM「DBRX」って、一体どんなモデル？</a></li>
+    <li class="toc-chapter"><a href="./contributors.html">著者紹介</a></li>
+</ul>
+      </nav>
+      <div class="page-inner">
+        <header class="page-header">
+        </header>
+        <main class="page-main">
+<h1 class="boldlines center twolines"><a id="h5"></a><span class="secno">第5章</span> <br/>Databricks SQLとRaspberry Piを使ってIoTデータダッシュボードを作る</h1>
+<div id="arai_image1" class="image">
+<img src="images/realtime-app-dbsql/arai_image1.png" alt="作成するIoTデータダッシュボード（サンプル）" class="img width-090per border" />
+<p class="caption">
+図5.1: 作成するIoTデータダッシュボード（サンプル）
+</p>
+</div>
+
+<h2 class="grayback"><a id="h5-1"></a><span class="secno">5.1</span> はじめに</h2>
+<p>本書を手に取っていただいている皆さんは普段どのようなデータを取り扱っていますでしょうか。</p>
+<p>皆様の会社や職種によって、テキストデータや財務データ、構造化データもあれば非構造化データもなど多岐に渡るかと思います。その中でも製造業に従事されていた方々はIoTデータを取り扱われる方も多くいらっしゃるかと思います。</p>
+<p>時事刻々と生まれるIoTデータを活用すると、即時的にデータドリブンな意思決定に繋がります。一方でリアルタイムにデータを収集、取り扱いに苦慮している方々も多い印象です。</p>
+<p>この記事では、DatabricksとRaspberry Piを組み合わせてIoTデータダッシュボードを構築する方法を解説します。具体的には、Raspberry Piでのセンサーデータの収集方法から始め、データのDatabricks SQLへの送信、加工、そしてダッシュボードを通じたリアルタイム分析までをカバーします。この記事を通じて、IoTデータ活用の糸口を見出していただけますと幸いです。</p>
+
+<h2 class="grayback"><a id="h5-2"></a><span class="secno">5.2</span> 要件</h2>
+<p>本章の手順を実施するにあたって必要な要件をまとめておきます。下記を事前にご確認ください。</p>
+<ul>
+<li>Databricksのワークスペースにログインできて、NotebookとDatabricks SQLが使えること
+</li>
+<li>DatabricksのUnity Catalogが有効化されていること
+</li>
+<li>Azure Portalにログイン、ストレージアカウントを作成できること
+</li>
+</ul>
+
+<h2 class="grayback"><a id="h5-3"></a><span class="secno">5.3</span> 概要</h2>
+<p>簡単に作るもののアーキテクチャをご紹介すると下図のようになります。それぞれの詳細な説明に移る前に、簡単にそれぞれのレイヤーで何をやっているか紹介します。</p>
+<p>Databricksはメダリオンアーキテクチャという、下記の流れでデータを加工する方針を推奨しております。</p>
+<ul>
+<li>データソース
+</li>
+<li>Bronzeデータ：生データ
+</li>
+<li>Silverデータ：整形されたデータ
+</li>
+<li>Goldデータ：集計されたデータ
+</li>
+</ul>
+<div id="arai_image2" class="image">
+<img src="images/realtime-app-dbsql/arai_image2.png" alt="全体のアーキテクチャ" class="img" />
+<p class="caption">
+図5.2: 全体のアーキテクチャ
+</p>
+</div>
+
+<h3 class="symbol"><a id="h5-3-1"></a>収集</h3>
+<p>このフェーズではマイクロソフト社が用意しているRaspberry Piシミュレータを使用してIoTデータ取得を行います。また、シミュレータから取得されるデータをAzure IoT Hubを介してAzure Data Lake Storage (ADLS) に取り込みます。</p>
+<ul>
+<li>Raspberry Piシミュレータ：マイクロソフト社が提供するRaspberry Piの動作をWeb上で実現できるシミュレータ
+</li>
+<li>Azure IoT Hub：IoTデバイスとクラウドを連携するためのメッセージハブ
+</li>
+<li>Azure Data Lake Storage：ビッグデータ分析用のスケーラブルで費用対効果の高いストレージ
+</li>
+</ul>
+
+<h3 class="symbol"><a id="h5-3-2"></a>生データ取り込み</h3>
+<p>ADLSコンテナからIoTデータ（JSON形式）をDeltaテーブル形式、bronze_sensorsテーブルという名前で格納します。Databricksの自動取り込み機能（AutoLoader）を使ってデータを追加していきます。</p>
+<ul>
+<li>Deltaテーブル形式：ビッグデータワークロードに適したオープンソースのストレージフォーマット 
+</li>
+<li>Databricks Autoloader：クラウドのオブジェクトストレージに格納されたデータを検出して自動で取り込む機能
+</li>
+</ul>
+
+<h3 class="symbol"><a id="h5-3-3"></a>データ整形</h3>
+<p>リアルタイムで入ってくるIoTの生データ（bronze_sensors）を整形して、silver_sensorsテーブルという名前で格納します。ウォーターマークという機能を使って遅れてくるセンサーデータへの対応も考慮します。</p>
+
+<h3 class="symbol"><a id="h5-3-4"></a>データ集計</h3>
+<p>クレンジングされたIoTデータ（silver_sensorsテーブル）を加工して最終的に参照するgold_sensorsという名前でVIEWとして格納します。</p>
+
+<h3 class="symbol"><a id="h5-3-5"></a>可視化</h3>
+<p>整形されたデータをDatabricksのダッシュボード機能を使って可視化します。</p>
+<ul>
+<li>Databricks ダッシュボード：Databricks上でデータを可視化できるBIツール
+</li>
+</ul>
+<p>ここまでで概略として、どのようなソリューションを構築していくかのイメージを掴んでいただけましたら幸いです。それでは、次節からそれぞれのステップの詳細を紐解いていきます。</p>
+
+<h2 class="grayback"><a id="h5-4"></a><span class="secno">5.4</span> 手順詳細</h2>
+
+<h3 class="symbol"><a id="h5-4-1"></a>①収集</h3>
+<p>幸いなことに、この手順はマイクロソフト社が提供しているマニュアルに記載されています。以下の文書を参考にして、Azure IoT Hubを自分で作成し、シミュレートされたRaspberry Pi環境からセンサーデータのストリーミングを開始することができます。</p>
+<div id="arai_image3" class="image">
+<img src="images/realtime-app-dbsql/arai_image3.png" alt="Raspberry Piシミュレータ" class="img width-090per" />
+<p class="caption">
+図5.3: Raspberry Piシミュレータ
+</p>
+</div>
+<ul>
+<li>Raspberry PiオンラインシミュレータをAzure IoT Hubに接続する（Node.js使用）<br />https://learn.microsoft.com/ja-jp/azure/iot-hub/raspberry-pi-get-started
+</li>
+</ul>
+<p>また、IoT HubからデータをADLSに連携するためにStream Analyticsジョブを使用します。そちらの手順は下記のリンクに記載がありますので、こちらをご参照ください。</p>
+<ul>
+<li>Azureポータルを使用してStream Analyticsジョブを作成する<br />https://learn.microsoft.com/ja-jp/azure/stream-analytics/stream-analytics-quick-create-portal
+</li>
+</ul>
+<p>Stream Analyticsジョブが何かを端的に説明するとIoT HubとADLS間を連携してくれるサービスです。</p>
+<div id="arai_image_sa" class="image">
+<img src="images/realtime-app-dbsql/arai_image_sa.png" alt="Stream Analyticsジョブのイメージ" class="img" />
+<p class="caption">
+図5.4: Stream Analyticsジョブのイメージ
+</p>
+</div>
+<p>上記のステップまで完了すると、下図のようにADLSのコンテナ内にjson形式でファイルが作成されていることがわかります。</p>
+<div id="arai_image4" class="image">
+<img src="images/realtime-app-dbsql/arai_image4.png" alt="ADLSに格納されたJSON形式ファイル" class="img" />
+<p class="caption">
+図5.5: ADLSに格納されたJSON形式ファイル
+</p>
+</div>
+<p>ここでJSONファイルをダウンロードして、中身を確認してみます。</p>
+<div id="arai_image5" class="image">
+<img src="images/realtime-app-dbsql/arai_image5.png" alt="JSON形式のセンサーデータ内容" class="img" />
+<p class="caption">
+図5.6: JSON形式のセンサーデータ内容
+</p>
+</div>
+<p>取得されているデータには下記のような要素が含まれていることがわかります。</p>
+<ul>
+<li>messageId: 各メッセージに固有のIDです。これにより、送信される各メッセージを識別し、追跡することが可能です。
+</li>
+<li>deviceId: そのメッセージが送信されたデバイスのIDです。このIDにより、どのデバイスがデータを送信したかを特定できます。
+</li>
+<li>temperature: 測定された温度の値です。このデータはセンサーから収集され、特定の時点での環境温度を表します。
+</li>
+<li>humidity: 測定された湿度の値です。この数値は空気中の水蒸気の割合を示し、環境の湿度状態を反映します。
+</li>
+<li>EventProcessedUtcTime: イベントが処理されたUTC時刻です。これはシステムがデータを受け取り、処理した正確な時刻を示します。
+</li>
+<li>PartitionId: イベントが保存されるパーティションのIDです。データの管理と検索を効率的に行うために使用されます。
+</li>
+<li>EventEnqueuedUtcTime: イベントがエンキューされたUTC時刻です。これはデータがIoT Hubに最初に送信された時刻を指します。
+</li>
+<li>IoTHub: メッセージが送信されるAzureのIoT Hubの名前や情報です。IoT Hubは、多数のデバイスからのデータを集約し、管理するクラウドプラットフォームの役割を果たします。
+</li>
+</ul>
+<p>上記が確認できたら本ステップは完了です。</p>
+
+<h3 class="symbol"><a id="h5-4-2"></a>②生データ取り込み</h3>
+<p>次にクラウドストレージから、Databricksにデータを読み込んでいきます。Azure IoT Hubからのデータをクラウドストレージに正常に取り込んだ後、次はそのデータをDatabricksで取り込んで検索や権限管理などガバナンスがきく形で格納しておきます。</p>
+<p>ここからDatabricksのNotebookを使って実際に作業をしていきます。ワークスペースにログイン後、左のパネルから「新規」→「ノートブック」に遷移してください。</p>
+<div id="arai_image6" class="image">
+<img src="images/realtime-app-dbsql/arai_image6.png" alt="Databricks Notebookを開く" class="img" />
+<p class="caption">
+図5.7: Databricks Notebookを開く
+</p>
+</div>
+<p>Notebookを開いた後にストレージアカウントを定義していきます。ここではストレージアカウントのアクセスキーを設定しております。また、spark.conf.set関数を使用して、Azure Blob Storageへのアクセスキーの設定情報をSparkのグローバル設定に追加しています。この設定により、後続のコードセルでAzure Blob Storageへのアクセスが可能になります。</p>
+<div class="caption-code">
+<span class="caption">ストレージアカウントの定義</span>
+<pre class="list">  storage_account_name = &quot;[storage_account_name]&quot;
+  storage_account_access_key = &quot;[storage_account_access_key]&quot;
+  # Spark
+  spark.conf.set(
+  &quot;fs.azure.account.key.&quot;+storage_account_name+&quot;.blob.core.windows.net&quot;,
+  storage_account_access_key)
+</pre>
+</div>
+<p>storage account access keyの取得方法については下記ドキュメントをご参照ください。<br />ストレージ アカウント アクセス キーを管理する <sup><a id="fnb-link2" href="#fn-link2" class="noteref" epub:type="noteref">*1</a></sup></p>
+<p>次に使用するカタログ・データベースを宣言します。Databricksではテーブル/VIEWの上の概念としてデータベース、その上にカタログが存在しており、どのカタログ・データベースで作業をするか宣言することができます。</p>
+<div class="caption-code">
+<span class="caption">使用するカタログ・データベースの宣言</span>
+<pre class="list">%sql
+  USE CATALOG [catalog_name];
+  CREATE DATABASE IF NOT EXISTS [database_name];
+  USE DATABASE [database_name];
+</pre>
+</div>
+<div class="footnote-list">
+<div class="footnote" id="fn-link2" epub:type="footnote"><p class="footnote"><span class="footnote-mark">[*1] </span>https://learn.microsoft.com/ja-jp/azure/storage/common/storage-account-keys-manage?tabs=azure-portal</p></div>
+</div><!--/.footnote-list-->
+<p>こちらでデータ取り込み前の準備は完了です。次にADLSに入ってきたデータをDatabricksに自動で読み込んでいきます。今回のデータセットはJSONファイルタイプですが、Databricksは構造化データだけではなく、非構造化データも含めてあらゆるタイプのデータ形式を処理することができます。</p>
+<p>下記のコードでは、指定されたAzure Blob Storageのパスからリアルタイムのストリーミングデータを読み込み、選択した列を含むDeltaテーブル（bronze_sensors）に書き込むためのストリーミングパイプラインを作成しています。</p>
+<div class="caption-code">
+<span class="caption">ADLSに入ってきたデータの取り込み</span>
+<pre class="list">from pyspark.sql.types import *
+from pyspark.sql.functions import *
+
+inputPath = &quot;wasbs://[container_name]@[storage_account_name].blob.core.windows.net/[directry_name]/&quot;
+bronze_checkpoint_location = &quot;[checkpoint_path_bronze]&quot; # ex.  &quot;/Volumes/koheiarai_demo/realtime_app/checkpoints/bronze/&quot;
+
+streamingInputDF = (
+    spark.readStream.format(&quot;cloudFiles&quot;)
+    .option(&quot;cloudFiles.format&quot;, &quot;text&quot;)
+    .option(&quot;cloudFiles.maxFilesPerTrigger&quot;, 100000)
+    .load(inputPath)
+    .selectExpr(
+        &quot;value:messageId::integer AS Message&quot;,
+        &quot;value:deviceId::string AS DeviceName&quot;,
+        &quot;value:temperature::float AS TempReading&quot;,
+        &quot;value:humidity::float AS HumidityReading&quot;,
+        &quot;value:EventProcessedUtcTime::timestamp AS EventTimestamp&quot;,
+        &quot;value:EventProcessedUtcTime::timestamp::date AS EventDate&quot;,
+        &quot;current_timestamp() AS ReceivedTimestamp&quot;,
+        &quot;input_file_name() AS InputFileName&quot;,
+        &quot;value&quot;,
+    )
+)
+
+(
+    streamingInputDF.writeStream.format(&quot;delta&quot;)
+    .outputMode(&quot;append&quot;)
+    .option(&quot;checkpointLocation&quot;, bronze_checkpoint_location)
+    .option(&quot;mergeSchema&quot;, &quot;true&quot;)
+    .trigger(
+        processingTime=&quot;2 seconds&quot;
+    )  ## processing_time = '2 seconds' for realtime version
+    .toTable(&quot;bronze_sensors&quot;)
+)
+</pre>
+</div>
+<p>具体的な動作を説明すると、以下の手順で実行されます。</p>
+<ul>
+<li>inputPath変数で指定されたAzure Blob Storageのパスから、cloudFiles形式でストリーミングデータを読み込みます。読み込むファイル形式や1回のトリガーで処理するファイル数などのオプションも指定されています。
+</li>
+<li>selectExprを使用して、読み込んだデータの特定の列を選択し、必要な形式やデータ型に変換します。例えば、value:X::Yの形式で列 X を Y のデータ型に変換しています。
+</li>
+<li>writeStreamを使用して、変換されたデータをDelta形式で書き込むための設定を行います。outputModeは&quot;append&quot;に設定されており、新しいデータが既存のDeltaテーブルに追加されることを意味しています。
+</li>
+<li>checkpointLocationオプションを使用して、ストリーミングクエリのチェックポイントの場所を指定します。この場所には、ストリーミングクエリの状態が保存され、再開や障害時の復旧が行われます。こちらにはDatabricksのVolumesなどを使用ください。
+</li>
+<li>triggerを使用して、ストリーミングクエリのトリガー間隔を設定します。この場合、2秒ごとにデータが処理されます。
+</li>
+<li>最後に、Deltaテーブルの名前をtoTableで指定し、ストリーミングデータを書き込みます。
+</li>
+</ul>
+<p>こちらが終了したら下図のようにDatabricksのアプリケーション上部にある検索ウィンドウに&quot;bronze_sensors&quot;テーブルと入力して、テーブルを検索してみてください。</p>
+<div id="arai_search_window" class="image">
+<img src="images/realtime-app-dbsql/arai_search_window.png" alt="テーブルやノートブックの検索ウィンドウ" class="img" />
+<p class="caption">
+図5.8: テーブルやノートブックの検索ウィンドウ
+</p>
+</div>
+<p>Databricks上でデータを確認できる、カタログエクスプローラーからサンプルデータが確認できていましたら成功です。問題なく生データが抽出・格納されていることがわかります。</p>
+<div id="arai_image7" class="image">
+<img src="images/realtime-app-dbsql/arai_image7.png" alt="bronze_sensorsテーブルのサンプルデータ" class="img width-090per" />
+<p class="caption">
+図5.9: bronze_sensorsテーブルのサンプルデータ
+</p>
+</div>
+<p>以上でこちらのステップは完了です。次にデータの整形に移ります。</p>
+
+<h3 class="symbol"><a id="h5-4-3"></a>③データ整形</h3>
+<p>実際のRaspberry Piセンサーはデータのサンプリング頻度が高いため、適切な粒度にデータをまとめる必要があります。ここではbronze_sensorデータをストリームデータとして読み込んで、データの整形を行なっていきます。これを実現するには、Databricksの構造化ストリーミング機能を使用して遅延して到着するデータを考慮するウォーターマーキングという機能を使用します。</p>
+<p>下記のコードではウォーターマーキングの設定と必要なカラム値の集約を行います。</p>
+<div class="caption-code">
+<span class="caption">使用するカタログ・データベースの宣言</span>
+<pre class="list">%sql
+bronze_df = (
+    spark.readStream.format(&quot;delta&quot;)
+    .table(&quot;bronze_sensors&quot;)
+    .withWatermark(&quot;EventTimestamp&quot;, &quot;10 minutes&quot;)
+)
+silver_checkpoint_location = (
+    &quot;[checkpoint_path_silver]&quot; # ex. /Volumes/koheiarai_demo/realtime_app/checkpoints/silver/
+)
+
+int_df = bronze_df.groupBy(
+    col(&quot;DeviceName&quot;), window(bronze_df.EventTimestamp, &quot;1 second&quot;).alias(&quot;EventWindow&quot;)
+).agg(
+    avg(col(&quot;TempReading&quot;)).cast(&quot;float&quot;).alias(&quot;TempReading&quot;),
+    avg(col(&quot;HumidityReading&quot;)).cast(&quot;float&quot;).alias(&quot;HumidityReading&quot;),
+    min(col(&quot;EventTimestamp&quot;)).cast(&quot;timestamp&quot;).alias(&quot;EventTimestamp&quot;),
+    min(col(&quot;EventDate&quot;)).cast(&quot;date&quot;).alias(&quot;EventDate&quot;),
+    min(col(&quot;ReceivedTimestamp&quot;)).cast(&quot;timestamp&quot;).alias(&quot;ReceivedTimestamp&quot;),
+    min(col(&quot;InputFileName&quot;)).alias(&quot;InputFileName&quot;),
+)
+
+(
+    int_df.writeStream.format(&quot;delta&quot;)
+    .trigger(processingTime=&quot;2 seconds&quot;)
+    .option(&quot;checkpointLocation&quot;, silver_checkpoint_location)
+    .outputMode(&quot;append&quot;)
+    .toTable(&quot;silver_sensors&quot;)
+)
+</pre>
+</div>
+<p>具体的には、次の手順で実行されます。</p>
+<ul>
+<li>bronze_sensors テーブルを Delta 形式として読み込みます。table 関数を使用して Delta テーブルを指定します。
+</li>
+<li>EventTimestamp カラムにウォーターマークを指定します。ウォーターマークは、イベント時間に基づいてデータを遅延処理するための制御ポイントです。下記の記事が参考になります。<br />
+</li>
+</ul>
+<p>Spark Structured Streaming で遅延データを処理する方法 <sup><a id="fnb-link1" href="#fn-link1" class="noteref" epub:type="noteref">*2</a></sup></p>
+<ul>
+<li>silver_checkpoint_location 変数で指定されたチェックポイントの場所にチェックポイントを格納します。チェックポイントは、ストリーミングクエリの状態を保存して、再起動や障害からの復帰を可能にします。
+</li>
+<li>bronze_df を基に、DeviceName 列とイベント時間のウィンドウ化 (1秒間) をグループ化し、集計を行います。
+</li>
+<li>集計された結果を int_df として取得し、必要なカラムのデータ型をキャストします。
+</li>
+<li>triggerを使用して、ストリーミングクエリのトリガー間隔を設定します。この場合、2秒ごとにデータが処理されます。
+</li>
+<li>最後に、Deltaテーブルの名前をtoTableで指定し、ストリーミングデータを書き込みます。
+</li>
+</ul>
+<div class="footnote-list">
+<div class="footnote" id="fn-link1" epub:type="footnote"><p class="footnote"><span class="footnote-mark">[*2] </span>https://developers.microad.co.jp/entry/2019/07/12/063000</p></div>
+</div><!--/.footnote-list-->
+<p>こちらが終了したらbronze_sensorsデータの際と同様に、&quot;silver_sensors&quot;テーブルを検索してみてください。カタログエクスプローラーからサンプルデータが下記のようなサンプルデータが確認できましたら成功です。EventWindowごとに温度や湿度、タイムスタンプが格納されていることがわかります。</p>
+<div id="arai_image8" class="image">
+<img src="images/realtime-app-dbsql/arai_image8.png" alt="silver_sensorsテーブルのサンプルデータ" class="img width-090per" />
+<p class="caption">
+図5.10: silver_sensorsテーブルのサンプルデータ
+</p>
+</div>
+<p>以上でこちらのステップは完了です。次にデータの集計に移ります。</p>
+
+<h3 class="symbol"><a id="h5-4-4"></a>④データ集計</h3>
+<p>最後にゴールドビューを作成します。下記のコードでは&quot;silver_sensors&quot;テーブルからデータを抽出し、&quot;gold_sensors&quot;というビューを作成または上書きしています。</p>
+<div class="caption-code">
+<span class="caption">使用するカタログ・データベースの宣言</span>
+<pre class="list">%sql
+  CREATE
+  OR REPLACE VIEW gold_sensors AS (
+    SELECT
+      date_trunc('second', EventTimestamp) AS TimestampSecond,
+      AVG(TempReading) OVER (
+        ORDER BY
+          EventTimestamp ROWS BETWEEN 7 PRECEDING
+          AND CURRENT ROW
+      ) AS Temperature_Moving_Average,
+      AVG(HumidityReading) OVER (
+        ORDER BY
+          EventTimestamp ROWS BETWEEN 7 PRECEDING
+          AND CURRENT ROW
+      ) AS Humidity_Moving_Average
+    FROM
+      silver_sensors
+  );
+</pre>
+</div>
+<p>具体的には、次の手順で実行されます。</p>
+<ul>
+<li>&quot;silver_sensors&quot;テーブルからデータを抽出し、新しいテーブルとして&quot;gold_sensors&quot;ビューを作成します。
+</li>
+<li>&quot;EventTimestamp&quot;列を秒単位で丸めた&quot;TimestampSecond&quot;列を作成します。
+</li>
+<li>&quot;Temperature_Moving_Average&quot;列と&quot;Humidity_Moving_Average&quot;列をそれぞれ計算します。これは、&quot;EventTimestamp&quot;列を基準に直近7つのデータを含むウィンドウを設定し、その範囲内での平均値を計算しています。
+</li>
+</ul>
+<p>こちらが終了したら&quot;gold_sensors&quot;テーブルを検索します。タイムスタンプごとに温度や湿度の移動平均が格納されていることがわかります。</p>
+<div id="arai_image9" class="image">
+<img src="images/realtime-app-dbsql/arai_image9.png" alt="gold_sensorsテーブルのサンプルデータ" class="img width-090per" />
+<p class="caption">
+図5.11: gold_sensorsテーブルのサンプルデータ
+</p>
+</div>
+
+<h3 class="symbol"><a id="h5-4-5"></a>⑤可視化</h3>
+<p>ゴールドレイヤーにビューが構築されたので、BIツール/ダッシュボードを使ってデータを可視化する準備が整いました。カタログエクスプローラーの&quot;gold_sensors&quot;テーブルから「ダッシュボード」をクリックしてください。</p>
+<div id="arai_image10" class="image">
+<img src="images/realtime-app-dbsql/arai_image10.png" alt="ダッシュボード作成" class="img" />
+<p class="caption">
+図5.12: ダッシュボード作成
+</p>
+</div>
+<p>テーブル形式でデータが表示されているかと思います。右上の可視化箇所において、右のパネルで下記のように設定します。</p>
+<ul>
+<li>可視化：折れ線
+</li>
+<li>X値：TimestampSecond
+</li>
+<li>Y値：Humidity_Moving_Average  
+</li>
+</ul>
+<p>下図のようにデータが見えたら完成です。それぞれの可視化は大きさ変更や場所の移動もできますので、色々な可視化に調整してみてください。</p>
+<div id="arai_image11" class="image">
+<img src="images/realtime-app-dbsql/arai_image11.png" alt="ダッシュボード作成" class="img width-090per" />
+<p class="caption">
+図5.13: ダッシュボード作成
+</p>
+</div>
+<p>ダッシュボードにはスケジュール実行機能があり、例えば1分ごとに更新するためには下図のように設定します。</p>
+<div id="arai_image12" class="image">
+<img src="images/realtime-app-dbsql/arai_image12.png" alt="ダッシュボード作成" class="img width-090per" />
+<p class="caption">
+図5.14: ダッシュボード作成
+</p>
+</div>
+<p>こちらでダッシュボード作成は完了です。Databricksのダッシュボード以外にもカスタムのWebアプリケーションを作成して、Databricks SQLに対してクエリを実行することもできます。</p>
+<div id="arai_image13" class="image">
+<img src="images/realtime-app-dbsql/arai_image13.jpeg" alt="Web Application" class="img width-090per" />
+<p class="caption">
+図5.15: Web Application
+</p>
+</div>
+<p>上記のようにWebアプリケーションでDatabricks SQLを使用する場合には下記のようなPython用Databricks SQLコネクタやREST APIを使用する方針があります。<br /></p>
+<ul>
+<li>Python 用 Databricks SQL コネクタ<br />https://learn.microsoft.com/ja-jp/azure/databricks/dev-tools/python-sql-connector<br />
+</li>
+<li>Statement Execution API: ウェアハウスで SQL を実行する<br />https://learn.microsoft.com/ja-jp/azure/databricks/dev-tools/sql-execution-tutorial
+</li>
+</ul>
+
+<h2 class="grayback"><a id="h5-5"></a><span class="secno">5.5</span> おわりに</h2>
+<p>いかがでしたでしょうか。Raspberry PiなどのIoTセンサーデータとDatabricks SQLを組み合わせることで、一気通貫で分析ソリューションを構築することができます。このIoTデータダッシュボードを使うことで、リモートからリアルタイムに機器の状態を監視でき、予防保全のユースケースを実現できます。製造業の皆様は勿論、エネルギー業界やWeb業界といった方々にも活用いただくヒントになりましたら幸いです。もし何かご質問などあればX(旧Twitter)やLinkedInまでお気軽にご連絡ください。</p>
+<ul>
+<li>X(旧Twitter)：https://twitter.com/cafe_engineer_
+</li>
+<li>LinkedIn：https://www.linkedin.com/in/kohei-arai-551355b3/
+</li>
+</ul>
+
+<h3 class="symbol"><a id="h5-5-1"></a>参考</h3>
+<ul>
+<li>Build Real-Time Production Data Apps with Databricks &amp; Plotly Dash<br />https://medium.com/plotly/build-real-time-production-data-apps-with-databricks-plotly-dash-269cb64b7575）</li>
+</ul>
+
+        </main>
+        <nav class="page-navi">
+          <a href="lakeview.html" class="page-prev">&#9664;</a>
+          <a href="SQLextention.html" class="page-next">&#9654;</a>
+        </nav>
+        <footer>
+        </footer>
+      </div>
+    </div>
+  </body>
+</html>
+<!-- layout.html5.erb -->

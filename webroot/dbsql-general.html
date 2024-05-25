@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Databricks SQL の概要 | はじめてのデータウェアハウス</title>
+    <link rel="stylesheet" type="text/css" href="css/normalize.css" />
+    <link rel="stylesheet" type="text/css" href="css/webstyle.css" />
+    <link rel="next" title="Unity Catalogではじめるデータマネジメント" href="unitycatalog.html">
+    <link rel="prev" title="まえがき" href="preface.html">
+    <meta name="generator" content="Re:VIEW Starter">
+  </head>
+  <body>
+    <div class="page-outer">
+      <nav class="side-content">
+                <a class="nav-title" href="index.html">はじめてのデータウェアハウス</a>
+<ul class="toc toc-1">
+    <li class="toc-chapter"><a href="./preface.html">まえがき</a></li>
+    <li class="toc-chapter"><a href="./dbsql-general.html">1 Databricks SQL の概要</a>
+      <ul class="toc toc-2">
+        <li class="toc-section"><a href="#h1-1">1.1 Databricks ってSQLもできるんです！</a></li>
+        <li class="toc-section"><a href="#h1-2">1.2 そのまえに・・・Databricksの概要紹介</a></li>
+        <li class="toc-section"><a href="#h1-3">1.3 Databricks SQL ・・・なんです！</a></li>
+        <li class="toc-section"><a href="#h1-4">1.4 Pro/Classic/Serverless どれにしたらいいの？</a></li>
+        <li class="toc-section"><a href="#h1-5">1.5 Serverless SQL って便利だねっ</a></li>
+        <li class="toc-section"><a href="#h1-6">1.6 Databricks SQL を使ってみよう！</a></li>
+        <li class="toc-section"><a href="#h1-7">1.7 まとめ</a></li>
+      </ul>
+    </li>
+    <li class="toc-chapter"><a href="./unitycatalog.html">2 Unity Catalogではじめるデータマネジメント</a></li>
+    <li class="toc-chapter"><a href="./data-engineering.html">3 データエンジニアリング</a></li>
+    <li class="toc-chapter"><a href="./lakeview.html">4 Lakeviewによるデータ可視化とBIダッシュボード</a></li>
+    <li class="toc-chapter"><a href="./realtime-app-dbsql.html">5 Databricks SQLとRaspberry Piを使ってIoTデータダッシュボードを作る</a></li>
+    <li class="toc-chapter"><a href="./SQLextention.html">6 Databricks SQLの拡張機能</a></li>
+    <li class="toc-chapter"><a href="./dbsql-perf-tuning.html">7 Databricks SQL パフォーマンス・チューニング Tips</a></li>
+    <li class="toc-chapter"><a href="./dbsql-serverless-nw-security.html">8 Databricks SQLサーバーレスのネットワークセキュリティ</a></li>
+    <li class="toc-chapter"><a href="./dbsql-migration.html">9 既存データウェアハウスからDatabricksへの実践的な移行方法と成功のためのヒント</a></li>
+    <li class="toc-chapter"><a href="./DBRX.html">データブリックスが作った新しいLLM「DBRX」って、一体どんなモデル？</a></li>
+    <li class="toc-chapter"><a href="./contributors.html">著者紹介</a></li>
+</ul>
+      </nav>
+      <div class="page-inner">
+        <header class="page-header">
+        </header>
+        <main class="page-main">
+<h1 class="boldlines center twolines"><a id="h1"></a><span class="secno">第1章</span> <br/>Databricks SQL の概要</h1>
+
+<h2 class="grayback"><a id="h1-1"></a><span class="secno">1.1</span> Databricks ってSQLもできるんです！</h2>
+<p>Databricks SQL ってご存知ですか？Databricks SQL は Databricks 上でSQLを実行し、 データウェアハウス( DWH とよく訳します) を実現する仕組みです。 Databricks は Apache Spark だけと思ってるそこのあなた！Databricks SQL を使いこなして手軽にデータ分析しちゃいましょう！</p>
+
+<h2 class="grayback"><a id="h1-2"></a><span class="secno">1.2</span> そのまえに・・・Databricksの概要紹介</h2>
+<p>と、その前にそもそも皆様の中には Databricks をご存じない方もいらっしゃると思います。ですのでその前に簡単に Databricks について説明していきたいと思います。</p>
+
+<h3 class="symbol"><a id="h1-2-1"></a>Databricks ってなぁに？</h3>
+<p>Databricks の説明の前に Databricks という会社の説明をします！ Databricks はデータ分析、AI/ML基盤の Databricks を提供する企業として2013年にできました。創業者は大規模データ処理OSSの、 Apache Spark 、オープンテーブルフォーマットのOSSである Delta Lake 、機械学習フレームワークである MLflow の開発者達です。世界でも経営者がオープンソースコミッターと言う企業はなかなかないですよね？ですので会社も非常にオープンソースや、エンジニアカルチャーを大事にしています。</p>
+<p>そんな Databricks が作った統合データ分析・AI/ML基盤が Databricks です。Databricks の特徴は以下です。</p>
+<ul>
+<li>オールインワンな機能群
+</li>
+<li>スケーラビリティと柔軟性
+</li>
+<li>データ分析機能
+</li>
+<li>AI・機械学習機能
+</li>
+</ul>
+<div id="lakehouseplatform" class="image">
+<img src="images/dbsql-general/lakehouseplatform.png" alt="レイクハウスプラットフォーム" class="img border" />
+<p class="caption">
+図1.1: レイクハウスプラットフォーム
+</p>
+</div>
+
+<h4><a id="h1-2-1-1"></a>オールインワンな機能群</h4>
+<p>データ分析と機械学習に必要な様々なツールをDatabricksがオールインワンで提供しています、 ETL 、 ELT 処理、 Workflow ツール、パイプライン作成、モニタリング、データカタログ、メタストアなどが高度に統合されており、様々なサービスを使う必要がなく、構築、運用コストを抑えて低いTCOを実現します。</p>
+
+<h4><a id="h1-2-1-2"></a>スケーラビリティと柔軟性</h4>
+<p>Databricks は AWS 、 Google Cloud 、 Azure のマルチクラウドに対応しています。先ほど説明したオールインワンな機能群に加えて、サードパーティツールの使用も可能で、高い柔軟性を持っています。クラウドのオートスケーリング機能により、リソースを使用状況に応じて柔軟に調整し、プロジェクトの規模に合わせてスケールアップやスケールダウンが容易です。これにより、データ分析と機械学習プロジェクトを効率的にサポートします。</p>
+
+<h4><a id="h1-2-1-3"></a>データ分析機能</h4>
+<p>Databricks は AI や機械学習の基盤として知られていますが、データ分析の分野でもでも非常に豊富な機能を提供しています。なぜなら機械学習を行うためにはデータの前処理が必要となり、そのためにはデータ分析機能を強化する必要があったからです。 Databricks は「データレイクハウス」という独自のアーキテクチャを採用しています。そしてこれから紹介する Databricks SQL もデータ分析の1機能として重要な役割を担っています。</p>
+
+<h4><a id="h1-2-1-4"></a>AI・機械学習機能</h4>
+<p>Databricks は AI および機械学習分野で非常に強力で、進化し続ける必要がある AI/ML の問題を解決するためのツールとして MLflow を開発しました。また、 Vector Index 、 Model Registry 、 Model Serving 、 AI Gateway など、 AI/ML をサポートする様々な機能も提供しています。</p>
+
+<h2 class="grayback"><a id="h1-3"></a><span class="secno">1.3</span> Databricks SQL ・・・なんです！</h2>
+<p>このような様々な機能を提供しているソフトウェアである Databricks ですが、その中で先ほどもお話したデータウェアハウス機能を提供するのが Databricks SQL です。</p>
+<p>Databricks SQL は、データ分析とビジネスインテリジェンスのためのクエリサービスです。 Databricks SQL は、 Databricks のデータレイクハウスアーキテクチャを活用し、 ANSI SQL を使用して大規模データセットに対し効率的よくクエリを実行することが可能なサービスです。 Databricks SQL は、リアルタイムダッシュボード、ビジュアル分析、レポート作成などを実行するために、BIツール、アドホッククエリなどを適切に実行できます。これによって、データサイエンティスト、アナリスト、ビジネスユーザーが使い慣れた SQL を使いデータへ自由にアクセスすることができ、また自動化されたパフォーマンス最適化、セキュリティ、ガバナンス機能、そしてこのあと説明していきますがよりコスト効率の良さや起動の速さを実現した Serverless SQL といった機能を提供しています。</p>
+
+<h2 class="grayback"><a id="h1-4"></a><span class="secno">1.4</span> Pro/Classic/Serverless どれにしたらいいの？</h2>
+<p>ここからは Databricks SQL を実行するコンピュート（コンピュータのリソースといった意味です）である SQL Warehouse について簡単に説明していきます。 SQL Warehouse とは Databricks で SQL を実行することに最適化されたクラスターになっていて、 SQL でデータにアクセスしたいユーザ（データアナリスト、データサイエンティスト、データエンジニアなど）向けに使えるクラスターになっています。</p>
+<p>Databricks SQL の SQL Warehouse には3つの種類がありそれぞれに特徴があります。</p>
+<ul>
+<li>Classic
+</li>
+<li>Pro
+</li>
+<li>Serverless
+</li>
+</ul>
+<p>Classic と Pro はユーザー環境の EC2 などのコンピュートを立ち上げてそこに SQL Warehouse を構築します。</p>
+<div id="sqlwarehouse_classicarch" class="image">
+<img src="images/dbsql-general/sqlwarehouse_classicarch.png" alt="Classic/Pro のアーキテクチャ" class="img border" />
+<p class="caption">
+図1.2: Classic/Pro のアーキテクチャ
+</p>
+</div>
+<p>対して Serverless は Databricks が管理するコンピュートを払い出す形で提供されます。</p>
+<div id="sqlwarehouse_serverlessarch" class="image">
+<img src="images/dbsql-general/sqlwarehouse_serverlessarch.png" alt="Serverless のアーキテクチャ" class="img border" />
+<p class="caption">
+図1.3: Serverless のアーキテクチャ
+</p>
+</div>
+<p>Classic と Pro の使い分けについては、まず EC2 などのリソースを自分たちの AWS アカウントに立ち上げたい場合かつ、小さい、かつシンプルなワークロードの場合は Classic を使うことで、コストを抑えることができますし、より大きなワークロードの場合には Pro を使うことで ストレージ性能の最適化や、各種フェデレーションや、 Python UDF などの機能を使うことができます。詳しくは以下の表を参照ください。</p>
+<div id="dbsql_featurematrix" class="image">
+<img src="images/dbsql-general/dbsql_featurematrix.png" alt="Classic/Pro/Serverless の機能一覧" class="img border" />
+<p class="caption">
+図1.4: Classic/Pro/Serverless の機能一覧
+</p>
+</div>
+
+<h2 class="grayback"><a id="h1-5"></a><span class="secno">1.5</span> Serverless SQL って便利だねっ</h2>
+<p>そして、最後の Serverless SQL ですが、今までの SQL Warehouse(Pro/Classic) とは異なるアーキテクチャで動作する SQL Warehouse です。先程もでてきましたが、 Databricks の管理するノードから払い出し高速にユーザーに SQL Warehouseの を提供することが可能となります。 Serverless は Pro にある機能は基本的に持っています。</p>
+<p>更に Serverless SQL にはいくつかのメリットがあります。</p>
+<ul>
+<li>コスト効率/スケーラビリティ
+</li>
+<li>メンテナンスフリー
+</li>
+<li>セキュリティの向上
+</li>
+</ul>
+
+<h3 class="symbol"><a id="h1-5-1"></a>コスト効率/スケーラビリティ</h3>
+<p>Serverless SQL は数秒で起動するため、今までのように EC2 などのクラスタが立ち上がる数分の無駄というものがなくなります。さらに実際の負荷に合わせてオートスケールを行う際にもすぐにその負荷に合わせたリソースを準備することが可能です。負荷がなくなればリソースをゼロにすることもできますし、負荷が高いときにはすぐにクラスタのリソースを足すことができます。</p>
+
+<h3 class="symbol"><a id="h1-5-2"></a>メンテナンスフリー</h3>
+<p>先ほども出た通り、自分たちでノードを管理しないということは、例えば AWS 上で、 EC2 のメンテナンスに対して自分たちで対応する必要がないわけです。なのでその分の作業コストなどの TCO を抑えることができます。</p>
+
+<h3 class="symbol"><a id="h1-5-3"></a>セキュリティの向上</h3>
+<p>これもユーザ環境と SQL の実行環境が分かれているためセキュリティを高めることができます。具体的にはコンテナの分離、 VM の分離、そしてネットワークの分離を行っており、 Serverless SQL を利用するだけでより高いセキュリティレベルを実現することができます。また Databricks 内部でのセキュリティチームと外部のベンダーなどを活用したセキュリティテストも実施しています。</p>
+
+<h2 class="grayback"><a id="h1-6"></a><span class="secno">1.6</span> Databricks SQL を使ってみよう！</h2>
+<p>ここまで Databricks と、 Databricks SQL の概要について説明してきました、ここからは実際に Databricks SQL を使ってみましょう。まずはこれがなければ始まらない！Databricksのワークスペース画面へログインしてみましょう。わからない、、、という方には、このデータブリックス クイックスタートガイド（https://www.amazon.co.jp/dp/B09V1YXFVQ/)を見てみましょう！Kindle Unlimited で読めます！(宣伝)</p>
+
+<h3 class="symbol"><a id="h1-6-1"></a>SQL Warehouse を作ろう</h3>
+<p>まずこの画面から始まると思います。ワークスペースのホーム画面です。</p>
+<div id="wshome" class="image">
+<img src="images/dbsql-general/wshome.png" alt="ワークスペースのホーム画面" class="img width-050per border" />
+<p class="caption">
+図1.5: ワークスペースのホーム画面
+</p>
+</div>
+<p>この画面の左のメニューから [ SQL Warehouse ] を選択してください。</p>
+<div id="sqlwarehouse" class="image">
+<img src="images/dbsql-general/sqlwarehouse.png" alt="SQL Warehouse 画面" class="img width-080per border" />
+<p class="caption">
+図1.6: SQL Warehouse 画面
+</p>
+</div>
+<p>するとこのような画面に遷移すると思います。この画面で、 [ Create SQL Warehouse ] ボタンをクリックすると下記のような画面が開きます。</p>
+<div id="createsqlwarehouse" class="image">
+<img src="images/dbsql-general/createsqlwarehouse.png" alt="SQL Warehouse 作成画面" class="img width-080per border" />
+<p class="caption">
+図1.7: SQL Warehouse 作成画面
+</p>
+</div>
+<p>ここから自分の作りたい SQL Warehouse を作成することができます。</p>
+<ul>
+<li>[Name]: SQL Warehouseの名前
+</li>
+<li>[ Cluster size]: SQL Warehouseのサイズ
+</li>
+</ul>
+<p>先ほどお話しした通り、 Classic/Pro であれば数分、 Serverless であれば数秒で　SQL Warehouse が起動します。</p>
+
+<h3 class="symbol"><a id="h1-6-2"></a>SQL を実行しよう</h3>
+<p>SQL Warehouseができたら次はSQLを実行しましょう！ワクワクしますね！</p>
+<p>次は SQL を実行するための画面に移動します、先程のワークスペースのホーム画面にもどって今度は [ SQL Editor ] をクリックしてください。</p>
+<p>そうするとこのような画面になると思います。</p>
+<div id="sqleditor" class="image">
+<img src="images/dbsql-general/sqleditor.png" alt="SQL Editor画面" class="img width-080per border" />
+<p class="caption">
+図1.8: SQL Editor画面
+</p>
+</div>
+<p>このテキストボックスに SQL を書くことができます。先程作成した SQL Warehouse を指定して SQL を実行してみましょう！</p>
+<p>まずは、データを保存するための、カタログ、スキーマ、テーブルといった要素を作って行きます。</p>
+<div class="caption-code">
+<span class="caption">カタログ作成</span>
+<pre class="list">
+CREATE CATALOG sample_catalog_20240525
+
+</pre>
+</div>
+<div class="caption-code">
+<span class="caption">スキーマ作成</span>
+<pre class="list">
+CREATE DATABASE sample_catalog_20240525.sample_catalog_20240525
+
+</pre>
+</div>
+<div class="caption-code">
+<span class="caption">テーブル作成</span>
+<pre class="list">
+CREATE TABLE sample_catalog_20240525.sample_catalog_20240525.persons(
+  Id INT,
+  Name STRING,
+  Age INT,
+  Hobby STRING
+)
+
+</pre>
+</div>
+<p>次に、できたテーブルにデータを投入していきましょう！</p>
+<div class="caption-code">
+<span class="caption">データ投入</span>
+<pre class="list">
+INSERT INTO sample_catalog_20240525.sample_catalog_20240525.persons (Id, Name, Age, Hobby) VALUES
+(1, 'Alice', 30, 'Reading'),
+(2, 'Bob', 25, 'Hiking'),
+(3, 'Charlie', 35, 'Gardening'),
+(4, 'Kuwano', 46, 'Curry')
+
+</pre>
+</div>
+<p>成功しましたか？成功したかどうかデータがちゃんと入っているか確認してみましょう！</p>
+<div class="caption-code">
+<span class="caption">データ取得</span>
+<pre class="list">
+SELECT * FROM sample_catalog_20240525.sample_catalog_20240525.persons
+
+</pre>
+</div>
+<div id="selectresult" class="image">
+<img src="images/dbsql-general/selectresult.png" alt="SELECTの結果" class="img width-080per border" />
+<p class="caption">
+図1.9: SELECTの結果
+</p>
+</div>
+<p>できてそうですね！このように、 Databricks を SQL で簡単に操作することができました！おめでとうございます！</p>
+
+<h2 class="grayback"><a id="h1-7"></a><span class="secno">1.7</span> まとめ</h2>
+<p>ここまで Databricks と Databricks SQL を紹介してきましたが、いかがでしたでしょうか？オールインワンにデータや、 AI/ML を処理できる Databricks と、 データに簡単にアクセスできる Databricks SQL についてちょっと知ることができてきたのではないかなと思います。</p>
+<p>この本には他にも Databricks を活用したデータウェアハウス活用方法が詰まっていますので是非このあとも楽しんでくださいね！</p>
+
+        </main>
+        <nav class="page-navi">
+          <a href="preface.html" class="page-prev">&#9664;</a>
+          <a href="unitycatalog.html" class="page-next">&#9654;</a>
+        </nav>
+        <footer>
+        </footer>
+      </div>
+    </div>
+  </body>
+</html>
+<!-- layout.html5.erb -->

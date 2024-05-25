@@ -1,0 +1,636 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Databricks SQLの拡張機能 | はじめてのデータウェアハウス</title>
+    <link rel="stylesheet" type="text/css" href="css/normalize.css" />
+    <link rel="stylesheet" type="text/css" href="css/webstyle.css" />
+    <link rel="next" title="Databricks SQL パフォーマンス・チューニング Tips" href="dbsql-perf-tuning.html">
+    <link rel="prev" title="Databricks SQLとRaspberry Piを使ってIoTデータダッシュボードを作る" href="realtime-app-dbsql.html">
+    <meta name="generator" content="Re:VIEW Starter">
+  </head>
+  <body>
+    <div class="page-outer">
+      <nav class="side-content">
+                <a class="nav-title" href="index.html">はじめてのデータウェアハウス</a>
+<ul class="toc toc-1">
+    <li class="toc-chapter"><a href="./preface.html">まえがき</a></li>
+    <li class="toc-chapter"><a href="./dbsql-general.html">1 Databricks SQL の概要</a></li>
+    <li class="toc-chapter"><a href="./unitycatalog.html">2 Unity Catalogではじめるデータマネジメント</a></li>
+    <li class="toc-chapter"><a href="./data-engineering.html">3 データエンジニアリング</a></li>
+    <li class="toc-chapter"><a href="./lakeview.html">4 Lakeviewによるデータ可視化とBIダッシュボード</a></li>
+    <li class="toc-chapter"><a href="./realtime-app-dbsql.html">5 Databricks SQLとRaspberry Piを使ってIoTデータダッシュボードを作る</a></li>
+    <li class="toc-chapter"><a href="./SQLextention.html">6 Databricks SQLの拡張機能</a>
+      <ul class="toc toc-2">
+        <li class="toc-section"><a href="#h6-1">6.1 はじめに</a></li>
+        <li class="toc-section"><a href="#h6-2">6.2 Databricks SQLの拡張機能としてのUDF</a></li>
+        <li class="toc-section"><a href="#h6-3">6.3 Databricks SQLでLLMを活用する（AI Functions）</a></li>
+        <li class="toc-section"><a href="#h6-4">6.4 おわりに</a></li>
+      </ul>
+    </li>
+    <li class="toc-chapter"><a href="./dbsql-perf-tuning.html">7 Databricks SQL パフォーマンス・チューニング Tips</a></li>
+    <li class="toc-chapter"><a href="./dbsql-serverless-nw-security.html">8 Databricks SQLサーバーレスのネットワークセキュリティ</a></li>
+    <li class="toc-chapter"><a href="./dbsql-migration.html">9 既存データウェアハウスからDatabricksへの実践的な移行方法と成功のためのヒント</a></li>
+    <li class="toc-chapter"><a href="./DBRX.html">データブリックスが作った新しいLLM「DBRX」って、一体どんなモデル？</a></li>
+    <li class="toc-chapter"><a href="./contributors.html">著者紹介</a></li>
+</ul>
+      </nav>
+      <div class="page-inner">
+        <header class="page-header">
+        </header>
+        <main class="page-main">
+<h1 class="boldlines center twolines"><a id="h6"></a><span class="secno">第6章</span> <br/>Databricks SQLの拡張機能</h1>
+
+<h2 class="grayback"><a id="h6-1"></a><span class="secno">6.1</span> はじめに</h2>
+<p>本章はDatabricks SQLの拡張機能としてのユーザー定義関数（以下UDF）と、Databricksで提供している拡張関数（AI Functions）の基礎からその活用方法までを体系的に解説することを目的としています。対象読者は、Python、SQLの基本的な知識を持ち、Apache Sparkを用いてより高度なデータ処理を行いたいと考えているデータエンジニアやデータサイエンティストです。一方で、初学者の方にも理解しやすいよう、丁寧な説明を心がけつつ、実践で役立つテクニックや応用例も紹介します。</p>
+<p>本章の構成は、以下の通りです。</p>
+<p>最初に、「Databricks SQLの拡張機能としてのUDF」の節では、Apache Sparkの進化に伴うUDFの変遷について解説します。Python UDFとPandas UDFの登場を振り返り、それぞれの特徴を比較します。次に、Pandas UDFの基本的な使い方を説明し、Databricks SQLでUDFを使うための基礎知識を提供します。さらに、応用編として、他のシステムからDatabricksへのワークロード移行や、Spark SQLでネイティブにサポートされていない高度なデータ変換の実現方法を紹介します。</p>
+<p>続く「Databricks SQLでLLMを活用する（AI Functions）」の節では、Databricksが提供するAI Functionsの概要と使い方について解説します。LLMを活用したデータ処理の可能性と、その実現方法を具体的な例を交えて説明します。</p>
+<p>本章を通じて、読者の皆様がDatabricks SQLの拡張機能を効果的に活用し、より高度なデータ処理を実現できるようになることを願っています。</p>
+
+<h2 class="grayback"><a id="h6-2"></a><span class="secno">6.2</span> Databricks SQLの拡張機能としてのUDF</h2>
+
+<h3 class="symbol"><a id="h6-2-1"></a>Apache Sparkの進化に伴うUDFの変遷</h3>
+
+<h4><a id="h6-2-1-1"></a>Python UDFの登場</h4>
+<p>UDFの変遷を語る上で、まずPythonについて触れておく必要があります。PythonはデータサイエンスやETLの分野で広く使われているプログラミング言語であり、多くのライブラリやツールに恵まれています。特にPandas、Numpy、Statsmodel、Scikit-learnなどのライブラリは、大きな支持を得て、主流のライブラリとなっていると思います。しかし、ライブラリは手軽に使えて便利な反面、細かいカスタマイズがしづらかったり、複雑な処理を1つの関数で表現しきれなかったりする場合があります。そういった場合に、UDFを自作することで、より柔軟にPythonを活用できます。</p>
+<p>次に示すPython UDFは、2つの列の数字を足し算し、DataFrameに新しい列を追加します。</p>
+<div class="caption-code">
+<span class="caption">2つの列の数字を足し算するPython UDFの例</span>
+<pre class="list">import pandas as pd
+
+# サンプルDataFrameの作成
+df = pd.DataFrame({'A': [1, 2, 3], 'B': [4, 5, 6]})
+
+# 2つの数字を足し算するUDFの定義
+def add_numbers(a, b):
+    return a + b
+
+# UDFを使用して、DataFrameに新しい列を作成する
+df['C'] = df.apply(lambda row: add_numbers(row['A'], row['B']), axis=1)
+</pre>
+</div>
+<p>話はApache Sparkに戻りますが、2013年2月頃、Apache Sparkもバージョン 0.7 でPython APIが追加され、UDFをサポートするようになりました [1][2] 。Apache Sparkは元々はスケーラブルな分散処理エンジンとしてScalaで開発されましたが、Python APIの登場によりPythonエンジニアでもApache Sparkを活用できるようになりました。また、Apache SparkのMLlibと呼ばれる分散機械学習ライブラリもPython APIを提供しています。Python UDFが使えるようになったことで、高度な機械学習パイプラインをPythonで構築できるようになりました。</p>
+<p>しかし、当初のUDFは、1行ずつ処理を行うため、SparkとPythonの間でデータのシリアライズとデシリアライズのオーバーヘッドが大きく、パフォーマンスが低下する問題がありました<sup><a id="fnb-python-udf1" href="#fn-python-udf1" class="noteref" epub:type="noteref">*1</a></sup>。そのため、多くのデータパイプラインでは、JavaやScalaでUDFを定義し、Pythonから呼び出すという方法が取られていました。</p>
+<div class="footnote-list">
+<div class="footnote" id="fn-python-udf1" epub:type="footnote"><p class="footnote"><span class="footnote-mark">[*1] </span>Python UDFのシリアライズ/デシリアライズはPicklingで⾏われていて、行毎にJVM上で動作するExecutorとPythonインタプリタ間の通信が非効率でした。詳しい解説を補足の節で記載しています。</p></div>
+</div><!--/.footnote-list-->
+
+<h4><a id="h6-2-1-2"></a>Pandas UDFの登場</h4>
+<p>こうした課題を解決するため、2018年11月頃、Apache Sparkはバージョン 2.4 からPandas UDFが導入されました [3] 。Pandas UDFはApache Arrowを活用しており、これまで課題となっていたパフォーマンス低下を大幅に改善しています。具体的には、シリアライゼーションの排除、ベクトル化、ゼロコピー、スキーマの柔軟性などにより、通常のPython UDFと比べて飛躍的に性能を向上させています。実際に、Databricksの検証では、Pandas UDFがPython UDFの最大100倍の処理性能を発揮したと報告されています [4] 。</p>
+<p>Apache Spark 3.0 以降も、Pythonタイプヒントで新しいPandas UDFタイプを表現できるようになったり、複雑なデータタイプのサポートも拡張されたりしています [5][6] 。また、メモリ使用量の多い箇所を特定し、最適化することができるメモリプロファイラも実装されました [7] 。これにより、パフォーマンスのボトルネックとなっているコードを見つけ出し、より効率的なUDFを実装することが可能となっています。</p>
+
+<h3 class="symbol"><a id="h6-2-2"></a>Pandas UDFの基本的な使い方</h3>
+<p>UDFを定義する際は、関数の作成と、その関数をSparkに登録する処理の2つを用意するだけです。現在、Apache Spark 3.0 以降のPandas UDFでサポートされているタイプヒント<sup><a id="fnb-pandas-udf1" href="#fn-pandas-udf1" class="noteref" epub:type="noteref">*2</a></sup>には、以下4つがあります。</p>
+<ul>
+<li>pandas.Series, … -&gt; pandas.Series
+<ul>
+<li>与えられた関数が1つ以上のpandas.Seriesを受け取り、1つのpandas.Seriesを出力する必要があります。
+</li>
+<li>出力の長さは入力と同じである必要があります。
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li>Iterator[pandas.Series] -&gt; Iterator[pandas.Series]
+<ul>
+<li>この関数はpandas.Seriesのイテレータを受け取り、出力します。出力全体の長さは、入力全体の長さと同じである必要があります。
+</li>
+<li>与えられた関数は、1つの列を入力として受け取る必要があります。
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li>Iterator[Tuple[pandas.Series, ...]] -&gt; Iterator[pandas.Series]
+<ul>
+<li>与えられた関数は、pandas.Seriesのタプルのイテレータを受け取り、pandas.Seriesのイテレータを出力します。また、出力全体の長さは入力全体の長さと同じである必要があります。
+</li>
+<li>与えられた関数は、Iterator of Series から Iterator of Series と異なり、複数の列を入力として受け取る必要があります。
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li>pandas.Series, … -&gt; Any
+<ul>
+<li>この関数は、1つ以上のpandas.Seriesを受け取り、プリミティブなデータタイプを出力します。返されるスカラーは、Pythonのプリミティブ型、例えばint、float、またはNumPyのデータ型、例えば numpy.int64、 numpy.float64、 などのいずれかにすることが可能です。
+</li>
+<li>Any は理想的にはそれに応じて特定のスカラータイプである必要があります。
+</li>
+</ul>
+</li>
+</ul>
+<div class="footnote-list">
+<div class="footnote" id="fn-pandas-udf1" epub:type="footnote"><p class="footnote"><span class="footnote-mark">[*2] </span>現在推奨されている手法で、タイプヒントを使うことで、SparkはPandas UDFの入出力のタイプを認識し、適切なデータ変換を行えます。これによりPandas UDFをスムーズにSparkワークフローに組み込む事が可能です。</p></div>
+</div><!--/.footnote-list-->
+<p>次の例は、2つの列の積を計算するPandas UDFを作成し、Spark DataFrameに対して適用する方法を示しています。</p>
+<div class="caption-code">
+<span class="caption">2つの数字を掛け算するUDFの例</span>
+<pre class="list">import pandas as pd
+
+from pyspark.sql.functions import col, pandas_udf
+from pyspark.sql.types import LongType
+
+# 関数の宣言とUDFの作成
+def multiply_func(a: pd.Series, b: pd.Series) -&gt; pd.Series:
+    return a * b
+
+multiply = pandas_udf(multiply_func, returnType=LongType())  # type: ignore[call-overload]
+
+# pandas_udfはローカルのPandasデータで実行できる必要がある
+x = pd.Series([1, 2, 3])
+print(multiply_func(x, x))
+
+# 0    1
+# 1    4
+# 2    9
+# dtype: int64
+
+# Spark DataFrameを作成、'spark'は既存のSparkセッション
+df = spark.createDataFrame(pd.DataFrame(x, columns=[&quot;x&quot;]))
+
+# Pandas UDFとして関数を実行する
+df.select(multiply(col(&quot;x&quot;), col(&quot;x&quot;))).show()
+# +-------------------+
+# |multiply_func(x, x)|
+# +-------------------+
+# |                  1|
+# |                  4|
+# |                  9|
+# +-------------------+
+</pre>
+</div>
+<p>ここでは、Pandas UDFに注目しましたが、他にもApache SparkでサポートしているUDFとして、以下3つを押さえておきましょう。特に、パフォーマンスに課題のあったPython UDFですが、Arrowによって最適化されたArrow Python UDFが登場しています。詳細はApache Spark公式ドキュメントをご確認ください [8] 。</p>
+<ol start="1" type="1">
+<li>Pandas Function APIs</li>
+<li>Arrow Python UDFs</li>
+<li>Python User-defined Table Functions (UDTFs)</li>
+</ol>
+
+<h3 class="symbol"><a id="h6-2-3"></a>Databricks SQLでUDFを使う（基礎編）</h3>
+<p>ここからが本題ですが、Apache SparkでPython UDFやPandas UDFが使える事のメリットは、分散処理によって高度な処理を高速化できる事だけではありません。2022年6月頃、Databricksでは、Pythonで作成したUDFをDatabricks SQLで直接呼び出せるようになりました [9] 。これにより、SQLに慣れ親しんだエンジニアでもPythonの力を借りられるようになり、生産性が大きく向上しました。SQLの世界とPythonの世界が融合し、Sparkを軸にしたデータ処理基盤の可能性が大きく広がったとも言えると思います。</p>
+<p>Python UDFの例を見てみましょう。以下の関数は、機密データへの不正アクセスを防ぐために、JSONファイルから電子メールと電話番号を冗長化し、冗長化された文字列を返します [10] 。</p>
+<div class="caption-code">
+<span class="caption">電子メールと電話番号を冗長化するUDFの例</span>
+<pre class="list">CREATE FUNCTION redact(a STRING)
+RETURNS STRING
+LANGUAGE PYTHON
+AS $$
+import json
+keys = [&quot;email&quot;, &quot;phone&quot;]
+obj = json.loads(a)
+for k in obj:
+  if k in keys:
+    obj[k] = &quot;REDACTED&quot;
+return json.dumps(obj)
+$$;
+</pre>
+</div>
+<p>Python UDFを定義するために必要なのは、CREATE FUNCTION SQL文だけです。この文は関数名、入力パラメータと型を定義し、言語をPYTHONと指定し、$$の間にPython関数を記述します。Databricks SQLにおけるPython UDFの関数本体は、通常のPython関数と同等であり、UDF自体は計算の最終値を返します。</p>
+
+<h3 class="symbol"><a id="h6-2-4"></a>Databricks SQLでUDFを使う（応用編）</h3>
+<p>続いて、より実践的な内容として、(1)他のシステムからDatabricksにワークロードを移行するケース、(2)SQLでは表現しきれない高度な処理をPythonやPandasを使って行うケースをご紹介したいと思います。</p>
+
+<h4><a id="h6-2-4-1"></a>(1) 他のシステムからDatabricksにワークロードを移行</h4>
+<p>Databricks SQLはデフォルトでANSI SQLなので、他のシステムで利用可能な組み込み関数のほとんどはDatabricksでも利用可能です。しかし、特定のRDBMSでのみ使用可能な関数や、特定のドメインの問題を解決するために作成したカスタム関数が含まれているかもしれません。そういったケースのためにUDFを作成することで、他のシステムからの移行をスムーズに行う事が可能です。今回は、他のシステムからDatabricksへの移行例として、ストアドプロシージャ、Hadoop、SASにおけるUDFの活用方法について説明します。</p>
+<p>ストアドプロシージャ：</p>
+<p>例として、従業員テーブル (Employees)から、指定された部署ID (DepartmentID)に所属する従業員の情報を取得するストアドプロシージャを考えてみます。</p>
+<div class="caption-code">
+<span class="caption">指定された部署IDに属する従業員を取得するストアドプロシージャの例</span>
+<pre class="list">sql
+CREATE PROCEDURE GetEmployeesByDepartment
+    @DepartmentID INT
+AS
+BEGIN
+    -- 指定された部署IDに属する従業員を取得するSELECT文
+    SELECT 
+        e.EmployeeID,
+        e.FirstName,
+        e.LastName,
+        e.Email,
+        d.DepartmentName
+    FROM 
+        Employees e
+        INNER JOIN Departments d ON e.DepartmentID = d.DepartmentID
+    WHERE
+        e.DepartmentID = @DepartmentID
+    ORDER BY
+        e.LastName, e.FirstName;
+END
+</pre>
+</div>
+<p>これをPandas UDFに変換すると、次のようになります。</p>
+<div class="caption-code">
+<span class="caption">指定された部署IDに属する従業員を取得するPandas UDFの例</span>
+<pre class="list">python
+from pyspark.sql.functions import pandas_udf, PandasUDFType
+from pyspark.sql.types import StructType, StructField, IntegerType, StringType
+
+# Pandas UDFを定義
+@pandas_udf(returnType=StructType([
+    StructField(&quot;EmployeeID&quot;, IntegerType(), True),
+    StructField(&quot;FirstName&quot;, StringType(), True),
+    StructField(&quot;LastName&quot;, StringType(), True),
+    StructField(&quot;Email&quot;, StringType(), True),
+    StructField(&quot;DepartmentName&quot;, StringType(), True)
+]), functionType=PandasUDFType.GROUPED_MAP)
+def get_employees_by_department(employees_pd, departments_pd):
+    df = employees_pd.merge(departments_pd, on='DepartmentID')
+    df = df[['EmployeeID', 'FirstName', 'LastName', 'Email', 'DepartmentName']]
+    df = df.sort_values(['LastName', 'FirstName'])
+    return df
+</pre>
+</div>
+<p>Hadoop：</p>
+<p>具体例として、オンプレミスのHadoopクラスターで動作している顧客分析システムをDatabricksに移行するケースを考えてみます。Hiveで定義されていた顧客IDを匿名化するUDFを、Databricks SQLのPython UDFとして移行することが可能です。</p>
+<div class="caption-code">
+<span class="caption">顧客IDを匿名化するHive UDFの例</span>
+<pre class="list">sql
+CREATE FUNCTION mask_customer_id(customer_id STRING) 
+RETURNS STRING
+LANGUAGE JAVA
+AS 'return customer_id.replaceAll(&quot;\\d(?=\\d{4})&quot;, &quot;X&quot;);';
+</pre>
+</div>
+<p>Databricks SQLのPython UDFとして以下のように書き換えます。</p>
+<div class="caption-code">
+<span class="caption">顧客IDを匿名化するPython UDFの例</span>
+<pre class="list">sql
+CREATE FUNCTION mask_customer_id(customer_id STRING)
+RETURNS STRING
+LANGUAGE PYTHON
+AS $$
+  import re
+  return re.sub(r'\d(?=\d{4})', 'X', customer_id)
+$$
+;
+</pre>
+</div>
+<p>SAS：</p>
+<p>SASプログラムをDatabricksでUDFとして定義することも勿論可能です。例えば、以下のようなSASで書かれたTable Operator関数を変換してみます。</p>
+<div class="caption-code">
+<span class="caption">2つのカラムの合計を新たな列として定義するSASプログラムの例</span>
+<pre class="list">sas
+FUNCTION ADDCOL(intbl);
+  DECLARE TABLE intbl(x INT, y INT);
+  DECLARE TABLE outtbl(x INT, y INT, z INT);
+  outtbl.x = intbl.x;
+  outtbl.y = intbl.y;
+  outtbl.z = intbl.x + intbl.y;
+  RETURN outtbl;
+ENDSUB;
+
+</pre>
+</div>
+<p>Databricks SQLのPandas UDFとして以下のように書き換えます。</p>
+<div class="caption-code">
+<span class="caption">2つのカラムの合計を新たな列として定義するPandas UDFの例</span>
+<pre class="list">sql
+CREATE FUNCTION ADDCOL(x INT, y INT)
+RETURNS TABLE(x INT, y INT, z INT)
+LANGUAGE PYTHON
+PANDAS_UDF
+AS $$
+  import pandas as pd
+
+  def addcol(x: pd.Series, y: pd.Series) -&gt; pd.DataFrame:
+    return pd.DataFrame({
+      'x': x, 
+      'y': y,
+      'z': x + y
+    })
+$$
+;
+</pre>
+</div>
+<p>話は逸れてしまいますが、より実践的な話をしたいと思います。これまでUDFへの変換例を紹介してきましたが、実際の移行プロジェクトにおいて、他のシステムで使用していたワークロードをDatabricksで使用するための変換作業自体が、最も重要かつ困難な課題であると言えます。手作業で1つ1つ変換していくのは非効率であり、移行をいかに効率的かつ効果的に実施するかが、データエンジニアが直面する大きな課題となっています。</p>
+<p>そこで、昨今では、GenAIを活用することで、コードを効率的に変換する取り組みが盛んに行われています [11][12][13] 。GenAIによる自動変換により、移行にかかる工数を大幅に削減できる可能性があります。</p>
+<p>Databricksでも多くのGenAI機能を有していますが、2024年4月頃に自社のLLMであるDBRXを発表しました [14] 。実際に、DBRXを活用した移行事例も増えてきており、今後もDatabricksは大きな役割を果たしていくことが期待されます [15][16] 。</p>
+
+<h4><a id="h6-2-4-2"></a>(2) Spark SQLでネイティブにサポートされていない高度なデータ変換</h4>
+<p>PythonやPandasを使ってSQLでは表現しきれない高度な処理をUDFとして定義したいと思います。これにより、SQLユーザーもその高度な処理を再利用できるようになります。1つ目は、テキストデータから感情分析スコアを計算するPythonロジックを、Databricks SQLのPython UDFとして登録してみます。</p>
+<div class="caption-code">
+<span class="caption">テキストデータから感情分析スコアを計算するPython UDFの例</span>
+<pre class="list">python
+import nltk
+from nltk.sentiment import SentimentIntensityAnalyzer
+
+def sentiment_score(text):
+  sia = SentimentIntensityAnalyzer()
+  return sia.polarity_scores(text)['compound']
+</pre>
+</div>
+<p>上記のPython関数をDatabricks SQLのUDFとして以下のように登録します。</p>
+<div class="caption-code">
+<span class="caption">テキストデータから感情分析スコアを計算するPython UDFの例</span>
+<pre class="list">sql
+CREATE FUNCTION sentiment_score(text STRING)
+RETURNS DOUBLE
+LANGUAGE PYTHON
+AS $$
+  import nltk 
+  from nltk.sentiment import SentimentIntensityAnalyzer
+
+  def sentiment_score(text):
+    sia = SentimentIntensityAnalyzer()
+    return sia.polarity_scores(text)['compound']
+$$
+;
+</pre>
+</div>
+<p>2つ目は、緯度経度から市区町村名を取得するジオコーディングをDatabricks SQLのPython UDFで実装してみます。</p>
+<div class="caption-code">
+<span class="caption">緯度経度から市区町村名を取得するPython UDFの例</span>
+<pre class="list">sql
+CREATE FUNCTION geocode(lat DOUBLE, lon DOUBLE)
+RETURNS STRING
+LANGUAGE PYTHON
+AS $$
+  from geopy.geocoders import Nominatim
+  geolocator = Nominatim(user_agent=&quot;my_app&quot;)
+  location = geolocator.reverse(f&quot;{lat}, {lon}&quot;)
+  return location.raw['address'].get('city', '')
+$$
+;
+</pre>
+</div>
+<p>上記のUDFを使って、次のようにSQLクエリ内で、緯度経度から市区町村名を取得できます。</p>
+<div class="caption-code">
+<span class="caption">緯度経度から市区町村名を取得するSQLの例</span>
+<pre class="list">sql
+SELECT 
+  geocode(latitude, longitude) AS city
+FROM locations;
+</pre>
+</div>
+
+<h3 class="symbol"><a id="h6-2-5"></a>UDFのまとめ</h3>
+<p>Databricks SQLの拡張機能としてのUDFについてご紹介しました。重要なポイントについて、次のように整理したいと思います。</p>
+<ul>
+<li>Apache SparkでPython UDFやPandas UDFが使える事のメリットは、分散処理によって高度な処理を高速化できる事。特に、Pandas UDFを活用する事で、通常のPython UDFと比べて最大100倍の高速化が可能。
+</li>
+<li>Databricksでは、Pythonで作成したUDFをDatabricks SQLで直接呼び出せるようになった。これは、他のシステムからDatabricksにワークロードを移行するケース、SQLでは表現しきれない高度な処理をPythonやPandasを使って行うケース等で有効。
+</li>
+<li>他のシステムで使用していたワークロードをDatabricksで使用するための変換作業自体が、最も重要かつ困難な課題である。昨今では、GenAIを活用することで、コードを効率的に変換する取り組みが盛んに行われている。実際に、DBRXを活用した移行事例も増えてきており、今後もDatabricksは大きな役割を果たしていくことが期待される。
+</li>
+</ul>
+<p>以上を念頭に、UDFをうまく使いこなすことで、Apache Sparkをより柔軟かつ効率的に活用できるはずです。使い所を見極め、UDFを活用していきましょう。</p>
+<div class="miniblock miniblock-info">
+<p class="miniblock-caption">補足</p>
+<p>ここでは、Python UDFとPandas UDFの違いについて補足的に説明したいと思います。まず、Python UDFについては、次のステップで処理が実行されます [17] 。</p>
+<ol start="1" type="1">
+<li>関数がシリアル化されてワーカーに送信されます。</li>
+<li>Sparkがワーカーノードで個別のPythonプロセスを開始し、データがPythonに送信されます。</li>
+<li>実行は行ごとに実行されます。</li>
+<li>Pythonで計算が実行されると、結果がSparkに返されます。</li>
+</ol>
+<div id="Mori_python_udf_cal" class="image">
+<img src="images/SQLextention/Mori_python_udf_cal.jpg" alt="Python UDFの処理構造" class="img width-080per" />
+<p class="caption">
+図6.1: Python UDFの処理構造
+</p>
+</div>
+<p>ここで注意すべきは、ワーカーノードでPythonプロセスを開始し、データをシリアル化するコストが非常に高くなる事です。シリアライズ/デシリアライズはPicklingで⾏われており、データはブロックごとにfetchされますが、UDF処理は⾏毎に実⾏されています。また、Pythonは追加のメモリを消費し、リソース不足によりワーカー/エグゼキュータが失敗する可能性があります。</p>
+<p>続いて、Pandas UDFでのApache Arrow処理の特徴は次の通りです。</p>
+<ol start="1" type="1">
+<li>メモリ上でのデータ表現の統一</li>
+<li>列指向フォーマットによる効率的なメモリアクセス</li>
+<li>ゼロコピーでのデータ転送</li>
+</ol>
+<p>まず、メモリ上でのデータ表現の統一については、Apache Arrowは、異なるシステムやプログラミング言語の間でデータを効率的にやり取りするための、共通の列指向のメモリフォーマットを定義しています。これにより、例えばPythonとJavaの間でデータを交換する際に、データを一旦ファイルに書き出してから読み込む必要がなくなります。メモリ上の同じデータ表現を使うことで、シリアライズ・デシリアライズのオーバーヘッドを削減できるのです。</p>
+<div id="Mori_arrow_memory" class="image">
+<img src="images/SQLextention/Mori_arrow_memory.jpg" alt="メモリ上でのデータ表現の統一" class="img width-090per" />
+<p class="caption">
+図6.2: メモリ上でのデータ表現の統一
+</p>
+</div>
+<p>続いて、列指向フォーマットによる効率的なメモリアクセスについては、Arrowは列指向のメモリフォーマットを採用しています。つまり、同じ列のデータはメモリ上で連続して並んでいます。例えば、「名前」「年齢」「住所」からなるテーブルがあるとき、Arrowでは「名前」の値が全て連続し、次に「年齢」が連続する、といった具合です。行指向フォーマットと比べて、列指向フォーマットはデータ分析などで多く使われる列単位の処理に適しています。キャッシュヒット率が上がり、メモリアクセスの効率が良くなるためです。</p>
+<div id="Mori_arrow_col" class="image">
+<img src="images/SQLextention/Mori_arrow_col.jpg" alt="列指向フォーマットによる効率的なメモリアクセス" class="img width-090per" />
+<p class="caption">
+図6.3: 列指向フォーマットによる効率的なメモリアクセス
+</p>
+</div>
+<p>最後に、ゼロコピーでのデータ転送については、Arrowでは、データを転送する際にメモリコピーが発生しません。送信側のメモリ上のデータを、そのまま受信側で利用できるためです。ゼロコピーによってデータのコピーにかかる時間を削減でき、システム間のデータ転送を高速化できます。</p>
+<p>実際に、Databricksの検証では、Pandas UDFがPython UDFの最大100倍の処理性能を発揮したと報告されています [4] 。</p>
+<div id="Mori_pandasudf_perf" class="image">
+<img src="images/SQLextention/Mori_pandasudf_perf.jpg" alt="Pandas UDFとPython UDFの処理性能の違い" class="img width-080per" />
+<p class="caption">
+図6.4: Pandas UDFとPython UDFの処理性能の違い
+</p>
+</div>
+<p>また、機械学習のユースケースとして、SHAPの計算を分散処理する際や、AIモデルの分散バッチ推論においても、Python UDFからPandas UDFに処理を変えることで性能向上が確認されています [19][20] 。機械学習の分野では、大量のデータを高速に処理する必要があるため、Pandas UDFを活用することで、Python UDFの制約を克服し、パフォーマンスを大幅に改善できることが分かります。</p>
+<p>ここまで説明すると、Python UDFはもう使えないのか？と言うと、実はそうではありません。Apache Spark 3.5 では、Arrowに最適化されたPython UDFがリリースされ、Arrowカラムナーフォーマットを活用してパフォーマンスが向上されています [21] 。この最適化により、Python UDFはベクトル化されたI/Oにより、最新のCPUアーキテクチャでpickled Python UDFよりも最大2倍高速に実行できます。</p>
+<p>次の例に示すように、spark.sql.execution.pythonUDF.arrow.enabled設定がTrueに設定されているか、UDFデコレータを使用してuseArrowがTrueに設定されている場合、Python UDFはArrowカラムナーフォーマットを活用してパフォーマンスを向上させます。</p>
+<div class="caption-code">
+<span class="caption">Arrowを適用するPython UDFの例</span>
+<pre class="list">spark.conf.set(&quot;spark.sql.execution.pythonUDF.arrow.enabled&quot;, True)
+</pre>
+</div>
+<div class="caption-code">
+<span class="caption">Arrowを適用するPython UDFの例</span>
+<pre class="list">@udf(&quot;integer&quot;, useArrow=True)
+def my_len_udf(s: str) -&gt; int:
+    return len(s)
+</pre>
+</div>
+<p>次に示すように、同じクラスタにおいて、Arrowに最適化されたPython UDFは、32GBのデータセットにおいて、Python UDFのpickleよりも1.9倍高速に実行できます。</p>
+<div id="Mori_pythonudf_perf" class="image">
+<img src="images/SQLextention/Mori_pythonudf_perf.jpg" alt="PickleとArrowのPython UDF処理性能の違い" class="img width-090per" />
+<p class="caption">
+図6.5: PickleとArrowのPython UDF処理性能の違い
+</p>
+</div>
+<p>以上のように、PySparkにおいてはPandas UDFの活用が推奨されますが、ユースケースに応じてArrow最適化済みのPython UDFも選択肢となり得ます。データ処理の内容や規模に合わせて、適切な実装方式を選択することが重要だと言えるでしょう。</p>
+<p>具体的には、データ量が数GB以下と小さく、シンプルな処理の場合は、Python UDFでも十分に高速に処理できます。一方で、データ量が数十GBと大きく、行単位の処理が必要な場合は、Python UDFではシリアライズ・デシリアライズのオーバーヘッドが無視できなくなります。また、グループ化して集計する処理や、機械学習のためのデータ前処理などは、Pandas UDFの適用で大きな効果が期待できます。更に大規模な数百GB以上のデータを扱う場合は、Pandas UDFを使っても分散処理のメリットを十分に活かせない可能性があります。そのような場合は、データを分割したり、Sparkの分散処理に適したアルゴリズムを工夫したり、Spark SQLの最適化されたネイティブ関数を使うことも検討すべきです。</p>
+<p>ただし、これらの目安はあくまで一般論であり、実際のデータ量の判断はシステムの性能や要件によって異なります。例えば、メモリが潤沢なマシンではより大きなデータ量でもPython UDFで処理できますし、厳しいレイテンシ要件があれば少ないのデータ量でもPandas UDFを使う必要があるかもしれません。また、データ量だけでなく、データの形式や内容も処理方式の選択に影響します。例えば、JSONファイルのようにネストが深い構造のデータはPython UDFでの処理が適している一方、数値データの行列計算はPandas UDFの方が得意です。したがって、データ量の大小は処理方式選択の重要な判断材料ではありますが、それ以外の要素も総合的に考慮しつつ、実際のデータと処理で検証を重ねることが大切だと言えます。実際のパフォーマンスは、クラスタの構成やデータの特性によっても変わるため、ベンチマークを取りながら最適な方式を選択していくことが重要だと考えられます。</p>
+</div>
+
+<h2 class="grayback"><a id="h6-3"></a><span class="secno">6.3</span> Databricks SQLでLLMを活用する（AI Functions）</h2>
+<p>前節では、Databricks SQLでUDFを使うことによって、生産性が大きく向上することを説明しました。Databricksでは、他にも生産性を向上させる取り組みとして、SQLの組み込み関数も提供しています。2023年4月頃、DatabricksはAI Functionsというビルトイン関数をリリースしました [22] 。AI Functionsは、Databricksに組み込まれたSQL関数で、SQLから直接LLMにアクセスできるようになります。</p>
+<p>AI Functionsがどのように機能するかを説明するために、あなたがアナリストで、何千もの通話記録の履歴リストを与えられ、すべての通話を4つのカテゴリー（不満、満足、中立、満足）のいずれかに分類するレポートを作成するタスクを与えられたとします。通常、このような場合、データサイエンスチームに分類モデルの作成を依頼することになります。しかし、AI Functions を使えば、OpenAIのChatGPTモデルのような大規模言語モデルを、SQLから直接呼び出すことができます。LLMプロンプトの例は、次のようになります：</p>
+<div class="caption-code">
+<span class="caption">通話を分類するプロンプト例</span>
+<pre class="list">Prompt: Classify the following text into one of four categories 
+[Frustrated, Happy, Neutral, Satisfied]: 
+
+Thanks so much for helping me today, you have resolved my issue with the extra bill.
+
+Response: Satisfied
+</pre>
+</div>
+<p>AI Functionsを使用すると、このプロンプトをSQL UDFにすることができます。これにより、複雑な複数ステップのパイプラインではなく、次のような事が可能になります：</p>
+<div class="caption-code">
+<span class="caption">CLASSIFY_TRANSCRIPT関数で通話を分類</span>
+<pre class="list">sql
+SELECT 
+transcript_line, 
+CLASSIFY_TRANSCRIPT(transcript_line) as classification
+FROM
+your_dataset
+</pre>
+</div>
+<p>この例を使って、そのために必要なステップを説明していきましょう。ここでは、大規模言語モデルとしてAzure OpenAIサービスを使用しますが、OpenAIを使用することも、DBRXのようなオープンソースのLLMを含む、他の大規模言語モデルも可能です。Azure OpenAI APIキーをDatabricks Secretとして保存し、SECRET関数で参照できるようにしています：</p>
+<div class="caption-code">
+<span class="caption">AI_GENERATE_TEXT関数</span>
+<pre class="list">sql
+AI_GENERATE_TEXT(
+  prompt,
+ 'azure_openai/gpt-35-turbo',
+ 'apiKey', SECRET('tokens', 'azure-openai'),
+ &quot;deploymentName&quot;, &quot;00000&quot;,
+ &quot;apiVersion&quot;, &quot;2023-03-15-preview&quot;, 
+ &quot;resourceName&quot;, &quot;lakehouserules&quot;,
+ “temperature”, 0.0
+);
+</pre>
+</div>
+<p>AI_GENERATE_TEXT関数は別の関数で囲むことをお勧めします。これにより、トランスクリプトのような入力データを渡すことが容易になります。また、目的をより明確にするために関数に名前を付けることができます：</p>
+<div class="caption-code">
+<span class="caption">CLASSIFY_TRANSCRIPT関数</span>
+<pre class="list">sql
+CREATE OR REPLACE FUNCTION CLASSIFY_TRANSCRIPT(transcript STRING)
+RETURNS STRING
+RETURN AI_GENERATE_TEXT(
+ CONCAT(‘Classify the following text into one of four categories [Frustrated, Happy, Neutral,  
+  Satisfied]’, 
+  transcript),
+ 'azure_openai/gpt-35-turbo',
+ 'apiKey', SECRET('tokens', 'azure-openai'),
+ &quot;deploymentId&quot;, &quot;llmbricks&quot;,
+ &quot;apiVersion&quot;, &quot;2023-03-15-preview&quot;, 
+ &quot;resourceName&quot;, &quot;llmbricks&quot;,
+“temperature”, 0.0
+);
+</pre>
+</div>
+<p>CLASSIFY_TRANSCRIPT関数を呼び出すことで、データセットの各レコードに対して通話を分類する事ができます。</p>
+<div class="caption-code">
+<span class="caption">CLASSIFY_TRANSCRIPT関数で通話を分類</span>
+<pre class="list">sql
+SELECT 
+transcript_line, 
+CLASSIFY_TRANSCRIPT(transcript_line) as classification
+FROM
+your_dataset
+</pre>
+</div>
+<div id="Mori_aifunction_res" class="image">
+<img src="images/SQLextention/Mori_aifunction_res.jpg" alt="CLASSIFY_TRANSCRIPT関数による分類結果" class="img" />
+<p class="caption">
+図6.6: CLASSIFY_TRANSCRIPT関数による分類結果
+</p>
+</div>
+<p>AI Functionsを使えば、SQLアナリストがLLMの力を日々のワークフローに活用できるようになります。さらに、ユーザーがLLMをビジネスに合わせて簡単にカスタマイズし、新しいユースケースが次々と生まれてくることが予想されます。</p>
+
+<h2 class="grayback"><a id="h6-4"></a><span class="secno">6.4</span> おわりに</h2>
+<p>本章では、Databricks SQLの拡張機能であるUDFとAI Functionsについて、基礎から応用まで幅広く解説してきました。</p>
+<p>UDFに関しては、Apache Sparkの進化に伴うPython UDFとPandas UDFの登場と特徴を理解し、それらの基本的な使い方を学びました。さらに、Databricks SQLでUDFを活用する方法として、他のシステムからのワークロード移行や、Spark SQLでネイティブにサポートされていない高度なデータ変換の実現方法を紹介しました。</p>
+<p>AI Functionsについては、LLMを活用したデータ処理の可能性と、その実現方法を具体的な例を交えて説明しました。</p>
+<p>これらの知識を活用することで、データエンジニアやデータサイエンティストの皆様は、より効率的かつ高度なデータ処理を実現できるようになるでしょう。UDFとAI Functionsは、Databricks SQLの強力な拡張機能であり、データ処理のパフォーマンスと可能性を大きく向上させます。本章で得た知識を実践に活かし、データ処理のスペシャリストとして活躍されることを心より願っています。今後も、Databricksの新機能や活用事例に注目し、継続的な学習と成長を重ねていきましょう。データ処理の世界は常に進化し続けています。皆様が、その進化の最前線で活躍されることを期待しています。</p>
+
+<h3 class="symbol"><a id="h6-4-1"></a>参考</h3>
+<ol class="ol-none">
+<li data-mark="[1]"><span class="li-mark">[1] </span>https://spark.apache.org/news/spark-0-7-0-released.html
+</li>
+</ol>
+<ol class="ol-none">
+<li data-mark="[2]"><span class="li-mark">[2] </span>https://www.databricks.com/jp/blog/2017/10/30/introducing-vectorized-udfs-for-pyspark.html
+</li>
+</ol>
+<ol class="ol-none">
+<li data-mark="[3]"><span class="li-mark">[3] </span>https://spark.apache.org/releases/spark-release-2-4-0.html
+</li>
+</ol>
+<ol class="ol-none">
+<li data-mark="[4]"><span class="li-mark">[4] </span>https://www.databricks.com/jp/blog/2017/10/30/introducing-vectorized-udfs-for-pyspark.html
+</li>
+</ol>
+<ol class="ol-none">
+<li data-mark="[5]"><span class="li-mark">[5] </span>https://www.databricks.com/blog/2020/05/20/new-pandas-udfs-and-python-type-hints-in-the-upcoming-release-of-apache-spark-3-0.html
+</li>
+</ol>
+<ol class="ol-none">
+<li data-mark="[6]"><span class="li-mark">[6] </span>https://www.slideshare.net/databricks/pandas-udf-and-python-type-hint-in-apache-spark-30
+</li>
+</ol>
+<ol class="ol-none">
+<li data-mark="[7]"><span class="li-mark">[7] </span>https://www.databricks.com/blog/2022/11/30/memory-profiling-pyspark.html
+</li>
+</ol>
+<ol class="ol-none">
+<li data-mark="[8]"><span class="li-mark">[8] </span>https://spark.apache.org/docs/latest/api/python/user_guide/sql/arrow_pandas.html
+</li>
+</ol>
+<ol class="ol-none">
+<li data-mark="[9]"><span class="li-mark">[9] </span>https://www.databricks.com/blog/2022/07/22/power-to-the-sql-people-introducing-python-udfs-in-Databricks-sql.html
+</li>
+</ol>
+<ol class="ol-none">
+<li data-mark="[10]"><span class="li-mark">[10] </span>https://www.databricks.com/blog/whats-new-databricks-sql
+</li>
+</ol>
+<ol class="ol-none">
+<li data-mark="[11]"><span class="li-mark">[11] </span>https://www.infoworld.com/article/3712826/10-ways-generative-ai-will-transform-software-development.html
+</li>
+</ol>
+<ol class="ol-none">
+<li data-mark="[12]"><span class="li-mark">[12] </span>https://www.mckinsey.com/capabilities/mckinsey-digital/our-insights/unleashing-developer-productivity-with-generative-ai
+</li>
+</ol>
+<ol class="ol-none">
+<li data-mark="[13]"><span class="li-mark">[13] </span>https://www.ibm.com/architectures/hybrid/genai-modernization-and-code-generation
+</li>
+</ol>
+<ol class="ol-none">
+<li data-mark="[14]"><span class="li-mark">[14] </span>https://www.databricks.com/company/newsroom/press-releases/databricks-launches-dbrx-new-standard-efficient-open-source-models
+</li>
+</ol>
+<ol class="ol-none">
+<li data-mark="[15]"><span class="li-mark">[15] </span>https://anakin.ai/blog/dbrx-databricks-llm/
+</li>
+</ol>
+<ol class="ol-none">
+<li data-mark="[16]"><span class="li-mark">[16] </span>https://medium.com/@tzhang_westmonroe/genai-assisted-code-migration-a-quick-test-of-code-generation-using-databricks-dbrx-93e27ed0894b
+</li>
+</ol>
+<ol class="ol-none">
+<li data-mark="[17]"><span class="li-mark">[17] </span>https://datanoon.com/blog/pyspark_udf/
+</li>
+</ol>
+<ol class="ol-none">
+<li data-mark="[18]"><span class="li-mark">[18] </span>https://arrow.apache.org/overview/
+</li>
+</ol>
+<ol class="ol-none">
+<li data-mark="[19]"><span class="li-mark">[19] </span>https://www.databricks.com/blog/2022/02/02/scaling-shap-calculations-with-pyspark-and-pandas-udf.html
+</li>
+</ol>
+<ol class="ol-none">
+<li data-mark="[20]"><span class="li-mark">[20] </span>https://zenn.dev/hiouchiy/articles/5285e405014c45
+</li>
+</ol>
+<ol class="ol-none">
+<li data-mark="[21]"><span class="li-mark">[21] </span>https://www.databricks.com/jp/blog/introducing-apache-sparktm-35
+</li>
+</ol>
+<ol class="ol-none">
+<li data-mark="[22]"><span class="li-mark">[22] </span>https://www.databricks.com/jp/blog/2023/04/18/introducing-ai-functions-integrating-large-language-models-databricks-sql.html
+</li>
+</ol>
+
+        </main>
+        <nav class="page-navi">
+          <a href="realtime-app-dbsql.html" class="page-prev">&#9664;</a>
+          <a href="dbsql-perf-tuning.html" class="page-next">&#9654;</a>
+        </nav>
+        <footer>
+        </footer>
+      </div>
+    </div>
+  </body>
+</html>
+<!-- layout.html5.erb -->
