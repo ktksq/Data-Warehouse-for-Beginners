@@ -1,0 +1,162 @@
+
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title> | はじめてのデータウェアハウス</title>
+
+    <link rel="stylesheet" type="text/css" href="css/normalize.css" />
+
+    <link rel="stylesheet" type="text/css" href="css/webstyle.css" />
+
+
+    <link rel="next" title="まえがき" href="preface.html">
+
+
+    <meta name="generator" content="Re:VIEW Starter">
+  </head>
+  <body>
+    <div class="page-outer">
+
+      <div class="page-inner">
+        <header class="page-header">
+        </header>
+        <main class="page-main">
+
+          <h1>はじめてのデータウェアハウス</h1>
+<ul class="toc toc-1">
+    <li class="toc-chapter"><a href="./preface.html">まえがき</a>
+      <ul class="toc toc-2">
+        <li class="toc-section"><a href="#h">データブリックスとは</a></li>
+        <li class="toc-section"><a href="#h">実際の環境で試してみたい場合には</a></li>
+        <li class="toc-section"><a href="#h">もっとデータブリックスについて知りたい場合には</a></li>
+        <li class="toc-section"><a href="#h">本書の電子書籍版</a></li>
+        <li class="toc-section"><a href="#h">本書のお問い合わせ先</a></li>
+        <li class="toc-section"><a href="#h">免責事項</a></li>
+      </ul>
+    </li>
+    <li class="toc-chapter"><a href="./dbsql-general.html">1 Databricks SQL の概要</a>
+      <ul class="toc toc-2">
+        <li class="toc-section"><a href="#h1-1">1.1 Databricks ってSQLもできるんです！</a></li>
+        <li class="toc-section"><a href="#h1-2">1.2 そのまえに・・・Databricksの概要紹介</a></li>
+        <li class="toc-section"><a href="#h1-3">1.3 Databricks SQL ・・・なんです！</a></li>
+        <li class="toc-section"><a href="#h1-4">1.4 Pro/Classic/Serverless どれにしたらいいの？</a></li>
+        <li class="toc-section"><a href="#h1-5">1.5 Serverless SQL って便利だねっ</a></li>
+        <li class="toc-section"><a href="#h1-6">1.6 Databricks SQL を使ってみよう！</a></li>
+        <li class="toc-section"><a href="#h1-7">1.7 まとめ</a></li>
+      </ul>
+    </li>
+    <li class="toc-chapter"><a href="./unitycatalog.html">2 Unity Catalogではじめるデータマネジメント</a>
+      <ul class="toc toc-2">
+        <li class="toc-section"><a href="#h2-1">2.1 はじめに</a></li>
+        <li class="toc-section"><a href="#h2-2">2.2 Unity Catalogとはなにか？</a></li>
+        <li class="toc-section"><a href="#h2-3">2.3 Unity Catalogでできること</a></li>
+        <li class="toc-section"><a href="#h2-4">2.4 Unity Catalog のアーキテクチャ</a></li>
+        <li class="toc-section"><a href="#h2-5">2.5 おわりに</a></li>
+      </ul>
+    </li>
+    <li class="toc-chapter"><a href="./data-engineering.html">3 データエンジニアリング</a>
+      <ul class="toc toc-2">
+        <li class="toc-section"><a href="#h3-1">3.1 はじめに</a></li>
+        <li class="toc-section"><a href="#h3-2">3.2 サンプルアプリケーションの紹介: ニュース配信アプリ</a></li>
+        <li class="toc-section"><a href="#h3-3">3.3 ワークフロー: データタスクの自動化と統合</a></li>
+        <li class="toc-section"><a href="#h3-4">3.4 Delta Live Tables: 宣言的データパイプラインの実現</a></li>
+        <li class="toc-section"><a href="#h3-5">3.5 メダリオンアーキテクチャ</a></li>
+        <li class="toc-section"><a href="#h3-6">3.6 外部APIデータをDeltaテーブルに取り込み</a></li>
+        <li class="toc-section"><a href="#h3-7">3.7 ワークフロージョブを作成して複数のタスクを並列実行</a></li>
+        <li class="toc-section"><a href="#h3-8">3.8 ワークフロージョブを実行して結果を確認する</a></li>
+        <li class="toc-section"><a href="#h3-9">3.9 開発向け多目的クラスタと本番向けジョブクラスタ</a></li>
+        <li class="toc-section"><a href="#h3-10">3.10 DLTで宣言的なデータパイプラインを実装</a></li>
+        <li class="toc-section"><a href="#h3-11">3.11 ワークフロージョブからDLTパイプラインを実行する</a></li>
+        <li class="toc-section"><a href="#h3-12">3.12 ワークフローを条件分岐で制御する</a></li>
+        <li class="toc-section"><a href="#h3-13">3.13 Chromaベクトルデータベースファイルを最新化</a></li>
+        <li class="toc-section"><a href="#h3-14">3.14 SparkストリーミングでChromaにニュースを追加</a></li>
+        <li class="toc-section"><a href="#h3-15">3.15 MLflowを利用したモデル管理</a></li>
+        <li class="toc-section"><a href="#h3-16">3.16 おすすめニュースをバッチ推論する</a></li>
+        <li class="toc-section"><a href="#h3-17">3.17 複数タスクの完了を待ってからタスクを実行する</a></li>
+        <li class="toc-section"><a href="#h3-18">3.18 おわりに</a></li>
+      </ul>
+    </li>
+    <li class="toc-chapter"><a href="./lakeview.html">4 Lakeviewによるデータ可視化とBIダッシュボード</a>
+      <ul class="toc toc-2">
+        <li class="toc-section"><a href="#h4-1">4.1 はじめに</a></li>
+        <li class="toc-section"><a href="#h4-2">4.2 今までとこれから</a></li>
+        <li class="toc-section"><a href="#h4-3">4.3 LakeViewの機能</a></li>
+        <li class="toc-section"><a href="#h4-4">4.4 チャートの配置(応用)</a></li>
+        <li class="toc-section"><a href="#h4-5">4.5 おわりに</a></li>
+      </ul>
+    </li>
+    <li class="toc-chapter"><a href="./realtime-app-dbsql.html">5 Databricks SQLとRaspberry Piを使ってIoTデータダッシュボードを作る</a>
+      <ul class="toc toc-2">
+        <li class="toc-section"><a href="#h5-1">5.1 はじめに</a></li>
+        <li class="toc-section"><a href="#h5-2">5.2 要件</a></li>
+        <li class="toc-section"><a href="#h5-3">5.3 概要</a></li>
+        <li class="toc-section"><a href="#h5-4">5.4 手順詳細</a></li>
+        <li class="toc-section"><a href="#h5-5">5.5 おわりに</a></li>
+      </ul>
+    </li>
+    <li class="toc-chapter"><a href="./SQLextention.html">6 Databricks SQLの拡張機能</a>
+      <ul class="toc toc-2">
+        <li class="toc-section"><a href="#h6-1">6.1 はじめに</a></li>
+        <li class="toc-section"><a href="#h6-2">6.2 Databricks SQLの拡張機能としてのUDF</a></li>
+        <li class="toc-section"><a href="#h6-3">6.3 Databricks SQLでLLMを活用する（AI Functions）</a></li>
+        <li class="toc-section"><a href="#h6-4">6.4 おわりに</a></li>
+      </ul>
+    </li>
+    <li class="toc-chapter"><a href="./dbsql-perf-tuning.html">7 Databricks SQL パフォーマンス・チューニング Tips</a>
+      <ul class="toc toc-2">
+        <li class="toc-section"><a href="#h7-1">7.1 はじめに</a></li>
+        <li class="toc-section"><a href="#h7-2">7.2 Databricks SQLとは</a></li>
+        <li class="toc-section"><a href="#h7-3">7.3 チューニングステップ</a></li>
+        <li class="toc-section"><a href="#h7-4">7.4 I/Oの効率化</a></li>
+        <li class="toc-section"><a href="#h7-5">7.5 SQL実行プランの改善</a></li>
+        <li class="toc-section"><a href="#h7-6">7.6 Photon利用率の改善</a></li>
+        <li class="toc-section"><a href="#h7-7">7.7 クラスタサイズの調整</a></li>
+        <li class="toc-section"><a href="#h7-8">7.8 おわりに</a></li>
+      </ul>
+    </li>
+    <li class="toc-chapter"><a href="./dbsql-serverless-nw-security.html">8 Databricks SQLサーバーレスのネットワークセキュリティ</a>
+      <ul class="toc toc-2">
+        <li class="toc-section"><a href="#h8-1">8.1 はじめに</a></li>
+        <li class="toc-section"><a href="#h8-2">8.2 NCCの概要</a></li>
+        <li class="toc-section"><a href="#h8-3">8.3 NCCの設定の流れ：ファイアウォール</a></li>
+        <li class="toc-section"><a href="#h8-4">8.4 NCCの設定の流れ：プライベートリンク</a></li>
+        <li class="toc-section"><a href="#h8-5">8.5 NCCの補足</a></li>
+        <li class="toc-section"><a href="#h8-6">8.6 おわりに</a></li>
+      </ul>
+    </li>
+    <li class="toc-chapter"><a href="./dbsql-migration.html">9 既存データウェアハウスからDatabricksへの実践的な移行方法と成功のためのヒント</a>
+      <ul class="toc toc-2">
+        <li class="toc-section"><a href="#h9-1">9.1 はじめに</a></li>
+        <li class="toc-section"><a href="#h9-2">9.2 データベースオブジェクトのマッピング</a></li>
+        <li class="toc-section"><a href="#h9-3">9.3 テーブルの移行</a></li>
+        <li class="toc-section"><a href="#h9-4">9.4 ビューの移行</a></li>
+        <li class="toc-section"><a href="#h9-5">9.5 インデックスの移行</a></li>
+        <li class="toc-section"><a href="#h9-6">9.6 ストアドプロシージャの移行</a></li>
+        <li class="toc-section"><a href="#h9-7">9.7 ファンクションの移行</a></li>
+        <li class="toc-section"><a href="#h9-8">9.8 シーケンスの移行</a></li>
+        <li class="toc-section"><a href="#h9-9">9.9 トリガーの移行</a></li>
+        <li class="toc-section"><a href="#h9-10">9.10 その他：トランザクション処理の移行</a></li>
+        <li class="toc-section"><a href="#h9-11">9.11 おわりに</a></li>
+      </ul>
+    </li>
+    <li class="toc-chapter"><a href="./DBRX.html">データブリックスが作った新しいLLM「DBRX」って、一体どんなモデル？</a></li>
+    <li class="toc-chapter"><a href="./contributors.html">著者紹介</a></li>
+</ul>
+
+
+        </main>
+        <nav class="page-navi">
+
+
+          <a href="preface.html" class="page-next">&#9654;</a>
+
+        </nav>
+        <footer>
+
+        </footer>
+      </div>
+    </div>
+
+

@@ -1,0 +1,646 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Databricks SQLサーバーレスのネットワークセキュリティ | はじめてのデータウェアハウス</title>
+    <link rel="stylesheet" type="text/css" href="css/normalize.css" />
+    <link rel="stylesheet" type="text/css" href="css/webstyle.css" />
+    <link rel="next" title="既存データウェアハウスからDatabricksへの実践的な移行方法と成功のためのヒント" href="dbsql-migration.html">
+    <link rel="prev" title="Databricks SQL パフォーマンス・チューニング Tips" href="dbsql-perf-tuning.html">
+    <meta name="generator" content="Re:VIEW Starter">
+  </head>
+  <body>
+    <div class="page-outer">
+      <nav class="side-content">
+                <a class="nav-title" href="index.html">はじめてのデータウェアハウス</a>
+<ul class="toc toc-1">
+    <li class="toc-chapter"><a href="./preface.html">まえがき</a></li>
+    <li class="toc-chapter"><a href="./dbsql-general.html">1 Databricks SQL の概要</a></li>
+    <li class="toc-chapter"><a href="./unitycatalog.html">2 Unity Catalogではじめるデータマネジメント</a></li>
+    <li class="toc-chapter"><a href="./data-engineering.html">3 データエンジニアリング</a></li>
+    <li class="toc-chapter"><a href="./lakeview.html">4 Lakeviewによるデータ可視化とBIダッシュボード</a></li>
+    <li class="toc-chapter"><a href="./realtime-app-dbsql.html">5 Databricks SQLとRaspberry Piを使ってIoTデータダッシュボードを作る</a></li>
+    <li class="toc-chapter"><a href="./SQLextention.html">6 Databricks SQLの拡張機能</a></li>
+    <li class="toc-chapter"><a href="./dbsql-perf-tuning.html">7 Databricks SQL パフォーマンス・チューニング Tips</a></li>
+    <li class="toc-chapter"><a href="./dbsql-serverless-nw-security.html">8 Databricks SQLサーバーレスのネットワークセキュリティ</a>
+      <ul class="toc toc-2">
+        <li class="toc-section"><a href="#h8-1">8.1 はじめに</a></li>
+        <li class="toc-section"><a href="#h8-2">8.2 NCCの概要</a></li>
+        <li class="toc-section"><a href="#h8-3">8.3 NCCの設定の流れ：ファイアウォール</a></li>
+        <li class="toc-section"><a href="#h8-4">8.4 NCCの設定の流れ：プライベートリンク</a></li>
+        <li class="toc-section"><a href="#h8-5">8.5 NCCの補足</a></li>
+        <li class="toc-section"><a href="#h8-6">8.6 おわりに</a></li>
+      </ul>
+    </li>
+    <li class="toc-chapter"><a href="./dbsql-migration.html">9 既存データウェアハウスからDatabricksへの実践的な移行方法と成功のためのヒント</a></li>
+    <li class="toc-chapter"><a href="./DBRX.html">データブリックスが作った新しいLLM「DBRX」って、一体どんなモデル？</a></li>
+    <li class="toc-chapter"><a href="./contributors.html">著者紹介</a></li>
+</ul>
+      </nav>
+      <div class="page-inner">
+        <header class="page-header">
+        </header>
+        <main class="page-main">
+<h1 class="boldlines center twolines"><a id="h8"></a><span class="secno">第8章</span> <br/>Databricks SQLサーバーレスのネットワークセキュリティ</h1>
+
+<h2 class="grayback"><a id="h8-1"></a><span class="secno">8.1</span> はじめに</h2>
+<p>データの活用が進む中で、データを安全に管理することの重要性が増しています。特にクラウドを利用したデータ分析基盤においては、ネットワークセキュリティは大きな関心事項の一つです。<b>Databricks SQLサーバーレス</b>（略して<b>DBSQLサーバーレス</b>）を利用する際も、ユーザーの大切なデータを保管しているクラウドオブジェクトストレージのネットワークセキュリティは重要な検討項目でしょう。</p>
+<p>この課題に対応するため、Databricksでは「<b>ネットワーク接続構成</b>」という機能を提供しています。Network Connectivity Configurationの頭文字をとって<b>NCC</b>と略します。NCCを利用することで、DBSQLサーバーレスからクラウドオブジェクトストレージなどのリソースへのアクセス時のネットワークセキュリティを、きめ細かく管理できるようになります。</p>
+<p>本章執筆時点（2024年4月）では、Azure Databricksにおいて、NCCが一般提供（GA）された状態で利用可能です。一方、Databricks on AWSとDatabricks on Google Cloudでは、NCC相当の機能の開発が進められている段階であり、パブリックプレビューおよびGAはこれからという状況です。</p>
+<p>本章では、NCCがGAとなっているAzure Databricksを中心に解説を進めます。ただし、NCCの基本的な概念はどのクラウドプロバイダーでも共通していますので、Databricks on AWSやDatabricks on Google Cloudをお使いの方にも参考になる内容かと思います。</p>
+<p>これから、NCCの概要や具体的な設定手順などを、豊富なキャプチャを交えながら丁寧に説明していきますので、ぜひ最後までお付き合いください。</p>
+
+<h3 class="symbol"><a id="h8-1-1"></a>サーバーレスのリリース状況</h3>
+<p>Databricksでは2023年からサーバーレスの機能強化がどんどん進められています。本章執筆時点で、Databricksのサーバーレス機能として、<b>DBSQLサーバーレス</b>と<b>ノートブックおよびワークフロー向けのサーバーレス</b>の2つがリリースされています。DBSQLサーバーレスは既に一般提供（GA）となっており、AWSの東京リージョン（<tt>ap-northeast-1</tt>）やAzureの東日本リージョン（<tt>Japan East</tt>）などで利用可能です。一方、ノートブック &amp; ワークフローのサーバーレスは、AWS、Azureともに米国などの一部のリージョンでパブリックプレビュー段階にあります。ただし、こちらもAWSの東京リージョンやAzureの東日本リージョンで近く利用可能になる見通しです。Google Cloudの東京リージョン（<tt>asia-northeast1</tt>）でも、将来的にはこれらのサーバーレス機能が利用可能になるでしょう。</p>
+<p>各クラウドプロバイダーでのサーバーレス機能の最新のリリース状況については、以下の公式ドキュメントが参考になります（日本語版は更新に若干のタイムラグがあるため、英語版をおすすめします）。</p>
+<ul>
+<li>AWS：<a href="https://docs.databricks.com/en/resources/supported-regions.html" class="link">https://docs.databricks.com/en/resources/supported-regions.html</a>
+</li>
+<li>Azure：<a href="https://learn.microsoft.com/en-us/azure/databricks/resources/supported-regions" class="link">https://learn.microsoft.com/en-us/azure/databricks/resources/supported-regions</a>
+</li>
+<li>Google Cloud：<a href="https://docs.gcp.databricks.com/en/resources/supported-regions.html" class="link">https://docs.gcp.databricks.com/en/resources/supported-regions.html</a>
+</li>
+</ul>
+
+<h3 class="symbol"><a id="h8-1-2"></a>サーバーレスのメリット</h3>
+<p>サーバーレス機能の大きなメリットは、<b>起動時間の短さ</b>と<b>優れた性能とコストパフォーマンス</b>です。DBSQLサーバーレスだけでなく、ノートブックやワークフローのサーバーレスにも共通するメリットと言えるでしょう。この点については、本書の前半の章でも詳しく解説されていますが、データブリックスの新井さんによるQiita記事「Databricks Serverless SQL のすゝめ」<sup><a id="fnb-dbsql-no-susume" href="#fn-dbsql-no-susume" class="noteref" epub:type="noteref">*1</a></sup>でも分かりやすくまとめられているのでおすすめです。</p>
+<div class="footnote-list">
+<div class="footnote" id="fn-dbsql-no-susume" epub:type="footnote"><p class="footnote"><span class="footnote-mark">[*1] </span><a href="https://qiita.com/kohei-arai/items/7b4e15a4cf79aa827957" class="link">https://qiita.com/kohei-arai/items/7b4e15a4cf79aa827957</a></p></div>
+</div><!--/.footnote-list-->
+
+<h3 class="symbol"><a id="h8-1-3"></a>サーバーレスにおけるコンピューティングの実行場所</h3>
+<p>サーバーレスでは、クラスターやウェアハウスといった「コンピュート（計算資源）」の実行される場所が従来とは異なります。従来型のクラシックコンピューティングプレーンでは、ユーザーが管理するクラウド環境の仮想ネットワーク内でコンピュートが実行されるのに対し、サーバーレスでは、Databricksが管理する<b>サーバーレスコンピューティングプレーン</b>上でコンピュートが実行されます。</p>
+<div id="serverless-networking" class="image">
+<img src="images/dbsql-serverless-nw-security/serverless-networking.png" alt="サーバーレス コンピューティング プレーン ネットワーキング" class="img" />
+<p class="caption">
+図8.1: サーバーレス コンピューティング プレーン ネットワーキング
+</p>
+</div>
+<p>上記の図の2番に示されているように、サーバーレスコンピュートとユーザーリソース間のネットワークセキュリティを管理するのが、<b>ネットワーク接続構成（NCC）</b>です。</p>
+<p>なお、図の1番で示されているユーザー/アプリとコントロールプレーン間のネットワークセキュリティについては、IPアクセスリストやPrivate Linkで保護できます。詳細は割愛しますが、Databricksのブログ記事<sup><a id="fnb-adb-nw-security-blog" href="#fn-adb-nw-security-blog" class="noteref" epub:type="noteref">*2</a></sup>や筆者が以前作成したスライド<sup><a id="fnb-adb-nw-security-deck" href="#fn-adb-nw-security-deck" class="noteref" epub:type="noteref">*3</a></sup>にAzure Databricksにおける解説がありますので、ご興味のある方はぜひご覧ください。</p>
+<div class="footnote-list">
+<div class="footnote" id="fn-adb-nw-security-blog" epub:type="footnote"><p class="footnote"><span class="footnote-mark">[*2] </span><a href="https://www.databricks.com/jp/blog/data-exfiltration-protection-with-azure-databricks" class="link">https://www.databricks.com/jp/blog/data-exfiltration-protection-with-azure-databricks</a></p></div>
+<div class="footnote" id="fn-adb-nw-security-deck" epub:type="footnote"><p class="footnote"><span class="footnote-mark">[*3] </span><a href="https://speakerdeck.com/nakazax/azure-databricks-learning-series-number-3-network-design" class="link">https://speakerdeck.com/nakazax/azure-databricks-learning-series-number-3-network-design</a></p></div>
+</div><!--/.footnote-list-->
+
+<h3 class="symbol"><a id="h8-1-4"></a>サーバーレス全般のセキュリティ</h3>
+<p>サーバーレス全般のセキュリティについては、Databricksのセキュリティ &amp; トラストセンター<sup><a id="fnb-security-and-trust-center" href="#fn-security-and-trust-center" class="noteref" epub:type="noteref">*4</a></sup>に詳細な情報がまとめられています。日本語での解説は、データブリックスジャパンによるスライド「Databricksのセキュリティ: Databricksサーバーレス」<sup><a id="fnb-databricks-security-deck" href="#fn-databricks-security-deck" class="noteref" epub:type="noteref">*5</a></sup>で分かりやすくまとめられているのでおすすめです。</p>
+<div class="footnote-list">
+<div class="footnote" id="fn-security-and-trust-center" epub:type="footnote"><p class="footnote"><span class="footnote-mark">[*4] </span><a href="https://www.databricks.com/trust/security-features/serverless-security" class="link">https://www.databricks.com/trust/security-features/serverless-security</a></p></div>
+<div class="footnote" id="fn-databricks-security-deck" epub:type="footnote"><p class="footnote"><span class="footnote-mark">[*5] </span><a href="https://speakerdeck.com/databricksjapan/databricks-no-sekiyuritei-databricks-sabaresu" class="link">https://speakerdeck.com/databricksjapan/databricks-no-sekiyuritei-databricks-sabaresu</a></p></div>
+</div><!--/.footnote-list-->
+<div class="column">
+
+<h3><a id="column-1"></a>Databricksセキュリティ &amp; トラストセンターのサーバーレスセキュリティの日本語訳</h3>
+<p>（以下は、著者による拙訳です）</p>
+
+<h4><a id="h8-1-4-1"></a>サーバーレスコンピュートで安全にワークロードをデプロイする</h4>
+<p>サーバーレスを使用することで、Databricksの顧客は、最小限の管理でTCO（総所有コスト）を抑えながら、ほぼ瞬時にコンピュートにアクセスできます。このコンピュートとそれに関連するリソースは、顧客のDatabricksアカウント内のサーバーレスコンピュートプレーン内でDatabricksによって管理されます。顧客データを保護するために、サーバーレスワークロードは、複数の分離レイヤー内で実行されます。</p>
+<p>まず、コンピュートは、顧客の認証情報（クレデンシャル）なしで未割り当てのプールに新規に作成されます。必要に応じて、実行中のコンピュートが顧客の論理ネットワークにすばやく割り当てられ、必要に応じてスケーリングされます。このアプローチにより、通常30秒以内でクラスターを迅速にデプロイできます。すべてのコンピュートは揮発性で、そのワークロードに専用であり、ワークロードが完了すると安全にワイプされます。これらの分離レイヤーは、社内のオフェンシブセキュリティチームと外部のペネトレーションテスト企業の両方によって広範囲にテストされ、常に顧客のデータを保護します。</p>
+
+<h4><a id="h8-1-4-2"></a>複数のセキュリティレイヤーでワークロードを保護する</h4>
+<p>Databricksでは、サーバーレスワークロードは複数のセキュリティレイヤーによって保護されています。これらのセキュリティレイヤーは、最も機密性の高いワークロードに対しても、安全で信頼性の高い環境を提供するというDatabricksのコミットメントの基盤を形成しています。これらには以下のようなものがありますが、これらに限定されるものではありません。</p>
+<ul>
+<li>専用のコンピュートリソース
+<ul>
+<li>各ワークロードは、そのワークロード専用のコンピュートと暗号化されたストレージ上で実行されます
+</li>
+<li>ストレージは、使用後に再割り当てや再割り当てを行うことはできません
+</li>
+<li>コンピュートとストレージの両方が、ワークロードが完了するとすぐに安全にワイプされます
+</li>
+</ul>
+</li>
+<li>ネットワークセグメンテーション
+<ul>
+<li>各ワークロードは、パブリックIPアドレスが割り当てられていないプライベートネットワーク内で動作します
+</li>
+<li>そのネットワークは、他のワークロードから論理的に分離されています
+</li>
+<li>ワークロード間の横移動や通信はブロックされます
+</li>
+<li>ユーザー、コントロールプレーン、コンピュートプレーン、クラウドサービス間のすべてのトラフィックは、パブリックインターネットではなく、クラウドプロバイダーのグローバルネットワークを経由してルーティングされます
+</li>
+</ul>
+</li>
+<li>保存時と転送時の暗号化
+<ul>
+<li>接続されたすべてのストレージは、業界標準のAES-256暗号化によって保護されています
+</li>
+<li>ユーザー、コントロールプレーン、コンピュートプレーン、クラウドサービス間のすべてのトラフィックは、少なくともTLS 1.2で暗号化されています
+</li>
+</ul>
+</li>
+<li>最小権限の原則
+<ul>
+<li>ワークロードは、そのワークロードの範囲外のシステムに対する特権や資格情報を持ちません
+</li>
+<li>データへのアクセスは、短期間（1時間）のトークンを介して行われます
+</li>
+<li>これらのトークンは、各特定のワークロードに安全に渡されます
+</li>
+</ul>
+</li>
+</ul>
+<div id="serverless-security" class="image">
+<img src="images/dbsql-serverless-nw-security/serverless-security.png" alt="" class="img width-060per" />
+<p class="caption">
+図8.2: 
+</p>
+</div>
+<p>Databricksサーバーレスコンピュートのより詳細は、AWS<sup><a id="fnb-aws-serverless-compute" href="#fn-aws-serverless-compute" class="noteref" epub:type="noteref">*6</a></sup>およびAzure<sup><a id="fnb-azure-serverless-compute" href="#fn-azure-serverless-compute" class="noteref" epub:type="noteref">*7</a></sup>のドキュメントを参照ください。</p>
+<div class="footnote-list">
+<div class="footnote" id="fn-aws-serverless-compute" epub:type="footnote"><p class="footnote"><span class="footnote-mark">[*6] </span><a href="https://docs.databricks.com/serverless-compute/index.html" class="link">https://docs.databricks.com/serverless-compute/index.html</a></p></div>
+<div class="footnote" id="fn-azure-serverless-compute" epub:type="footnote"><p class="footnote"><span class="footnote-mark">[*7] </span><a href="https://learn.microsoft.com/en-us/azure/databricks/serverless-compute/" class="link">https://learn.microsoft.com/en-us/azure/databricks/serverless-compute/</a></p></div>
+</div><!--/.footnote-list-->
+</div>
+
+<h2 class="grayback"><a id="h8-2"></a><span class="secno">8.2</span> NCCの概要</h2>
+<p>ここからAzure DatabricksにおけるNCCについて解説していきます。まずは、NCCの概要について見ていきましょう。最新の内容については以下のドキュメントをご覧頂くとして、ここでは分かりやすさを優先して記載します。</p>
+<p><a href="https://learn.microsoft.com/ja-jp/azure/databricks/security/network/serverless-network-security/#--what-is-a-network-connectivity-configuration-ncc" class="link">https://learn.microsoft.com/ja-jp/azure/databricks/security/network/serverless-network-security/#--what-is-a-network-connectivity-configuration-ncc</a></p>
+
+<h3 class="symbol"><a id="h8-2-1"></a>NCCとは？</h3>
+<p>ネットワーク接続構成（NCC）は、複数のDatabricksワークスペースのサーバーレスコンピュートからユーザーのクラウドオブジェクトストレージ（Azureの場合はAzureストレージアカウント）などのリソースへのネットワークセキュリティをアカウントレベルで一元的に管理するための機能です。</p>
+
+<h3 class="symbol"><a id="h8-2-2"></a>NCCで何ができる？</h3>
+<p>NCCを用いることでユーザーのAzureストレージアカウントに以下2つのネットワークセキュリティを適用できます。</p>
+<ol start="1" type="1">
+<li><b>ストレージアカウントのファイアウォール</b>（2024年2月一般提供開始）：DBSQLサーバーレスが経由する仮想ネットワークサービスエンドポイント<sup><a id="fnb-service-endpoint" href="#fn-service-endpoint" class="noteref" epub:type="noteref">*8</a></sup>の静的なサブネットID群をストレージアカウントのファイアウォールで許可し、接続元を制限します。</li>
+<li><b>プライベートリンク</b>（2024年4月一般提供開始）：DBSQLサーバーレスからストレージアカウントにAzure Private Link<sup><a id="fnb-private-link" href="#fn-private-link" class="noteref" epub:type="noteref">*9</a></sup>経由で接続します。</li>
+</ol>
+<div class="footnote-list">
+<div class="footnote" id="fn-service-endpoint" epub:type="footnote"><p class="footnote"><span class="footnote-mark">[*8] </span><a href="https://learn.microsoft.com/ja-jp/azure/virtual-network/virtual-network-service-endpoints-overview" class="link">https://learn.microsoft.com/ja-jp/azure/virtual-network/virtual-network-service-endpoints-overview</a></p></div>
+<div class="footnote" id="fn-private-link" epub:type="footnote"><p class="footnote"><span class="footnote-mark">[*9] </span><a href="https://learn.microsoft.com/ja-jp/azure/private-link/private-link-overview" class="link">https://learn.microsoft.com/ja-jp/azure/private-link/private-link-overview</a></p></div>
+</div><!--/.footnote-list-->
+<p>両者の違いについては以下の図をご覧ください。</p>
+<div id="ncc-concept" class="image">
+<img src="images/dbsql-serverless-nw-security/ncc-concept.png" alt="NCCの概念図（著者作成）" class="img" />
+<p class="caption">
+図8.3: NCCの概念図（著者作成）
+</p>
+</div>
+
+<h3 class="symbol"><a id="h8-2-3"></a>以前から何が変わったの？</h3>
+<p>プライベートリンクのサポートは2024年4月に新しく始まったものです。ストレージアカウントのファイアウォールについては「静的な」サブネットID群になったのがポイントです。</p>
+<p>2023年10月以前は、DBSQLサーバーレスが経由するサービスエンドポイントのサブネットID群をドキュメントで公開しており、それらのサブネットID群をストレージアカウントのファイアウォールに追加する方式でした。ただ、この方式だと、将来的にサブネットIDの追加や変更が発生した場合に、ユーザーがドキュメントを見て、ストレージアカウントのファイアウォールに反映するという作業が必要になってしまいます。そもそも、どうやってユーザーが変更に気付くのかという問題もありました。</p>
+<div id="previous-doc" class="image">
+<img src="images/dbsql-serverless-nw-security/previous-doc.png" alt="以前のドキュメントで公開していたサブネットID群" class="img width-070per" />
+<p class="caption">
+図8.4: 以前のドキュメントで公開していたサブネットID群
+</p>
+</div>
+<p>現在は、NCC作成時に、そのNCCにDBSQLサーバーレスが経由するサービスエンドポイントの「静的な」サブネットID群が設定されます。DBSQLサーバーレスは、その中の一つのサブネットIDのサービスエンドポイントを経由してストレージアカウントにアクセスします。ユーザーは、それらのサブネットID群を一度だけストレージアカウントのファイアウォールに追加すれば良くなり、ユーザーの利便性が向上しています。</p>
+
+<h3 class="symbol"><a id="h8-2-4"></a>NCCがサポートするサーバーレスの種類は？</h3>
+<p>本章執筆時点では、ストレージアカウントのファイアウォール、プライベートリンクともに、接続元としてサポートされているのはDBSQLサーバーレスのみです。</p>
+
+<h3 class="symbol"><a id="h8-2-5"></a>NCCへのアクセス方法</h3>
+<p>GUIとREST APIによるアクセスが可能です。今後Databricks CLIや各種SDK、Terraformなどもサポートされるはずです。</p>
+
+<h4><a id="h8-2-5-1"></a>GUIアクセス</h4>
+<p>Azure Databricksのアカウントコンソール (<a href="https://accounts.azuredatabricks.net" class="link">https://accounts.azuredatabricks.net</a>) の[<b>クラウドリソース</b>] &gt; [<b>ネットワーク接続構成</b>]でNCCの編集・閲覧ができます。</p>
+<div id="ncc-gui" class="image">
+<img src="images/dbsql-serverless-nw-security/ncc-gui.png" alt="アカウントコンソールのネットワーク接続構成" class="img width-080per" />
+<p class="caption">
+図8.5: アカウントコンソールのネットワーク接続構成
+</p>
+</div>
+
+<h4><a id="h8-2-5-2"></a>REST APIアクセス</h4>
+<p>以下のAPIリファレンスを参照ください。</p>
+<p><a href="https://docs.databricks.com/api/azure/account/networkconnectivity" class="link">https://docs.databricks.com/api/azure/account/networkconnectivity</a></p>
+
+<h3 class="symbol"><a id="h8-2-6"></a>NCCに必要な権限</h3>
+<p>NCCに関する操作を行うユーザーは以下の権限を持っている必要があります。</p>
+<ul>
+<li>Azure Databricksアカウントのアカウント管理者ロール
+<ul>
+<li>NCCはアカウントレベルのリソースのため、ユーザーはアカウント管理者ロールを持っている必要があります
+</li>
+</ul>
+</li>
+<li>対象のストレージアカウントのファイアウォールの編集権限
+<ul>
+<li>NCCを使ったストレージアカウントのファイアウォールの編集を行う場合に必要です
+</li>
+<li>Azure RBACの組み込みのロールの場合、ストレージアカウント共同作成者や共同作成者などのロールに必要な権限が含まれます
+</li>
+</ul>
+</li>
+<li>対象のストレージアカウントのプライベートエンドポイントの編集権限
+<ul>
+<li>NCCを使ったストレージアカウントのプライベートエンドポイントの編集を行う場合に必要です
+</li>
+<li>RBACロールについては同上で、ストレージアカウント共同作成者や共同作成者などのロールに必要な権限が含まれます
+</li>
+</ul>
+</li>
+</ul>
+<p>Azure Databricksのアカウントコンソールを有効化しておらず、アカウント管理者ロールが存在しない場合は、以下のドキュメントを参考に設定してください。</p>
+<p><a href="https://learn.microsoft.com/ja-jp/azure/databricks/administration-guide/#--establish-your-first-account-admin" class="link">https://learn.microsoft.com/ja-jp/azure/databricks/administration-guide/#--establish-your-first-account-admin</a></p>
+
+<h3 class="symbol"><a id="h8-2-7"></a>NCCの制限</h3>
+<p>NCCの制限は以下の通りです。</p>
+<ul>
+<li>NCCをアタッチするワークスペースはPremiumプランの必要があります
+</li>
+<li>1つのNCCは最大で50個のワークスペースにアタッチできます
+</li>
+<li>1つのAzure Databricksアカウントはリージョンごとに最大で10個のNCCを持つことができます
+</li>
+<li>1つのAzure Databricksアカウントはリージョンごとに最大で100個のプライベートエンドポイントを作成でき、必要に応じて1から10個のNCCに分散できます
+</li>
+</ul>
+<p>詳細は以下ドキュメントをご覧ください。</p>
+<p><a href="https://learn.microsoft.com/ja-jp/azure/databricks/security/network/serverless-network-security/serverless-private-link#requirements" class="link">https://learn.microsoft.com/ja-jp/azure/databricks/security/network/serverless-network-security/serverless-private-link#requirements</a></p>
+
+<h3 class="symbol"><a id="h8-2-8"></a>NCCの料金</h3>
+<p>NCCは<b>無料</b>でご利用頂けます。つまり、ストレージアカウントのファイアウォール、プライベートリンクどちらのオプションを利用する場合も追加料金は発生しません。詳細は以下のDatabricksのブログ記事をご参照ください。</p>
+<p><a href="https://www.databricks.com/jp/blog/announcing-general-availability-azure-private-link-and-azure-storage-firewall-support" class="link">https://www.databricks.com/jp/blog/announcing-general-availability-azure-private-link-and-azure-storage-firewall-support</a></p>
+
+<h2 class="grayback"><a id="h8-3"></a><span class="secno">8.3</span> NCCの設定の流れ：ファイアウォール</h2>
+<p>ここから実際にGUIを使ったNCCの設定の流れをウォークスルーしていきます。まずはストレージアカウントのファイアウォールから見ていきましょう。以下の公式ドキュメントに概ね従いながら、手順を説明していきます。</p>
+<p><a href="https://learn.microsoft.com/ja-jp/azure/databricks/security/network/serverless-network-security/serverless-firewall" class="link">https://learn.microsoft.com/ja-jp/azure/databricks/security/network/serverless-network-security/serverless-firewall</a></p>
+
+<h3 class="symbol"><a id="h8-3-1"></a>NCCを追加（アカウントコンソール）</h3>
+<p>アカウントコンソール (<a href="https://accounts.azuredatabricks.net/" class="link">https://accounts.azuredatabricks.net/</a>) にアクセスし、左サイドバーの [<b>クラウドリソース</b>] &gt; [<b>ネットワーク接続構成</b>] をクリックします。すると以下のような画面が表示されます。</p>
+<div id="ncc-fw-1-1" class="image">
+<img src="images/dbsql-serverless-nw-security/ncc-fw-1-1.png" alt="" class="img width-080per" />
+<p class="caption">
+図8.6: 
+</p>
+</div>
+<p>画面右上にある [<b>ネットワーク接続構成を追加</b>] ボタンをクリックします。</p>
+<p>任意の名前を入力、アタッチしたいワークスペースが存在するリージョンを選択し、[<b>追加</b>] をクリックします。</p>
+<div id="ncc-fw-1-3" class="image">
+<img src="images/dbsql-serverless-nw-security/ncc-fw-1-3.png" alt="" class="img width-080per" />
+<p class="caption">
+図8.7: 
+</p>
+</div>
+<p>指定した名前でNCCが作成されます。</p>
+<div id="ncc-fw-1-4" class="image">
+<img src="images/dbsql-serverless-nw-security/ncc-fw-1-4.png" alt="" class="img width-080per" />
+<p class="caption">
+図8.8: 
+</p>
+</div>
+
+<h3 class="symbol"><a id="h8-3-2"></a>NCCの静的サブネットID群をコピー（アカウントコンソール）</h3>
+<p>作成したNCCをクリック、[<b>デフォルトルール</b>] タブにアクセスし [<b>すべて表示</b>] リンクをクリックします。</p>
+<div id="ncc-fw-2-1" class="image">
+<img src="images/dbsql-serverless-nw-security/ncc-fw-2-1.png" alt="" class="img width-080per" />
+<p class="caption">
+図8.9: 
+</p>
+</div>
+<p>静的なサブネットIDの一覧が表示されるので [<b>サブネットをコピー</b>] をクリックします。</p>
+<div id="ncc-fw-2-2" class="image">
+<img src="images/dbsql-serverless-nw-security/ncc-fw-2-2.png" alt="" class="img width-080per" />
+<p class="caption">
+図8.10: 
+</p>
+</div>
+<p>これにより、クリップボードにサブネットIDの一覧がコピーされます。各サブネットIDがカンマと半角スペースで区切られています。この後、このサブネットID群をストレージアカウントのファイアウォールにスクリプトで追加していくのですが、その際にカンマがあるとエラーになりますので、テキストエディタなどに貼り付けてカンマを除去した上で、適当な名前で手元のPCに保存しておきましょう。</p>
+
+<h3 class="symbol"><a id="h8-3-3"></a>NCCをワークスペースにアタッチ（アカウントコンソール）</h3>
+<p>アカウントコンソールの左サイドバーの [<b>ワークスペース</b>] をクリックし、NCCをアタッチするワークスペースの名前をクリックします。</p>
+<p>[<b>構成</b>] タブが表示されるので右上の [<b>ワークスペースを更新</b>] ボタンをクリックします。</p>
+<div id="ncc-fw-3-2" class="image">
+<img src="images/dbsql-serverless-nw-security/ncc-fw-3-2.png" alt="" class="img width-080per" />
+<p class="caption">
+図8.11: 
+</p>
+</div>
+<p>[<b>ネットワーク接続構成</b>] 欄に作成したNCCを設定し [<b>更新</b>] ボタンをクリックします。</p>
+<div id="ncc-fw-3-3" class="image">
+<img src="images/dbsql-serverless-nw-security/ncc-fw-3-3.png" alt="" class="img width-080per" />
+<p class="caption">
+図8.12: 
+</p>
+</div>
+<p>以上でNCCのワークスペースへのアタッチは完了です。</p>
+<div id="ncc-fw-3-4" class="image">
+<img src="images/dbsql-serverless-nw-security/ncc-fw-3-4.png" alt="" class="img width-080per" />
+<p class="caption">
+図8.13: 
+</p>
+</div>
+<p>（ドキュメント<sup><a id="fnb-ncc-fw-note" href="#fn-ncc-fw-note" class="noteref" epub:type="noteref">*10</a></sup>に以下の記述がありますので、念のため本章にも転記しておきます）</p>
+<ul>
+<li>変更が有効になるまで10分待ちます
+</li>
+<li>ワークスペースで実行中のサーバーレスのSQLウェアハウスをすべて再起動します
+</li>
+</ul>
+<div class="footnote-list">
+<div class="footnote" id="fn-ncc-fw-note" epub:type="footnote"><p class="footnote"><span class="footnote-mark">[*10] </span><a href="https://learn.microsoft.com/ja-jp/azure/databricks/security/network/serverless-network-security/serverless-firewall#--step-2-attach-an-ncc-to-workspaces" class="link">https://learn.microsoft.com/ja-jp/azure/databricks/security/network/serverless-network-security/serverless-firewall#--step-2-attach-an-ncc-to-workspaces</a></p></div>
+</div><!--/.footnote-list-->
+
+<h3 class="symbol"><a id="h8-3-4"></a>ストレージアカウントのファイアウォールを有効化（Azureポータル）</h3>
+<ul>
+<li>Azureポータル (<a href="https://portal.azure.com" class="link">https://portal.azure.com</a>) にアクセスし、対象ストレージアカウントを選択し、[<b>ネットワーク</b>] をクリックします
+</li>
+<li>[<b>ファイアウォールと仮想ネットワーク</b>] &gt; [<b>パブリックネットワーク アクセス</b>]について [<b>選択した仮想ネットワークとIPアドレスから有効</b>] にチェックし [<b>保存</b>] をクリックします
+</li>
+</ul>
+<div id="ncc-fw-4-1" class="image">
+<img src="images/dbsql-serverless-nw-security/ncc-fw-4-1.png" alt="" class="img width-080per" />
+<p class="caption">
+図8.14: 
+</p>
+</div>
+<p>備考として、対象のストレージアカウントのファイアウォールについて、「すべてのネットワークから有効」から「選択した仮想ネットワークとIPアドレスから有効」に変更する場合、上記画面の「仮想ネットワーク」のセクションにAzure Databricksワークスペースの2つのサブネット（通称 <i>public-subnet</i> と <i>private-subnet</i>）のIDを追加してサービスエンドポイントを有効化してください。これを行わないと、非サーバーレスのクラスターやSQLウェアハウスから対象のストレージアカウントにアクセスできなくなります。なお、サービスエンドポイントが利用できるのはVNetインジェクション<sup><a id="fnb-vnet-injection" href="#fn-vnet-injection" class="noteref" epub:type="noteref">*11</a></sup>されたAzure Databricksワークスペースである点に留意ください。</p>
+<div class="footnote-list">
+<div class="footnote" id="fn-vnet-injection" epub:type="footnote"><p class="footnote"><span class="footnote-mark">[*11] </span><a href="https://learn.microsoft.com/ja-jp/azure/databricks/security/network/classic/vnet-inject" class="link">https://learn.microsoft.com/ja-jp/azure/databricks/security/network/classic/vnet-inject</a></p></div>
+</div><!--/.footnote-list-->
+
+<h3 class="symbol"><a id="h8-3-5"></a>ストレージアカウントのファイアウォールにNCCのサブネットID群を追加（Azure CLIなど）</h3>
+<p>Azure CLIやPowerShell、Terraform、または他のツールを使って、ストレージアカウントのファイアウォールにNCCのサブネットID群を追加します。</p>
+<p>以下はAzure CLIを使って複数のサブネットID群をループして追加するスクリプトです。スクリプトを実行する前に以下の文字列を置き換える必要があります。</p>
+<ul>
+<li><tt>SUBNETS</tt>の値をカンマを除去したサブネットID群で置き換えます
+</li>
+<li><tt>--subscription</tt>の値を自身のAzureサブスクリプションIDに置き換えます
+</li>
+<li><tt>--resource-group</tt>の値を対象のストレージアカウントが存在するリソースグループ名に置き換えます
+</li>
+<li><tt>--account-name</tt>の値を対象のストレージアカウント名に置き換えます
+</li>
+</ul>
+<div class="emlist-code">
+<pre class="emlist">#!/bin/bash
+SUBNETS=(/subscriptions/8453a5d5-9e9e-40c7-87a4-0ab4cc197f48/resourceGroups/prod-azure-eastusc3-nephos2/providers/Microsoft.Network/virtualNetworks/kaas-vnet/subnets/worker-subnet /subscriptions/8453a5d5-9e9e-40c7-87a4-0ab4cc197f48/resourceGroups/prod-azure-eastusc3-nephos3/providers/Microsoft.Network/virtualNetworks/kaas-vnet/subnets/worker-subnet)
+for SUBNET in ${SUBNETS[@]}
+do
+  az storage account network-rule add --subscription 9999999-1ff3-43f4-b91e-d0ceb97111111 --resource-group mystorage-rg --account-name myaccount --subnet ${SUBNET}
+done
+</pre>
+</div>
+<p>Azure CLIが手元のPCにインストールされていない場合は、AzureポータルからCloudShellを使うのがお手軽です。</p>
+<div id="ncc-fw-5-1" class="image">
+<img src="images/dbsql-serverless-nw-security/ncc-fw-5-1.png" alt="" class="img width-080per" />
+<p class="caption">
+図8.15: 
+</p>
+</div>
+<p>コマンドの実行が完了したら、Azureポータルから対象のストレージアカウントの [<b>ネットワーク</b>] &gt; [<b>仮想ネットワーク</b>] を確認します。以下のようにサブネットID群が追加されていればOKです。</p>
+<div id="ncc-fw-5-2" class="image">
+<img src="images/dbsql-serverless-nw-security/ncc-fw-5-2.png" alt="" class="img width-080per" />
+<p class="caption">
+図8.16: 
+</p>
+</div>
+<p>なお、エンドポイント状態列の「アクセス許可が不十分です」という表示や、ネットワーク一覧の下の警告は無視してOKです。これらは、ユーザーがNCCのサブネットID群の読み取りアクセス許可を持っていないことを示しているだけであり、サーバーレスコンピュートからストレージアカウントへの接続を妨げるものではありません。</p>
+
+<h3 class="symbol"><a id="h8-3-6"></a>DBSQLサーバーレスからストレージアカウントへの接続確認（ワークスペース）</h3>
+<p>NCCをアタッチしたワークスペースにアクセスします。</p>
+<p>タイプが<tt>サーバーレス</tt>のSQLウェアハウスがない場合、左サイドメニューの [<b>SQLウェアハウス</b>] &gt; [<b>SQLウェアハウスを作成</b>]をクリックして作成します。接続確認が目的なので、クラスターサイズは<tt>XXS</tt>などの小さなサイズでOKです。</p>
+<div id="ncc-fw-6-1" class="image">
+<img src="images/dbsql-serverless-nw-security/ncc-fw-6-1.png" alt="" class="img width-080per" />
+<p class="caption">
+図8.17: 
+</p>
+</div>
+<p>左サイドメニューの [<b>SQLエディタ</b>] にアクセスし、対象のストレージアカウントにデータがあるテーブルに対してSELECTをクエリを実行します。結果が表示されれば接続確認は問題ありません。</p>
+<div id="ncc-fw-6-2" class="image">
+<img src="images/dbsql-serverless-nw-security/ncc-fw-6-2.png" alt="" class="img width-080per" />
+<p class="caption">
+図8.18: 
+</p>
+</div>
+<p>ストレージアカウント側のネットワーク設定が上手く行えていない場合、以下のエラーメッセージが出力されます。その場合は前の手順に戻って見落としやミスがないかを確認してみてください。</p>
+<div id="ncc-fw-6-3" class="image">
+<img src="images/dbsql-serverless-nw-security/ncc-fw-6-3.png" alt="" class="img width-080per" />
+<p class="caption">
+図8.19: 
+</p>
+</div>
+<p>エラーメッセージ</p>
+<div class="emlist-code">
+<pre class="emlist">This Azure storage request is not authorized. The storage account's 'Firewalls and virtual networks' settings may be blocking access to storage services. Please verify your Azure storage credentials or firewall exception settings.
+</pre>
+</div>
+
+<h2 class="grayback"><a id="h8-4"></a><span class="secno">8.4</span> NCCの設定の流れ：プライベートリンク</h2>
+<p>続いてNCCのプライベートリンクの設定手順をウォークスルーしていきます。ストレージアカウントのファイアウォールと手順的に被る部分についてはキャプチャを省略してサクサクいきたいと思います。以下の公式ドキュメントに概ね従いながら進めていきます。</p>
+<p><a href="https://learn.microsoft.com/ja-jp/azure/databricks/security/network/serverless-network-security/serverless-private-link" class="link">https://learn.microsoft.com/ja-jp/azure/databricks/security/network/serverless-network-security/serverless-private-link</a></p>
+
+<h3 class="symbol"><a id="h8-4-1"></a>プライベートリンク用にNCCを追加（アカウントコンソール）</h3>
+<ul>
+<li>アカウントコンソール (<a href="https://accounts.azuredatabricks.net/" class="link">https://accounts.azuredatabricks.net/</a>) にアクセスし、左サイドバーの [<b>クラウドリソース</b>] &gt; [<b>ネットワーク接続構成</b>] をクリックします
+</li>
+<li>画面右上にある [<b>ネットワーク接続構成を追加</b>] ボタンをクリックします
+</li>
+<li>任意の名前を入力、アタッチしたいワークスペースが存在するリージョンを選択し、[<b>追加</b>] をクリックします
+</li>
+</ul>
+<div id="ncc-pl-1-1" class="image">
+<img src="images/dbsql-serverless-nw-security/ncc-pl-1-1.png" alt="" class="img width-080per" />
+<p class="caption">
+図8.20: 
+</p>
+</div>
+
+<h3 class="symbol"><a id="h8-4-2"></a>プライベートリンク用のNCCをワークスペースにアタッチ（アカウントコンソール）</h3>
+<ul>
+<li>アカウントコンソールの左サイドバーの [<b>ワークスペース</b>] をクリックし、NCCをアタッチするワークスペースの名前をクリックします
+</li>
+<li>[<b>構成</b>] タブが表示されるので右上の [<b>ワークスペースを更新</b>] ボタンをクリックします
+</li>
+<li>[<b>ネットワーク接続構成</b>] 欄に作成したNCCを設定し [<b>更新</b>] ボタンをクリックします
+</li>
+</ul>
+<div id="ncc-pl-2-1" class="image">
+<img src="images/dbsql-serverless-nw-security/ncc-pl-2-1.png" alt="" class="img width-080per" />
+<p class="caption">
+図8.21: 
+</p>
+</div>
+<p>（ドキュメント<sup><a id="fnb-ncc-pl-note" href="#fn-ncc-pl-note" class="noteref" epub:type="noteref">*12</a></sup>に以下の記述がありますので、念のため本章にも転記しておきます）</p>
+<ul>
+<li>変更が有効になるまで10分待ちます
+</li>
+<li>ワークスペースで実行中のサーバーレスのSQLウェアハウスをすべて再起動します
+</li>
+</ul>
+<div class="footnote-list">
+<div class="footnote" id="fn-ncc-pl-note" epub:type="footnote"><p class="footnote"><span class="footnote-mark">[*12] </span><a href="https://learn.microsoft.com/ja-jp/azure/databricks/security/network/serverless-network-security/serverless-private-link#--step-2-attach-an-ncc-to-a-workspace" class="link">https://learn.microsoft.com/ja-jp/azure/databricks/security/network/serverless-network-security/serverless-private-link#--step-2-attach-an-ncc-to-a-workspace</a></p></div>
+</div><!--/.footnote-list-->
+
+<h3 class="symbol"><a id="h8-4-3"></a>対象のストレージアカウントのリソースIDをコピー（Azureポータル）</h3>
+<p>Azureポータル (<a href="https://portal.azure.com" class="link">https://portal.azure.com</a>) にアクセスし、対象ストレージアカウントの [<b>概要</b>] ページの右上にある [<b>JSONビュー</b>] をクリックします。</p>
+<div id="ncc-pl-3-1" class="image">
+<img src="images/dbsql-serverless-nw-security/ncc-pl-3-1.png" alt="" class="img width-080per" />
+<p class="caption">
+図8.22: 
+</p>
+</div>
+<p>上部にリソースIDが表示されるので、枠で囲んだアイコンをクリックしてリソースIDをコピーします。</p>
+<div id="ncc-pl-3-2" class="image">
+<img src="images/dbsql-serverless-nw-security/ncc-pl-3-2.png" alt="" class="img width-080per" />
+<p class="caption">
+図8.23: 
+</p>
+</div>
+
+<h3 class="symbol"><a id="h8-4-4"></a>プライベートエンドポイントルールを追加（アカウントコンソール）</h3>
+<ul>
+<li>アカウントコンソールの左サイドバーの [<b>クラウドリソース</b>] &gt; [<b>ネットワーク接続構成</b>] にアクセスし、追加したNCCをクリックします
+</li>
+<li>[<b>プライベートエンドポイントルール</b>] タブを開き、[<b>プライベートエンドポイントルールを追加</b>] ボタンをクリックします
+</li>
+</ul>
+<div id="ncc-pl-4-1" class="image">
+<img src="images/dbsql-serverless-nw-security/ncc-pl-4-1.png" alt="" class="img width-080per" />
+<p class="caption">
+図8.24: 
+</p>
+</div>
+<p>[<b>適用先AzureリソースのID</b>] に先ほどコピーしたストレージアカウントのリソースIDを貼り付けます。Azureサブリソース名については、以下を参考に、対象のストレージアカウントの種類に応じて <tt>blob</tt> か <tt>dfs</tt> を入力します。</p>
+<ul>
+<li>対象がBlob Storage (= 階層型名前空間が有効でないストレージアカウント) の場合、サブリソース名に <tt>blob</tt> を入力
+</li>
+<li>対象がADLS Gen2 (= 階層型名前空間が有効なストレージアカウント) の場合、サブリソース名に <tt>dfs</tt> を入力
+</li>
+<li>対象がワークスペースルートストレージ (ルートDBFS) の場合、1つのリソースIDに対して <tt>blob</tt> と <tt>dfs</tt> の2つのプライベートエンドポイントルールを作成する必要がある
+</li>
+</ul>
+<p>ここではADLS Gen2を対象にしています。入力が完了したら [<b>追加</b>] をクリックします。</p>
+<div id="ncc-pl-4-2" class="image">
+<img src="images/dbsql-serverless-nw-security/ncc-pl-4-2.png" alt="" class="img width-080per" />
+<p class="caption">
+図8.25: 
+</p>
+</div>
+<p>[<b>追加</b>] ボタンが処理中を表す表示に変わるので、しばらく待ちます。（数十秒〜1分程度）</p>
+<div id="ncc-pl-4-3" class="image">
+<img src="images/dbsql-serverless-nw-security/ncc-pl-4-3.png" alt="" class="img width-080per" />
+<p class="caption">
+図8.26: 
+</p>
+</div>
+<p>自動的に表示が切り替わり、プライベートエンドポイントルールが1件追加されます。ステータスが <tt>PENDING</tt> になっているはずです。</p>
+<div id="ncc-pl-4-4" class="image">
+<img src="images/dbsql-serverless-nw-security/ncc-pl-4-4.png" alt="" class="img width-080per" />
+<p class="caption">
+図8.27: 
+</p>
+</div>
+
+<h3 class="symbol"><a id="h8-4-5"></a>プライベートエンドポイント接続を承認（Azureポータル）</h3>
+<p>Azureポータルで対象のストレージアカウントにアクセスし、[<b>ネットワーク</b>] &gt; [<b>プライベート エンドポイント接続</b>] タブを開きます。接続状態が <tt>保留中</tt> のプライベートエンドポイント接続が1件表示されるので、チェックボックスにチェックを入れて [<b>承認</b>] をクリックします。</p>
+<div id="ncc-pl-5-1" class="image">
+<img src="images/dbsql-serverless-nw-security/ncc-pl-5-1.png" alt="" class="img width-080per" />
+<p class="caption">
+図8.28: 
+</p>
+</div>
+<p>必要に応じて説明を入力し（ブランクでもOK）、[<b>はい</b>] をクリックします。</p>
+<div id="ncc-pl-5-2" class="image">
+<img src="images/dbsql-serverless-nw-security/ncc-pl-5-2.png" alt="" class="img width-080per" />
+<p class="caption">
+図8.29: 
+</p>
+</div>
+<p>しばらく待機し、接続状態が <tt>承認済み</tt> になることを確認します。</p>
+<div id="ncc-pl-5-3" class="image">
+<img src="images/dbsql-serverless-nw-security/ncc-pl-5-3.png" alt="" class="img width-080per" />
+<p class="caption">
+図8.30: 
+</p>
+</div>
+<p>アカウントコンソールのプライベートエンドポイントルールのステータスが <tt>ESTABLISHED</tt> になっていることを確認します。</p>
+<div id="ncc-pl-5-4" class="image">
+<img src="images/dbsql-serverless-nw-security/ncc-pl-5-4.png" alt="" class="img width-080per" />
+<p class="caption">
+図8.31: 
+</p>
+</div>
+
+<h3 class="symbol"><a id="h8-4-6"></a>（オプション）ストレージアカウントのパブリックネットワークアクセスを無効化（Azureポータル）</h3>
+<p>省略可能な手順です。対象のストレージアカウントへのアクセスについてプライベートエンドポイントに限定したい場合は、パブリックネットワークを <tt>無効</tt> に変更して保存します。</p>
+<div id="ncc-pl-6-1" class="image">
+<img src="images/dbsql-serverless-nw-security/ncc-pl-6-1.png" alt="" class="img width-080per" />
+<p class="caption">
+図8.32: 
+</p>
+</div>
+
+<h3 class="symbol"><a id="h8-4-7"></a>DBSQLサーバーレスからストレージアカウントへのプライベートリンク経由の接続確認（ワークスペース）</h3>
+<ul>
+<li>NCCをアタッチしたワークスペースにアクセスします
+</li>
+<li>タイプが<tt>サーバーレス</tt>のSQLウェアハウスがない場合、左サイドメニューの [<b>SQLウェアハウス</b>] &gt; [<b>SQLウェアハウスを作成</b>]をクリックして作成します。接続確認が目的なので、クラスターサイズは<tt>XXS</tt>などの小さなサイズでOKです
+</li>
+<li>左サイドメニューの [<b>SQLエディタ</b>] にアクセスし、対象のストレージアカウントにデータがあるテーブルに対してSELECTをクエリを実行します。結果が表示されれば接続確認は問題ありません
+</li>
+</ul>
+<div id="ncc-pl-7-1" class="image">
+<img src="images/dbsql-serverless-nw-security/ncc-pl-7-1.png" alt="" class="img width-080per" />
+<p class="caption">
+図8.33: 
+</p>
+</div>
+<p>NCCのウォークスルーは以上です。</p>
+
+<h2 class="grayback"><a id="h8-5"></a><span class="secno">8.5</span> NCCの補足</h2>
+<p>ここからは、NCCに関する補足的な内容について説明します。</p>
+
+<h3 class="symbol"><a id="h8-5-1"></a>NCCをどのように分けるか</h3>
+<p>NCCをどのように分けるかについて、ドキュメント<sup><a id="fnb-how-to-design-ncc" href="#fn-how-to-design-ncc" class="noteref" epub:type="noteref">*13</a></sup>では以下のようにガイドされています。少なくとも、ストレージアカウントのファイアウォールに使うNCCと、プライベートリンクを使うNCCを分けるところから始めるのが良さそうです。</p>
+<div class="footnote-list">
+<div class="footnote" id="fn-how-to-design-ncc" epub:type="footnote"><p class="footnote"><span class="footnote-mark">[*13] </span><a href="https://learn.microsoft.com/ja-jp/azure/databricks/security/network/serverless-network-security/serverless-private-link#--step-1-create-a-network-connectivity-configuration" class="link">https://learn.microsoft.com/ja-jp/azure/databricks/security/network/serverless-network-security/serverless-private-link#--step-1-create-a-network-connectivity-configuration</a></p></div>
+</div><!--/.footnote-list-->
+<blockquote class="blockquote">
+<p>Databricks では、同じ部署内で同じリージョン接続プロパティを共有するワークスペース間では、NCC を共有することを推奨しています。 たとえば、一部のワークスペースが Private Link を使い、他のワークスペースはファイアウォールの有効化を使う場合、それらのユース ケースには個別の NCC を使います。</p>
+</blockquote>
+<p>このガイダンスでは、ビジネスユニットの数、ワークスペースの数とリージョン、ストレージアカウントの数と接続方式など、複数のパラメーターが考慮されています。Azure Databricksを大規模に活用している組織では、前述のNCCの制限を念頭に置きつつ、組織の実情に合わせてNCCの設計を行うことが重要です。</p>
+
+<h3 class="symbol"><a id="h8-5-2"></a>NCCのアタッチ有無によるワークスペース間の動作の違い</h3>
+<p>NCCをアタッチしていないワークスペースのサーバーレスSQLウェアハウスも、サービスエンドポイントを経由してストレージアカウントにアクセスします。NCCのアタッチ有無によるワークスペース間の動作の違いは以下の通りです。</p>
+<ul>
+<li>NCCをアタッチしたワークスペース
+<ul>
+<li>サービスエンドポイントのサブネットID群が静的になる
+</li>
+<li>このサブネットID群は、ファイアウォールのルールに追加できる
+</li>
+</ul>
+</li>
+<li>NCCをアタッチしていないワークスペース
+<ul>
+<li>サービスエンドポイントのサブネットID群は静的ではない
+</li>
+<li>ただし、NCCをアタッチしたワークスペースと同一のサブネットのサービスエンドポイントを利用する可能性がある
+</li>
+</ul>
+</li>
+</ul>
+<p>つまり、NCCをアタッチしたワークスペースのサブネットID群をファイアウォールのルールに追加したストレージアカウントに対して、NCCをアタッチしていないワークスペースのサーバーレスSQLウェアハウスからのクエリが成功する場合があります。これは、両方のワークスペースが同一のサブネットのサービスエンドポイントを利用する可能性があるためです。</p>
+<p>NCCのアタッチ有無に関わらず、サーバーレスSQLウェアハウスからストレージアカウントへの通信は、認証や短命なアクセストークン、暗号化などによって安全に保護されています。NCCをアタッチすることで、静的なVNetサブネットID群をストレージアカウントのファイアウォールに設定し、接続元を限定することができます。</p>
+<p>特定のNCCがアタッチされたワークスペースのサーバーレスSQLウェアハウスからのネットワークアクセスのみを許可する必要がある場合には、NCCのプライベートリンクの利用を検討する必要があります。</p>
+
+<h2 class="grayback"><a id="h8-6"></a><span class="secno">8.6</span> おわりに</h2>
+<p>本章では、Databricks SQLサーバーレスとクラウドオブジェクトストレージ間のセキュアなネットワーク接続を管理するための機能である「ネットワーク接続構成（NCC）」について、Azure Databricksを例に概要と設定手順を紹介しました。</p>
+<p>NCCを使うことで、以下の2つの方法によりDBSQLサーバーレスからAzureストレージアカウントへのネットワークアクセスを制御できます。</p>
+<ol start="1" type="1">
+<li>ストレージアカウントのファイアウォールを使って、NCCに設定された静的なサブネットID群からの接続のみを許可する</li>
+<li>NCCのプライベートエンドポイントルールにより、プライベートリンク経由でストレージアカウントに接続する</li>
+</ol>
+<p>NCCはアカウントレベルのリソースであり、複数のワークスペースのネットワーク設定を一元管理できるメリットがあります。一方で、NCCにはいくつかの制限事項もあります。それらを理解した上で、組織の要件に合わせてNCCを適切に設計し、活用していくことが重要です。</p>
+<p>本章が、皆さまのDBSQLサーバーレスのネットワークセキュリティ強化の一助となれば幸いです。</p>
+
+        </main>
+        <nav class="page-navi">
+          <a href="dbsql-perf-tuning.html" class="page-prev">&#9664;</a>
+          <a href="dbsql-migration.html" class="page-next">&#9654;</a>
+        </nav>
+        <footer>
+        </footer>
+      </div>
+    </div>
+  </body>
+</html>
+<!-- layout.html5.erb -->
